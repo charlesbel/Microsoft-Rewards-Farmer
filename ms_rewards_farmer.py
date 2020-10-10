@@ -101,7 +101,7 @@ def visit_bing_url(url):
     browser.switch_to_window(browser.window_handles[0])
     time.sleep(2)
 
-browser = browser_setup(False, PC_USER_AGENT)
+browser = browser_setup(True, PC_USER_AGENT)
 
 login(USERNAME, PASSWORD)
 

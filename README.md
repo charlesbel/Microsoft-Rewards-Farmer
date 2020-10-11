@@ -10,3 +10,8 @@ A simple python script that uses selenium to farm daily microsoft rewards, to ea
 * Place these 2 files in X:\Windows (X as your Windows disk letter)
 * Edit the script.py and change your email and password in the 2 first variables
 * Run the script
+
+# Features
+- Bing search
+- Complete automatically the daily quiz (future update)
+- Complete automatically all the quizzes (future update)

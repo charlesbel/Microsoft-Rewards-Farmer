@@ -1,4 +1,4 @@
-# Microsoft-Rewards-Farmer
+# Microsoft Rewards Farmer
 A simple python script that uses selenium to farm daily microsoft rewards, to earn points, and then exchange for gift cards.
 
 # Installation

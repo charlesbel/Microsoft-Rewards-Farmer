@@ -8,10 +8,11 @@ A simple python script that uses selenium to farm daily microsoft rewards, to ea
   * Download Chrome WebDriver : https://chromedriver.chromium.org/downloads
   * Download Gecko Driver : https://github.com/mozilla/geckodriver/releases
 * Place these 2 files in X:\Windows (X as your Windows disk letter)
-* Edit the script.py and change your email and password in the 2 first variables
+* Edit the script and change your email and password in the 2 first variables
 * Run the script
 
 # Features
-- Bing search
-- Complete automatically the daily quiz (future update)
-- Complete automatically all the quizzes (future update)
+- Bing searches (Desktop and Mobile)
+- Complete automatically the daily set
+- Complete automatically punch cards
+- Complete automatically the others promotions

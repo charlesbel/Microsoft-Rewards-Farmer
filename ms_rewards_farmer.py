@@ -4,6 +4,7 @@ from datetime import date, timedelta, datetime
 import requests
 import random
 import json
+import urllib.parse
 
 from selenium import webdriver
 from selenium.webdriver.firefox.webdriver import WebDriver
@@ -165,6 +166,28 @@ def completeDailySetQuiz(browser: WebDriver, cardNumber: int):
     browser.switch_to.window(window_name = browser.window_handles[0])
     time.sleep(2)
 
+def completeDailySetTrueOrFalse(browser: WebDriver, cardNumber: int):
+    browser.get('https://account.microsoft.com/rewards/')
+    time.sleep(2)
+    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + cardNumber + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
+    time.sleep(1)
+    browser.switch_to.window(window_name = browser.window_handles[1])
+    time.sleep(8)
+    browser.find_element_by_xpath('//*[@id="rqStartQuiz"]').click()
+    waitUntilVisible(browser, By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
+    time.sleep(3)
+    quizInfo = json.loads(browser.execute_script("return _w.rewardsQuizRenderInfo"))
+    correctAnswer = quizInfo['correctAnswer']
+    if browser.find_element_by_id("rqAnswerOption0").get_attribute("data-option") == correctAnswer:
+        browser.find_element_by_id("rqAnswerOption0").click()
+    else :
+        browser.find_element_by_id("rqAnswerOption1").click()
+    time.sleep(10)
+    browser.close()
+    time.sleep(2)
+    browser.switch_to.window(window_name = browser.window_handles[0])
+    time.sleep(2)
+    
 def getDashboardData(browser: WebDriver) -> dict:
     browser.get('https://account.microsoft.com/rewards/')
     time.sleep(2)
@@ -188,7 +211,16 @@ def completeDailySet(browser: WebDriver):
                 if activity['pointProgressMax'] == 30:
                     completeDailySetQuiz(browser, cardNumber)
                 elif activity['pointProgressMax'] == 10:
-                    completeDailySetSurvey(browser, cardNumber)
+                    searchUrl = urllib.parse.unquote(urllib.parse.parse_qs(urllib.parse.urlparse(activity['destinationUrl']).query)['ru'][0])
+                    searchUrlQueries = urllib.parse.parse_qs(urllib.parse.urlparse(searchUrl).query)
+                    filters = {}
+                    for filter in searchUrlQueries['filters'][0].split(" "):
+                        filter = filter.split(':', 1)
+                        filters[filter[0]] = filter[1]
+                    if "PollScenarioId" in filters:
+                        completeDailySetSurvey(browser, cardNumber)
+                    else:
+                        completeDailySetTrueOrFalse(browser, cardNumber)
 
 def getAccountPoints(browser: WebDriver) -> int:
     return getDashboardData(browser)['userStatus']['availablePoints']

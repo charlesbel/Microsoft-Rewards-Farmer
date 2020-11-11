@@ -176,8 +176,7 @@ def completeDailySetTrueOrFalse(browser: WebDriver, cardNumber: int):
     browser.find_element_by_xpath('//*[@id="rqStartQuiz"]').click()
     waitUntilVisible(browser, By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
     time.sleep(3)
-    quizInfo = json.loads(browser.execute_script("return _w.rewardsQuizRenderInfo"))
-    correctAnswer = quizInfo['correctAnswer']
+    correctAnswer = browser.execute_script("return _w.rewardsQuizRenderInfo.correctAnswer")
     if browser.find_element_by_id("rqAnswerOption0").get_attribute("data-option") == correctAnswer:
         browser.find_element_by_id("rqAnswerOption0").click()
     else :

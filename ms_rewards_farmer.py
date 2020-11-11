@@ -240,7 +240,7 @@ def completePunchCard(browser: WebDriver, url: str, childPromotions: dict):
 def completePunchCards(browser: WebDriver):
     punchCards = getDashboardData(browser)['punchCards']
     for punchCard in punchCards:
-        if punchCard['parentPromotion'] != None and punchCard['parentPromotion']['complete'] == False and punchCard['parentPromotion']['promotionType'].split(',')[0] == "urlreward":
+        if punchCard['parentPromotion'] != None and punchCard['childPromotions'] != None and punchCard['parentPromotion']['complete'] == False and punchCard['parentPromotion']['promotionType'].split(',')[0] == "urlreward":
             url = punchCard['parentPromotion']['attributes']['destination']
             completePunchCard(browser, url, punchCard['childPromotions'])
 

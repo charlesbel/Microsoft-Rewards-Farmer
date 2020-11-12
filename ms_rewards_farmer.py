@@ -12,9 +12,12 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
 
-# Define credentials
-USERNAME = "Your Microsoft Email"
-PASSWORD = "Your Microsoft Password"
+ACCOUNTS = [
+    {
+        "username": "Your Microsoft Account Email",
+        "password": "Your Microsoft Account Password"
+    }
+]
 
 # Define user-agents
 PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.74 Safari/537.36 Edg/79.0.309.43'
@@ -24,17 +27,13 @@ MOBILE_USER_AGENT = 'Mozilla/5.0 (Android 6.0.1; Mobile; rv:77.0) Gecko/77.0 Fir
 def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -> WebDriver:
     # Check headless_mode
     if headless_mode :
-        # Create Firefox headless browser
-        from selenium.webdriver.firefox.options import Options
+        # Create Chrome browser
+        from selenium.webdriver.chrome.options import Options
         options = Options()
-        options.headless = headless_mode
-        profile = webdriver.FirefoxProfile()
-        profile.set_preference('general.useragent.override', user_agent)
-        profile.set_preference('dom.webnotifications.serviceworker.enabled', False)
-        profile.set_preference('dom.webnotifications.enabled', False)
-        profile.set_preference('geo.enabled', False)
-        firefox_browser_obj = webdriver.Firefox(options=options, firefox_profile=profile)
-        return firefox_browser_obj
+        options.add_argument("user-agent=" + user_agent)
+        options.set_headless(headless=True)
+        chrome_browser_obj = webdriver.Chrome(options=options)
+        return chrome_browser_obj
     else :
         # Create Chrome browser
         from selenium.webdriver.chrome.options import Options
@@ -59,7 +58,7 @@ def login(browser: WebDriver, email: str, pwd: str):
     waitUntilVisible(browser, By.ID, 'loginHeader', 10)
     # Enter password
     #browser.find_element_by_id("i0118").send_keys(pwd)
-    browser.execute_script('document.getElementById("i0118").value = "' + pwd + '";')
+    browser.execute_script("document.getElementById('i0118').value = '" + pwd + "';")
     # Click next
     browser.find_element_by_id('idSIButton9').click()
     # Wait complete loading
@@ -72,6 +71,10 @@ def login(browser: WebDriver, email: str, pwd: str):
     browser.get('https://bing.com/')
     # Wait 8 seconds
     time.sleep(8)
+    #Accept Cookies
+    browser.find_element_by_id('bnp_btn_accept').click()
+    #Wait 2 seconds
+    time.sleep(2)
     # Refresh page
     browser.refresh()
     # Wait 5 seconds
@@ -186,7 +189,7 @@ def completeDailySetTrueOrFalse(browser: WebDriver, cardNumber: int):
     time.sleep(2)
     browser.switch_to.window(window_name = browser.window_handles[0])
     time.sleep(2)
-    
+
 def getDashboardData(browser: WebDriver) -> dict:
     browser.get('https://account.microsoft.com/rewards/')
     time.sleep(2)
@@ -240,7 +243,7 @@ def completePunchCard(browser: WebDriver, url: str, childPromotions: dict):
 def completePunchCards(browser: WebDriver):
     punchCards = getDashboardData(browser)['punchCards']
     for punchCard in punchCards:
-        if punchCard['parentPromotion'] != None and punchCard['childPromotions'] != None and punchCard['parentPromotion']['complete'] == False and punchCard['parentPromotion']['promotionType'].split(',')[0] == "urlreward":
+        if punchCard['parentPromotion'] != None and punchCard['childPromotions'] != None and punchCard['parentPromotion']['complete'] == False and punchCard['parentPromotion']['promotionType'].split(',')[0] == "urlreward" and punchCard['parentPromotion']['pointProgressMax'] != 0:
             url = punchCard['parentPromotion']['attributes']['destination']
             completePunchCard(browser, url, punchCard['childPromotions'])
 
@@ -324,23 +327,25 @@ def completeMorePromotions(browser: WebDriver):
                 elif promotion['pointProgressMax'] == 50:
                     completeMorePromotionThisOrThat(browser, i)
 
-browser = browserSetup(False, PC_USER_AGENT)
-login(browser, USERNAME, PASSWORD)
+for account in ACCOUNTS:
 
-completeDailySet(browser)
+    browser = browserSetup(False, PC_USER_AGENT)
+    login(browser, account['username'], account['password'])
 
-completePunchCards(browser)
+    completeDailySet(browser)
 
-completeMorePromotions(browser)
+    completePunchCards(browser)
 
-bingSearches(browser, 30)
+    completeMorePromotions(browser)
 
-browser.quit()
+    bingSearches(browser, 34)
+
+    browser.quit()
 
 
-browser = browserSetup(False, MOBILE_USER_AGENT)
-login(browser, USERNAME, PASSWORD)
+    browser = browserSetup(False, MOBILE_USER_AGENT)
+    login(browser, account['username'], account['password'])
 
-bingSearches(browser, 20)
+    bingSearches(browser, 20)
 
-browser.quit()
+    browser.quit()

@@ -2,7 +2,7 @@
 A simple python script that uses selenium to farm daily microsoft rewards, to earn points, and then exchange for gift cards.
 
 # Installation
-* Install selenium with the following command : `pip install selenium`
+* Install selenium with the following command : `pip install -r requirements.txt`
 * Make sure you have Chrome installed
 * Windows :
   - Download Chrome WebDriver : https://chromedriver.chromium.org/downloads

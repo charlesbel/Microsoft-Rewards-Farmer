@@ -7,10 +7,11 @@ import json
 import urllib.parse
 
 from selenium import webdriver
-from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 
 ACCOUNTS = [
     {
@@ -72,7 +73,10 @@ def login(browser: WebDriver, email: str, pwd: str):
     # Wait 8 seconds
     time.sleep(8)
     #Accept Cookies
-    browser.find_element_by_id('bnp_btn_accept').click()
+    try:
+        browser.find_element_by_id('bnp_btn_accept').click()
+    except NoSuchElementException:
+        pass
     #Wait 2 seconds
     time.sleep(2)
     # Refresh page

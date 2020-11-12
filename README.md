@@ -3,12 +3,13 @@ A simple python script that uses selenium to farm daily microsoft rewards, to ea
 
 # Installation
 * Install selenium with the following command : `pip install selenium`
-* Make sure you have Chrome and Firefox installed
-* Download some drivers :
-  * Download Chrome WebDriver : https://chromedriver.chromium.org/downloads
-  * Download Gecko Driver : https://github.com/mozilla/geckodriver/releases
-* Place these 2 files in X:\Windows (X as your Windows disk letter)
-* Edit the script and change your email and password in the 2 first variables
+* Make sure you have Chrome installed
+* Windows :
+  - Download Chrome WebDriver : https://chromedriver.chromium.org/downloads
+  - Place the file in X:\Windows (X as your Windows disk letter)
+* MacOS or Linux :
+  - `brew cask install chromedriver`
+* Edit the script and change your emails and passwords in the ACCOUNT variable
 * Run the script
 
 # Features

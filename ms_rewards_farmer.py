@@ -32,7 +32,7 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
         from selenium.webdriver.chrome.options import Options
         options = Options()
         options.add_argument("user-agent=" + user_agent)
-        options.set_headless(headless=True)
+        options.headless = True
         chrome_browser_obj = webdriver.Chrome(options=options)
         return chrome_browser_obj
     else :

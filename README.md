@@ -17,5 +17,5 @@ A simple bot that uses selenium to farm Microsoft Rewards written in Python.
 - Complete automatically the daily set
 - Complete automatically punch cards
 - Complete automatically the others promotions
-- Headless Mode
+- Headless Mode (change from False to True on lines 348 and 362)
 - Multi-Account Management

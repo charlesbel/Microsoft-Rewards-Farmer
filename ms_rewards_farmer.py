@@ -345,7 +345,7 @@ def completeMorePromotions(browser: WebDriver):
 
 for account in ACCOUNTS:
 
-    browser = browserSetup(True, PC_USER_AGENT)
+    browser = browserSetup(False, PC_USER_AGENT)
     login(browser, account['username'], account['password'])
 
     completeDailySet(browser)
@@ -359,7 +359,7 @@ for account in ACCOUNTS:
     browser.quit()
 
 
-    browser = browserSetup(True, MOBILE_USER_AGENT)
+    browser = browserSetup(False, MOBILE_USER_AGENT)
     login(browser, account['username'], account['password'], True)
 
     bingSearches(browser, 20)

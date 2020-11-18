@@ -3,7 +3,6 @@ import json
 from datetime import date, timedelta, datetime
 import requests
 import random
-import json
 import urllib.parse
 
 from selenium import webdriver
@@ -15,8 +14,8 @@ from selenium.common.exceptions import NoSuchElementException
 
 ACCOUNTS = [
     {
-        "username": "Your Microsoft Account Email",
-        "password": "Your Microsoft Account Password"
+        "username": "Your Email",
+        "password": "Your Password"
     }
 ]
 
@@ -26,25 +25,17 @@ MOBILE_USER_AGENT = 'Mozilla/5.0 (Android 6.0.1; Mobile; rv:77.0) Gecko/77.0 Fir
 
 # Define browser setup function
 def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -> WebDriver:
-    # Check headless_mode
+    # Create Chrome browser
+    from selenium.webdriver.chrome.options import Options
+    options = Options()
+    options.add_argument("user-agent=" + user_agent)
     if headless_mode :
-        # Create Chrome browser
-        from selenium.webdriver.chrome.options import Options
-        options = Options()
-        options.add_argument("user-agent=" + user_agent)
         options.headless = True
-        chrome_browser_obj = webdriver.Chrome(options=options)
-        return chrome_browser_obj
-    else :
-        # Create Chrome browser
-        from selenium.webdriver.chrome.options import Options
-        options = Options()
-        options.add_argument("user-agent=" + user_agent)
-        chrome_browser_obj = webdriver.Chrome(options=options)
-        return chrome_browser_obj
+    chrome_browser_obj = webdriver.Chrome(options=options)
+    return chrome_browser_obj
 
 # Define login function
-def login(browser: WebDriver, email: str, pwd: str):
+def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
     # Access to bing.com
     browser.get('https://login.live.com/')
     # Wait complete loading
@@ -62,6 +53,13 @@ def login(browser: WebDriver, email: str, pwd: str):
     browser.execute_script("document.getElementById('i0118').value = '" + pwd + "';")
     # Click next
     browser.find_element_by_id('idSIButton9').click()
+    # Wait 5 seconds
+    time.sleep(5)
+    # Click Security Check
+    try:
+        browser.find_element_by_id('iLandingViewAction').click()
+    except NoSuchElementException:
+        pass
     # Wait complete loading
     waitUntilVisible(browser, By.ID, 'KmsiCheckboxField', 10)
     # Click next
@@ -75,6 +73,12 @@ def login(browser: WebDriver, email: str, pwd: str):
     #Accept Cookies
     try:
         browser.find_element_by_id('bnp_btn_accept').click()
+        if isMobile:
+            time.sleep(1)
+            browser.find_element_by_id('mHamburger').click()
+            time.sleep(1)
+            browser.find_element_by_id('HBSignIn').click()
+            time.sleep(2)
     except NoSuchElementException:
         pass
     #Wait 2 seconds
@@ -122,6 +126,15 @@ def bingSearches(browser: WebDriver, numberOfSearches: int):
         searchbar.send_keys(word)
         searchbar.submit()
         time.sleep(random.randint(10, 15))
+        report =  json.loads(findBetween(browser.find_element_by_xpath('/html/body').get_attribute('innerHTML'), "sj_evt && sj_evt.bind( \"onRALoad\", function() { var reportActivityModule = new ModernRewards.ReportActivity(", "); reportActivityModule.initialize(); }, 1 );;"))
+        while report['RewardsSessionData']['PreviousBalance'] == report['RewardsSessionData']['Balance']:
+            browser.get('https://bing.com')
+            time.sleep(2)
+            searchbar = browser.find_element_by_id('sb_form_q')
+            searchbar.send_keys(word)
+            searchbar.submit()
+            time.sleep(random.randint(10, 15))
+            report =  json.loads(findBetween(browser.find_element_by_xpath('/html/body').get_attribute('innerHTML'), "sj_evt && sj_evt.bind( \"onRALoad\", function() { var reportActivityModule = new ModernRewards.ReportActivity(", "); reportActivityModule.initialize(); }, 1 );;"))
 
 def completeDailySetSearch(browser: WebDriver, cardNumber: int):
     browser.get('https://account.microsoft.com/rewards/')
@@ -196,7 +209,6 @@ def completeDailySetTrueOrFalse(browser: WebDriver, cardNumber: int):
 
 def getDashboardData(browser: WebDriver) -> dict:
     browser.get('https://account.microsoft.com/rewards/')
-    time.sleep(2)
     dashboard = findBetween(browser.find_element_by_xpath('/html/body/script[20]').get_attribute('innerHTML'), "var dashboard = ", ";\n        appDataModule.constant(\"prefetchedDashboard\", dashboard);")
     dashboard = json.loads(dashboard)
     return dashboard
@@ -333,7 +345,7 @@ def completeMorePromotions(browser: WebDriver):
 
 for account in ACCOUNTS:
 
-    browser = browserSetup(False, PC_USER_AGENT)
+    browser = browserSetup(True, PC_USER_AGENT)
     login(browser, account['username'], account['password'])
 
     completeDailySet(browser)
@@ -347,8 +359,8 @@ for account in ACCOUNTS:
     browser.quit()
 
 
-    browser = browserSetup(False, MOBILE_USER_AGENT)
-    login(browser, account['username'], account['password'])
+    browser = browserSetup(True, MOBILE_USER_AGENT)
+    login(browser, account['username'], account['password'], True)
 
     bingSearches(browser, 20)
 

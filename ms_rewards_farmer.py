@@ -162,7 +162,7 @@ def completeDailySetSurvey(browser: WebDriver, cardNumber: int):
     browser.switch_to.window(window_name = browser.window_handles[0])
     time.sleep(2)
 
-def completeDailySetQuiz(browser: WebDriver, cardNumber: int):
+def completeDailySetQuiz(browser: WebDriver, cardNumber: int, numberOfQuestions: int):
     browser.get('https://account.microsoft.com/rewards/')
     time.sleep(2)
     browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + cardNumber + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
@@ -172,7 +172,7 @@ def completeDailySetQuiz(browser: WebDriver, cardNumber: int):
     browser.find_element_by_xpath('//*[@id="rqStartQuiz"]').click()
     waitUntilVisible(browser, By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
     time.sleep(3)
-    for question in range(3):
+    for question in range(numberOfQuestions):
         points = int((browser.find_elements_by_class_name('rqECredits')[0]).get_attribute("innerHTML"))
         answer = 0
         while (int((browser.find_elements_by_class_name('rqECredits')[0]).get_attribute("innerHTML")) == points) :
@@ -209,7 +209,7 @@ def completeDailySetTrueOrFalse(browser: WebDriver, cardNumber: int):
 
 def getDashboardData(browser: WebDriver) -> dict:
     browser.get('https://account.microsoft.com/rewards/')
-    dashboard = findBetween(browser.find_element_by_xpath('/html/body/script[20]').get_attribute('innerHTML'), "var dashboard = ", ";\n        appDataModule.constant(\"prefetchedDashboard\", dashboard);")
+    dashboard = findBetween(browser.find_element_by_xpath('/html/body').get_attribute('innerHTML'), "var dashboard = ", ";\n        appDataModule.constant(\"prefetchedDashboard\", dashboard);")
     dashboard = json.loads(dashboard)
     return dashboard
 
@@ -226,8 +226,10 @@ def completeDailySet(browser: WebDriver):
             if activity['promotionType'] == "urlreward":
                 completeDailySetSearch(browser, cardNumber)
             if activity['promotionType'] == "quiz":
-                if activity['pointProgressMax'] == 30:
-                    completeDailySetQuiz(browser, cardNumber)
+                if activity['pointProgressMax'] == 40:
+                    completeDailySetQuiz(browser, cardNumber, 4)
+                elif activity['pointProgressMax'] == 30:
+                    completeDailySetQuiz(browser, cardNumber, 3)
                 elif activity['pointProgressMax'] == 10:
                     searchUrl = urllib.parse.unquote(urllib.parse.parse_qs(urllib.parse.urlparse(activity['destinationUrl']).query)['ru'][0])
                     searchUrlQueries = urllib.parse.parse_qs(urllib.parse.urlparse(searchUrl).query)
@@ -264,7 +266,7 @@ def completePunchCards(browser: WebDriver):
             completePunchCard(browser, url, punchCard['childPromotions'])
 
 def completeMorePromotionSearch(browser: WebDriver, cardNumber: int):
-    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + cardNumber + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name = browser.window_handles[1])
     time.sleep(random.randint(13, 17))
@@ -274,7 +276,7 @@ def completeMorePromotionSearch(browser: WebDriver, cardNumber: int):
     time.sleep(2)
 
 def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
-    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + cardNumber + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name=browser.window_handles[1])
     time.sleep(8)
@@ -296,7 +298,7 @@ def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
     time.sleep(2)
 
 def completeMorePromotionThisOrThat(browser: WebDriver, cardNumber: int):
-    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + cardNumber + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name=browser.window_handles[1])
     time.sleep(8)

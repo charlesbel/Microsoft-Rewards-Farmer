@@ -139,7 +139,7 @@ def bingSearches(browser: WebDriver, numberOfSearches: int):
 def completeDailySetSearch(browser: WebDriver, cardNumber: int):
     browser.get('https://account.microsoft.com/rewards/')
     time.sleep(5)
-    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + cardNumber + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name = browser.window_handles[1])
     time.sleep(random.randint(13, 17))
@@ -151,7 +151,7 @@ def completeDailySetSearch(browser: WebDriver, cardNumber: int):
 def completeDailySetSurvey(browser: WebDriver, cardNumber: int):
     browser.get('https://account.microsoft.com/rewards/')
     time.sleep(5)
-    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + cardNumber + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name = browser.window_handles[1])
     time.sleep(8)
@@ -165,7 +165,7 @@ def completeDailySetSurvey(browser: WebDriver, cardNumber: int):
 def completeDailySetQuiz(browser: WebDriver, cardNumber: int, numberOfQuestions: int):
     browser.get('https://account.microsoft.com/rewards/')
     time.sleep(2)
-    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + cardNumber + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name = browser.window_handles[1])
     time.sleep(8)
@@ -189,7 +189,7 @@ def completeDailySetQuiz(browser: WebDriver, cardNumber: int, numberOfQuestions:
 def completeDailySetTrueOrFalse(browser: WebDriver, cardNumber: int):
     browser.get('https://account.microsoft.com/rewards/')
     time.sleep(2)
-    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + cardNumber + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name = browser.window_handles[1])
     time.sleep(8)
@@ -222,7 +222,7 @@ def completeDailySet(browser: WebDriver):
             todayPack = data
     for activity in todayPack:
         if activity['complete'] == False:
-            cardNumber = activity['offerId'][-1:]
+            cardNumber = int(activity['offerId'][-1:])
             if activity['promotionType'] == "urlreward":
                 completeDailySetSearch(browser, cardNumber)
             if activity['promotionType'] == "quiz":
@@ -266,7 +266,7 @@ def completePunchCards(browser: WebDriver):
             completePunchCard(browser, url, punchCard['childPromotions'])
 
 def completeMorePromotionSearch(browser: WebDriver, cardNumber: int):
-    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + cardNumber + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name = browser.window_handles[1])
     time.sleep(random.randint(13, 17))
@@ -276,7 +276,7 @@ def completeMorePromotionSearch(browser: WebDriver, cardNumber: int):
     time.sleep(2)
 
 def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
-    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + cardNumber + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name=browser.window_handles[1])
     time.sleep(8)
@@ -298,7 +298,7 @@ def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
     time.sleep(2)
 
 def completeMorePromotionThisOrThat(browser: WebDriver, cardNumber: int):
-    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + cardNumber + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name=browser.window_handles[1])
     time.sleep(8)
@@ -347,7 +347,7 @@ def completeMorePromotions(browser: WebDriver):
 
 for account in ACCOUNTS:
 
-    browser = browserSetup(False, PC_USER_AGENT)
+    browser = browserSetup(True, PC_USER_AGENT)
     login(browser, account['username'], account['password'])
 
     completeDailySet(browser)
@@ -361,7 +361,7 @@ for account in ACCOUNTS:
     browser.quit()
 
 
-    browser = browserSetup(False, MOBILE_USER_AGENT)
+    browser = browserSetup(True, MOBILE_USER_AGENT)
     login(browser, account['username'], account['password'], True)
 
     bingSearches(browser, 20)

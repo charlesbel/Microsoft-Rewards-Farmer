@@ -10,7 +10,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException
 
 ACCOUNTS = [
     {
@@ -58,14 +58,20 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
     # Click Security Check
     try:
         browser.find_element_by_id('iLandingViewAction').click()
-    except NoSuchElementException:
+    except (NoSuchElementException, ElementNotInteractableException) as e:
         pass
     # Wait complete loading
-    waitUntilVisible(browser, By.ID, 'KmsiCheckboxField', 10)
+    try:
+        waitUntilVisible(browser, By.ID, 'KmsiCheckboxField', 10)
+    except (TimeoutException) as e:
+        pass
     # Click next
-    browser.find_element_by_id('idSIButton9').click()
-    # Wait 5 seconds
-    time.sleep(5)
+    try:
+        browser.find_element_by_id('idSIButton9').click()
+        # Wait 5 seconds
+        time.sleep(5)
+    except (NoSuchElementException, ElementNotInteractableException) as e:
+        pass
     # Access bing.com
     browser.get('https://bing.com/')
     # Wait 8 seconds
@@ -73,14 +79,25 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
     #Accept Cookies
     try:
         browser.find_element_by_id('bnp_btn_accept').click()
-        if isMobile:
+    except (NoSuchElementException, ElementNotInteractableException) as e:
+        pass
+    if isMobile:
+        try:
             time.sleep(1)
             browser.find_element_by_id('mHamburger').click()
+        except (NoSuchElementException, ElementNotInteractableException) as e:
+            pass
+        try:
             time.sleep(1)
             browser.find_element_by_id('HBSignIn').click()
+        except (NoSuchElementException, ElementNotInteractableException) as e:
+            pass
+        try:
             time.sleep(2)
-    except NoSuchElementException:
-        pass
+            browser.find_element_by_id('iShowSkip').click()
+            time.sleep(3)
+        except (NoSuchElementException, ElementNotInteractableException) as e:
+            pass
     #Wait 2 seconds
     time.sleep(2)
     # Refresh page
@@ -347,7 +364,7 @@ def completeMorePromotions(browser: WebDriver):
 
 for account in ACCOUNTS:
 
-    browser = browserSetup(True, PC_USER_AGENT)
+    browser = browserSetup(False, PC_USER_AGENT)
     login(browser, account['username'], account['password'])
 
     completeDailySet(browser)
@@ -361,7 +378,7 @@ for account in ACCOUNTS:
     browser.quit()
 
 
-    browser = browserSetup(True, MOBILE_USER_AGENT)
+    browser = browserSetup(False, MOBILE_USER_AGENT)
     login(browser, account['username'], account['password'], True)
 
     bingSearches(browser, 20)

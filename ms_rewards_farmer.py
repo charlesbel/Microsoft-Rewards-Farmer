@@ -358,7 +358,10 @@ def completePunchCards(browser: WebDriver):
         if punchCard['parentPromotion'] != None and punchCard['childPromotions'] != None and punchCard['parentPromotion']['complete'] == False and punchCard['parentPromotion']['promotionType'].split(',')[0] == "urlreward" and punchCard['parentPromotion']['pointProgressMax'] != 0:
             url = punchCard['parentPromotion']['attributes']['destination']
             completePunchCard(browser, url, punchCard['childPromotions'])
-
+    time.sleep(2)
+    browser.get('https://account.microsoft.com/rewards/')
+    time.sleep(2)
+            
 def completeMorePromotionSearch(browser: WebDriver, cardNumber: int):
     browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
     time.sleep(1)

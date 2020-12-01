@@ -4,3 +4,4 @@ idna
 requests
 selenium
 urllib3
+ipapi

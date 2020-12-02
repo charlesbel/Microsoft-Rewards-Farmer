@@ -488,9 +488,9 @@ for account in ACCOUNTS:
     completeMorePromotions(browser)
     print('[MORE PROMO]', 'Completed More Promotions successfully !')
     print('[BING]', 'Starting Desktop and Edge Bing searches...')
-    remainingSearches = getRemainingSearches(browser)
-    if remainingSearches[0] != 0:
-        bingSearches(browser, remainingSearches[0])
+    remainingSearches, remainingSearchesM = getRemainingSearches(browser)
+    if remainingSearches != 0:
+        bingSearches(browser, remainingSearches)
     print('[BING]', 'Finished Desktop and Edge Bing searches !')
     browser.quit()
 
@@ -499,8 +499,8 @@ for account in ACCOUNTS:
     login(browser, account['username'], account['password'], True)
     print('[LOGIN]', 'Logged-in successfully !')
     print('[BING]', 'Starting Mobile Bing searches...')
-    if remainingSearches[1] != 0:
-        bingSearches(browser, remainingSearches[1], True)
+    if remainingSearchesM != 0:
+        bingSearches(browser, remainingSearchesM, True)
     print('[BING]', 'Finished Mobile Bing searches !')
     browser.quit()
     print('[POINTS]', 'You have earned', str(POINTS_COUNTER - startingPoints), 'points today !', '\n')

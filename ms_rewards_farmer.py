@@ -33,7 +33,7 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
     options = Options()
     options.add_argument("user-agent=" + user_agent)
     if headless_mode :
-        options.headless = True
+        options.add_argument("--headless")
     options.add_argument('log-level=3')
     chrome_browser_obj = webdriver.Chrome(options=options)
     return chrome_browser_obj

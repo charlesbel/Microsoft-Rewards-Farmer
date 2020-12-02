@@ -5,6 +5,7 @@ import requests
 import random
 import urllib.parse
 import ipapi
+import schedule
 
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -19,6 +20,12 @@ ACCOUNTS = [
         "password": "Your Password"
     }
 ]
+
+# Define user-agents
+PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.74 Safari/537.36 Edg/79.0.309.43'
+MOBILE_USER_AGENT = 'Mozilla/5.0 (Android 6.0.1; Mobile; rv:77.0) Gecko/77.0 Firefox/77.0'
+
+POINTS_COUNTER = 0
 
 # Define user-agents
 PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.74 Safari/537.36 Edg/79.0.309.43'
@@ -466,41 +473,64 @@ def getRemainingSearches(browser: WebDriver):
     remainingMobile = int((targetMobile - progressMobile) / searchPoints)
     return(remainingDesktop, remainingMobile)
 
+
+
+def schedule_next_run(): # set next run for random hour and minute each day
+   time_str = '{:02d}:{:02d}'.format(random.randint(7, 10), random.randint(0, 59))
+   schedule.clear()
+   print("Scheduled for {}".format(time_str))
+   schedule.every().day.at(time_str).do(run)
+
+
+def run():
+    for account in ACCOUNTS:
+
+        print('********************' + account['username'] + '********************')
+        browser = browserSetup(True, PC_USER_AGENT)
+        print('[LOGIN]', 'Logging-in...')
+        login(browser, account['username'], account['password'])
+        print('[LOGIN]', 'Logged-in successfully !')
+        startingPoints = POINTS_COUNTER
+        print('[POINTS]', 'You have', POINTS_COUNTER, 'points on your account !')
+        browser.get('https://account.microsoft.com/rewards/')
+        print('[DAILY SET]', 'Trying to complete the Daily Set...')
+        completeDailySet(browser)
+        print('[DAILY SET]', 'Completed the Daily Set successfully !')
+        print('[PUNCH CARDS]', 'Trying to complete the Punch Cards...')
+        try:
+            completePunchCards(browser)#Check for holiday punch card error
+        except:
+            print("Todays punch card had an error")
+            browser.get('https://account.microsoft.com/rewards/')
+        print('[PUNCH CARDS]', 'Completed the Punch Cards successfully !')
+        print('[MORE PROMO]', 'Trying to complete More Promotions...')
+        completeMorePromotions(browser)
+        print('[MORE PROMO]', 'Completed More Promotions successfully !')
+        print('[BING]', 'Starting Desktop and Edge Bing searches...')
+        remainingSearches, remainingSearchesM = getRemainingSearches(browser)
+        if remainingSearches != 0:
+            bingSearches(browser, remainingSearches)
+        print('[BING]', 'Finished Desktop and Edge Bing searches !')
+        browser.quit()
+
+        browser = browserSetup(True, MOBILE_USER_AGENT)
+        print('[LOGIN]', 'Logging-in...')
+        login(browser, account['username'], account['password'], True)
+        print('[LOGIN]', 'Logged-in successfully !')
+        print('[BING]', 'Starting Mobile Bing searches...')
+        if remainingSearchesM != 0:
+            bingSearches(browser, remainingSearchesM, True)
+        print('[BING]', 'Finished Mobile Bing searches !')
+        browser.quit()
+        print('[POINTS]', 'You have earned', str(POINTS_COUNTER - startingPoints), 'points today !', '\n')
+        schedule_next_run() #set a new hour and minut for the next day
+        return schedule.CancelJob #cancel current time schedule
+
+
 LANG, GEO, TZ = getCCodeLangAndOffset()
+schedule.every().day.at("00:00").do(run) #Start scheduling to be replaced by random ints after first run is over
+run() #Run for First time and set schedule for the next run
 
-for account in ACCOUNTS:
-
-    print('********************' + account['username'] + '********************')
-    browser = browserSetup(True, PC_USER_AGENT)
-    print('[LOGIN]', 'Logging-in...')
-    login(browser, account['username'], account['password'])
-    print('[LOGIN]', 'Logged-in successfully !')
-    startingPoints = POINTS_COUNTER
-    print('[POINTS]', 'You have', POINTS_COUNTER, 'points on your account !')
-    browser.get('https://account.microsoft.com/rewards/')
-    print('[DAILY SET]', 'Trying to complete the Daily Set...')
-    completeDailySet(browser)
-    print('[DAILY SET]', 'Completed the Daily Set successfully !')
-    print('[PUNCH CARDS]', 'Trying to complete the Punch Cards...')
-    completePunchCards(browser)
-    print('[PUNCH CARDS]', 'Completed the Punch Cards successfully !')
-    print('[MORE PROMO]', 'Trying to complete More Promotions...')
-    completeMorePromotions(browser)
-    print('[MORE PROMO]', 'Completed More Promotions successfully !')
-    print('[BING]', 'Starting Desktop and Edge Bing searches...')
-    remainingSearches, remainingSearchesM = getRemainingSearches(browser)
-    if remainingSearches != 0:
-        bingSearches(browser, remainingSearches)
-    print('[BING]', 'Finished Desktop and Edge Bing searches !')
-    browser.quit()
-
-    browser = browserSetup(True, MOBILE_USER_AGENT)
-    print('[LOGIN]', 'Logging-in...')
-    login(browser, account['username'], account['password'], True)
-    print('[LOGIN]', 'Logged-in successfully !')
-    print('[BING]', 'Starting Mobile Bing searches...')
-    if remainingSearchesM != 0:
-        bingSearches(browser, remainingSearchesM, True)
-    print('[BING]', 'Finished Mobile Bing searches !')
-    browser.quit()
-    print('[POINTS]', 'You have earned', str(POINTS_COUNTER - startingPoints), 'points today !', '\n')
+while True:
+    schedule.run_pending()
+    time.sleep(60)

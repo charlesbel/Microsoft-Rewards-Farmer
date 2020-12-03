@@ -517,8 +517,8 @@ def run():
         print('[BING]', 'Finished Mobile Bing searches !')
         browser.quit()
         print('[POINTS]', 'You have earned', str(POINTS_COUNTER - startingPoints), 'points today !', '\n')
-        schedule_next_run() #set a new hour and minut for the next day
-        return schedule.CancelJob #cancel current time schedule
+    schedule_next_run() #set a new hour and minut for the next day
+    return schedule.CancelJob #cancel current time schedule
 
 
 LANG, GEO, TZ = getCCodeLangAndOffset()

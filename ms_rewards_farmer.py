@@ -297,6 +297,41 @@ def completeDailySetTrueOrFalse(browser: WebDriver, cardNumber: int):
     browser.switch_to.window(window_name = browser.window_handles[0])
     time.sleep(2)
 
+def completeDailySetThisOrThat(browser: WebDriver, cardNumber: int):
+    time.sleep(2)
+    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
+    time.sleep(1)
+    browser.switch_to.window(window_name=browser.window_handles[1])
+    time.sleep(8)
+    browser.find_element_by_xpath('//*[@id="rqStartQuiz"]').click()
+    waitUntilVisible(browser, By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
+    time.sleep(3)
+    for question in range(10):
+        answerEncodeKey = browser.execute_script("return _G.IG")
+
+        answer1 = browser.find_element_by_id("rqAnswerOption0")
+        answer1Title = answer1.get_attribute('data-option')
+        answer1Code = browser.execute_script("var IG = \"" + answerEncodeKey + "\"; function getAnswerCode(n){for (var r, t = 0, i = 0; i < n.length; i++) t += n.charCodeAt(i); return r = parseInt(IG.substr(IG.length - 2), 16), t += r, t.toString();} return getAnswerCode(\"" + answer1Title + "\");")
+
+        answer2 = browser.find_element_by_id("rqAnswerOption1")
+        answer2Title = answer2.get_attribute('data-option')
+        answer2Code = browser.execute_script("var IG = \"" + answerEncodeKey + "\"; function getAnswerCode(n){for (var r, t = 0, i = 0; i < n.length; i++) t += n.charCodeAt(i); return r = parseInt(IG.substr(IG.length - 2), 16), t += r, t.toString();} return getAnswerCode(\"" + answer2Title + "\");")
+
+        correctAnswerCode = browser.execute_script("return _w.rewardsQuizRenderInfo.correctAnswer")
+
+        if (answer1Code == correctAnswerCode):
+            answer1.click()
+            time.sleep(8)
+        elif (answer2Code == correctAnswerCode):
+            answer2.click()
+            time.sleep(8)
+
+    time.sleep(5)
+    browser.close()
+    time.sleep(2)
+    browser.switch_to.window(window_name=browser.window_handles[0])
+    time.sleep(2)
+
 def getDashboardData(browser: WebDriver) -> dict:
     dashboard = findBetween(browser.find_element_by_xpath('/html/body').get_attribute('innerHTML'), "var dashboard = ", ";\n        appDataModule.constant(\"prefetchedDashboard\", dashboard);")
     dashboard = json.loads(dashboard)
@@ -316,7 +351,10 @@ def completeDailySet(browser: WebDriver):
                 print('[DAILY SET]', 'Completing search of card ' + str(cardNumber))
                 completeDailySetSearch(browser, cardNumber)
             if activity['promotionType'] == "quiz":
-                if activity['pointProgressMax'] == 40:
+                if activity['pointProgressMax'] == 50:
+                    print('[DAILY SET]', 'Completing quiz of card ' + str(cardNumber))
+                    completeDailySetThisOrThat(browser, cardNumber)
+                elif activity['pointProgressMax'] == 40:
                     print('[DAILY SET]', 'Completing quiz of card ' + str(cardNumber))
                     completeDailySetQuiz(browser, cardNumber, 4)
                 elif activity['pointProgressMax'] == 30:
@@ -361,7 +399,7 @@ def completePunchCards(browser: WebDriver):
     time.sleep(2)
     browser.get('https://account.microsoft.com/rewards/')
     time.sleep(2)
-            
+
 def completeMorePromotionSearch(browser: WebDriver, cardNumber: int):
     browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
     time.sleep(1)

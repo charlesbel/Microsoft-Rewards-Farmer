@@ -550,4 +550,5 @@ for account in ACCOUNTS:
         bingSearches(browser, remainingSearchesM, True)
         print('[BING]', 'Finished Mobile Bing searches !')
         browser.quit()
-        print('[POINTS]', 'You have earned', str(POINTS_COUNTER - startingPoints), 'points today !', '\n')
+
+    print('[POINTS]', 'You have earned', str(POINTS_COUNTER - startingPoints), 'points today !', '\n')

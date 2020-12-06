@@ -20,12 +20,6 @@ ACCOUNTS = [
     }
 ]
 
-# Define user-agents
-PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.74 Safari/537.36 Edg/79.0.309.43'
-MOBILE_USER_AGENT = 'Mozilla/5.0 (Android 6.0.1; Mobile; rv:77.0) Gecko/77.0 Firefox/77.0'
-
-POINTS_COUNTER = 0
-
 # Define browser setup function
 def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -> WebDriver:
     # Create Chrome browser
@@ -506,9 +500,11 @@ def getRemainingSearches(browser: WebDriver):
         #Level 2 US
         searchPoints = 5
     remainingDesktop = int((targetDesktop - progressDesktop) / searchPoints)
-    progressMobile = counters['mobileSearch'][0]['pointProgress']
-    targetMobile = counters['mobileSearch'][0]['pointProgressMax']
-    remainingMobile = int((targetMobile - progressMobile) / searchPoints)
+    remainingMobile = 0
+    if dashboard['userStatus']['levelInfo']['activeLevel'] != "Level1":
+        progressMobile = counters['mobileSearch'][0]['pointProgress']
+        targetMobile = counters['mobileSearch'][0]['pointProgressMax']
+        remainingMobile = int((targetMobile - progressMobile) / searchPoints)
     return(remainingDesktop, remainingMobile)
 
 LANG, GEO, TZ = getCCodeLangAndOffset()

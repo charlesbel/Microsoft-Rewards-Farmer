@@ -283,6 +283,10 @@ def completeDailySetTrueOrFalse(browser: WebDriver, cardNumber: int):
         browser.find_element_by_xpath('//*[@id="rqStartQuiz"]').click()
     except NoSuchElementException:
         time.sleep(random.randint(5, 9))
+        browser.close()
+        time.sleep(2)
+        browser.switch_to.window(window_name = browser.window_handles[0])
+        time.sleep(2)
         return
     waitUntilVisible(browser, By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
     time.sleep(3)
@@ -395,7 +399,10 @@ def completePunchCards(browser: WebDriver):
     for punchCard in punchCards:
         if punchCard['parentPromotion'] != None and punchCard['childPromotions'] != None and punchCard['parentPromotion']['complete'] == False and punchCard['parentPromotion']['promotionType'].split(',')[0] == "urlreward" and punchCard['parentPromotion']['pointProgressMax'] != 0:
             url = punchCard['parentPromotion']['attributes']['destination']
-            completePunchCard(browser, url, punchCard['childPromotions'])
+            path = url.replace('https://account.microsoft.com/rewards/dashboard/','')
+            userCode = path[:4]
+            dest = 'https://account.microsoft.com/rewards/dashboard/' + userCode + path.split(userCode)[1]
+            completePunchCard(browser, dest, punchCard['childPromotions'])
     time.sleep(2)
     browser.get('https://account.microsoft.com/rewards/')
     time.sleep(2)

@@ -284,7 +284,7 @@ def completeDailySetVariableActivity(browser: WebDriver, cardNumber: int):
     except NoSuchElementException:
         try:
             for question in range(3):
-                browser.find_element_by_xpath("document.evaluate(\"//*[@id=\"QuestionPane" + str(question) + "\"]/div[1]/div[2]/a[" + str(random.randint(1, 3)) + "]/div\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click()")
+                browser.find_element_by_xpath('document.evaluate("//*[@id=\'QuestionPane' + str(question) + '\']/div[1]/div[2]/a[' + str(random.randint(1, 3)) + ']/div", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click()')
                 #browser.find_element_by_xpath('//*[@id="QuestionPane' + str(question) + '"]/div[1]/div[2]/a[' + str(random.randint(1, 3)) + ']/div').clcik()
                 time.sleep(5)
                 browser.find_element_by_xpath('//*[@id="AnswerPane' + str(question) + '"]/div[1]/div[2]/div[4]/a/div/span/input').click()
@@ -459,7 +459,7 @@ def completeMorePromotionABC(browser: WebDriver, cardNumber: int, numberOfQuesti
     browser.switch_to.window(window_name=browser.window_handles[1])
     time.sleep(8)
     for question in range(numberOfQuestions):
-        browser.find_element_by_xpath("document.evaluate(\"//*[@id=\"QuestionPane" + str(question) + "\"]/div[1]/div[2]/a[" + str(random.randint(1, 3)) + "]/div\", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click()")
+        browser.find_element_by_xpath('document.evaluate("//*[@id=\'QuestionPane' + str(question) + '\']/div[1]/div[2]/a[' + str(random.randint(1, 3)) + ']/div", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click()')
         #browser.find_element_by_xpath('//*[@id="QuestionPane' + str(question) + '"]/div[1]/div[2]/a[' + str(random.randint(1, 3)) + ']/div').clcik()
         time.sleep(5)
         browser.find_element_by_xpath('//*[@id="AnswerPane' + str(question) + '"]/div[1]/div[2]/div[4]/a/div/span/input').click()

@@ -285,11 +285,9 @@ def completeDailySetVariableActivity(browser: WebDriver, cardNumber: int):
         try:
             for question in range(3):
                 browser.execute_script('document.evaluate("//*[@id=\'QuestionPane' + str(question) + '\']/div[1]/div[2]/a[' + str(random.randint(1, 3)) + ']/div", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click()')
-                #browser.find_element_by_xpath('//*[@id="QuestionPane' + str(question) + '"]/div[1]/div[2]/a[' + str(random.randint(1, 3)) + ']/div').clcik()
                 time.sleep(5)
                 browser.find_element_by_xpath('//*[@id="AnswerPane' + str(question) + '"]/div[1]/div[2]/div[4]/a/div/span/input').click()
                 time.sleep(3)
-            browser.find_element_by_xpath('//*[@id="AnswerPane' + str(3 - 1) + '"]/div[1]/div[2]/div[4]/a/div/span/input')
             time.sleep(5)
             browser.close()
             time.sleep(2)
@@ -462,11 +460,9 @@ def completeMorePromotionABC(browser: WebDriver, cardNumber: int):
     numberOfQuestions = max([int(s) for s in counter.split() if s.isdigit()])
     for question in range(numberOfQuestions):
         browser.execute_script('document.evaluate("//*[@id=\'QuestionPane' + str(question) + '\']/div[1]/div[2]/a[' + str(random.randint(1, 3)) + ']/div", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click()')
-        #browser.find_element_by_xpath('//*[@id="QuestionPane' + str(question) + '"]/div[1]/div[2]/a[' + str(random.randint(1, 3)) + ']/div').clcik()
         time.sleep(5)
         browser.find_element_by_xpath('//*[@id="AnswerPane' + str(question) + '"]/div[1]/div[2]/div[4]/a/div/span/input').click()
         time.sleep(3)
-    browser.find_element_by_xpath('//*[@id="AnswerPane' + str(numberOfQuestions - 1) + '"]/div[1]/div[2]/div[4]/a/div/span/input')
     time.sleep(5)
     browser.close()
     time.sleep(2)

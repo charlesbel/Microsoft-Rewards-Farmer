@@ -273,7 +273,7 @@ def completeDailySetQuiz(browser: WebDriver, cardNumber: int, numberOfQuestions:
     browser.switch_to.window(window_name = browser.window_handles[0])
     time.sleep(2)
 
-def completeDailySetTrueOrFalse(browser: WebDriver, cardNumber: int):
+def completeDailySetVariableActivity(browser: WebDriver, cardNumber: int):
     time.sleep(2)
     browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
     time.sleep(1)
@@ -282,12 +282,25 @@ def completeDailySetTrueOrFalse(browser: WebDriver, cardNumber: int):
     try :
         browser.find_element_by_xpath('//*[@id="rqStartQuiz"]').click()
     except NoSuchElementException:
-        time.sleep(random.randint(5, 9))
-        browser.close()
-        time.sleep(2)
-        browser.switch_to.window(window_name = browser.window_handles[0])
-        time.sleep(2)
-        return
+        try:
+            for question in range(3):
+                browser.find_element_by_xpath('//*[@id="QuestionPane' + str(question) + '"]/div[1]/div[2]/a[' + str(random.randint(1, 3)) + ']/div').clcik()
+                time.sleep(5)
+                browser.find_element_by_xpath('//*[@id="AnswerPane' + str(question) + '"]/div[1]/div[2]/div[4]/a/div/span/input').click()
+                time.sleep(3)
+            browser.find_element_by_xpath('//*[@id="AnswerPane' + str(3 - 1) + '"]/div[1]/div[2]/div[4]/a/div/span/input')
+            time.sleep(5)
+            browser.close()
+            time.sleep(2)
+            browser.switch_to.window(window_name=browser.window_handles[0])
+            time.sleep(2)
+        except NoSuchElementException:
+            time.sleep(random.randint(5, 9))
+            browser.close()
+            time.sleep(2)
+            browser.switch_to.window(window_name = browser.window_handles[0])
+            time.sleep(2)
+            return
     waitUntilVisible(browser, By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
     time.sleep(3)
     correctAnswer = browser.execute_script("return _w.rewardsQuizRenderInfo.correctAnswer")
@@ -356,7 +369,7 @@ def completeDailySet(browser: WebDriver):
                 completeDailySetSearch(browser, cardNumber)
             if activity['promotionType'] == "quiz":
                 if activity['pointProgressMax'] == 50:
-                    print('[DAILY SET]', 'Completing quiz of card ' + str(cardNumber))
+                    print('[DAILY SET]', 'Completing This or That of card ' + str(cardNumber))
                     completeDailySetThisOrThat(browser, cardNumber)
                 elif activity['pointProgressMax'] == 40:
                     print('[DAILY SET]', 'Completing quiz of card ' + str(cardNumber))
@@ -375,8 +388,8 @@ def completeDailySet(browser: WebDriver):
                         print('[DAILY SET]', 'Completing poll of card ' + str(cardNumber))
                         completeDailySetSurvey(browser, cardNumber)
                     else:
-                        print('[DAILY SET]', 'Completing True or False of card ' + str(cardNumber))
-                        completeDailySetTrueOrFalse(browser, cardNumber)
+                        print('[DAILY SET]', 'Completing quiz of card ' + str(cardNumber))
+                        completeDailySetVariableActivity(browser, cardNumber)
 
 def getAccountPoints(browser: WebDriver) -> int:
     return getDashboardData(browser)['userStatus']['availablePoints']
@@ -417,7 +430,7 @@ def completeMorePromotionSearch(browser: WebDriver, cardNumber: int):
     browser.switch_to.window(window_name = browser.window_handles[0])
     time.sleep(2)
 
-def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
+def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int, numberOfQuestions: int):
     browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name=browser.window_handles[1])
@@ -425,7 +438,7 @@ def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
     browser.find_element_by_xpath('//*[@id="rqStartQuiz"]').click()
     waitUntilVisible(browser, By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
     time.sleep(3)
-    for question in range(3):
+    for question in range(numberOfQuestions):
         points = int((browser.find_elements_by_class_name('rqECredits')[0]).get_attribute("innerHTML"))
         answer = 0
         while (int((browser.find_elements_by_class_name('rqECredits')[0]).get_attribute("innerHTML")) == points):
@@ -433,6 +446,23 @@ def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
             time.sleep(5)
             answer += 1
         time.sleep(5)
+    time.sleep(5)
+    browser.close()
+    time.sleep(2)
+    browser.switch_to.window(window_name=browser.window_handles[0])
+    time.sleep(2)
+
+def completeMorePromotionABC(browser: WebDriver, cardNumber: int, numberOfQuestions: int):
+    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
+    time.sleep(1)
+    browser.switch_to.window(window_name=browser.window_handles[1])
+    time.sleep(8)
+    for question in range(numberOfQuestions):
+        browser.find_element_by_xpath('//*[@id="QuestionPane' + str(question) + '"]/div[1]/div[2]/a[' + str(random.randint(1, 3)) + ']/div').clcik()
+        time.sleep(5)
+        browser.find_element_by_xpath('//*[@id="AnswerPane' + str(question) + '"]/div[1]/div[2]/div[4]/a/div/span/input').click()
+        time.sleep(3)
+    browser.find_element_by_xpath('//*[@id="AnswerPane' + str(numberOfQuestions - 1) + '"]/div[1]/div[2]/div[4]/a/div/span/input')
     time.sleep(5)
     browser.close()
     time.sleep(2)
@@ -482,8 +512,12 @@ def completeMorePromotions(browser: WebDriver):
             if promotion['promotionType'] == "urlreward":
                 completeMorePromotionSearch(browser, i)
             elif promotion['promotionType'] == "quiz":
-                if promotion['pointProgressMax'] == 30:
-                    completeMorePromotionQuiz(browser, i)
+                if promotion['pointProgressMax'] == 10:
+                    completeMorePromotionABC(browser, i, 3)
+                elif promotion['pointProgressMax'] == 30:
+                    completeMorePromotionQuiz(browser, i, 3)
+                elif promotion['pointProgressMax'] == 40:
+                    completeMorePromotionQuiz(browser, i, 4)
                 elif promotion['pointProgressMax'] == 50:
                     completeMorePromotionThisOrThat(browser, i)
 
@@ -550,5 +584,5 @@ for account in ACCOUNTS:
         bingSearches(browser, remainingSearchesM, True)
         print('[BING]', 'Finished Mobile Bing searches !')
         browser.quit()
-
+    
     print('[POINTS]', 'You have earned', str(POINTS_COUNTER - startingPoints), 'points today !', '\n')

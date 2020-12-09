@@ -548,7 +548,7 @@ def completeMorePromotions(browser: WebDriver):
                 elif promotion['pointProgressMax'] == 50:
                     completeMorePromotionThisOrThat(browser, i)
             else:
-                if promotion['pointProgressMax'] == 100:
+                if promotion['pointProgressMax'] == 100 or promotion['pointProgressMax'] == 200:
                     completeMorePromotionSearch(browser, i)
 
 def getRemainingSearches(browser: WebDriver):

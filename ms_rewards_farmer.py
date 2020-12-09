@@ -21,8 +21,8 @@ ACCOUNTS = [
 ]
 
 # Define user-agents
-PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.74 Safari/537.36 Edg/79.0.309.43'
-MOBILE_USER_AGENT = 'Mozilla/5.0 (Android 6.0.1; Mobile; rv:77.0) Gecko/77.0 Firefox/77.0'
+PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36 Edg/86.0.622.63'
+MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 10; Pixel 3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0. 3945.79 Mobile Safari/537.36'
 
 POINTS_COUNTER = 0
 
@@ -32,6 +32,7 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
     from selenium.webdriver.chrome.options import Options
     options = Options()
     options.add_argument("user-agent=" + user_agent)
+    options.add_argument('lang=' + LANG.split("-")[0])
     if headless_mode :
         options.add_argument("--headless")
     options.add_argument('log-level=3')
@@ -193,7 +194,7 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
                 browser.find_element_by_id('mHamburger').click()
             except UnexpectedAlertPresentException:
                 try :
-                    browser.switch_to.alert.dismiss()
+                    browser.switch_to.alert.accept()
                     time.sleep(1)
                     browser.find_element_by_id('mHamburger').click()
                 except NoAlertPresentException :
@@ -215,7 +216,15 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
                 if not isMobile:
                     points = int(browser.find_element_by_id('id_rc').get_attribute('innerHTML'))
                 else :
-                    browser.find_element_by_id('mHamburger').click()
+                    try:
+                        browser.find_element_by_id('mHamburger').click()
+                    except UnexpectedAlertPresentException:
+                        try :
+                            browser.switch_to.alert.accept()
+                            time.sleep(1)
+                            browser.find_element_by_id('mHamburger').click()
+                        except NoAlertPresentException :
+                            pass
                     time.sleep(1)
                     try :
                         points = int(browser.find_element_by_id('fly_id_rc').get_attribute('innerHTML'))
@@ -396,20 +405,38 @@ def getAccountPoints(browser: WebDriver) -> int:
 def completePunchCard(browser: WebDriver, url: str, childPromotions: dict):
     browser.get(url)
     for child in childPromotions:
-        if child['complete'] == False and child['promotionType'] == "urlreward":
-            browser.execute_script("document.getElementsByClassName('offer-cta')[0].click()")
-            time.sleep(1)
-            browser.switch_to.window(window_name = browser.window_handles[1])
-            time.sleep(random.randint(13, 17))
-            browser.close()
-            time.sleep(2)
-            browser.switch_to.window(window_name = browser.window_handles[0])
-            time.sleep(2)
+        if child['complete'] == False:
+            if child['promotionType'] == "urlreward":
+                browser.execute_script("document.getElementsByClassName('offer-cta')[0].click()")
+                time.sleep(1)
+                browser.switch_to.window(window_name = browser.window_handles[1])
+                time.sleep(random.randint(13, 17))
+                browser.close()
+                time.sleep(2)
+                browser.switch_to.window(window_name = browser.window_handles[0])
+                time.sleep(2)
+            if child['promotionType'] == "quiz":
+                browser.execute_script("document.getElementsByClassName('offer-cta')[0].click()")
+                time.sleep(1)
+                browser.switch_to.window(window_name = browser.window_handles[1])
+                time.sleep(8)
+                counter = str(browser.find_element_by_xpath('//*[@id="QuestionPane0"]/div[2]').get_attribute('innerHTML'))[:-1][1:]
+                numberOfQuestions = max([int(s) for s in counter.split() if s.isdigit()])
+                for question in range(numberOfQuestions):
+                    browser.execute_script('document.evaluate("//*[@id=\'QuestionPane' + str(question) + '\']/div[1]/div[2]/a[' + str(random.randint(1, 3)) + ']/div", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click()')
+                    time.sleep(5)
+                    browser.find_element_by_xpath('//*[@id="AnswerPane' + str(question) + '"]/div[1]/div[2]/div[4]/a/div/span/input').click()
+                    time.sleep(3)
+                time.sleep(5)
+                browser.close()
+                time.sleep(2)
+                browser.switch_to.window(window_name = browser.window_handles[0])
+                time.sleep(2)
 
 def completePunchCards(browser: WebDriver):
     punchCards = getDashboardData(browser)['punchCards']
     for punchCard in punchCards:
-        if punchCard['parentPromotion'] != None and punchCard['childPromotions'] != None and punchCard['parentPromotion']['complete'] == False and punchCard['parentPromotion']['promotionType'].split(',')[0] == "urlreward" and punchCard['parentPromotion']['pointProgressMax'] != 0:
+        if punchCard['parentPromotion'] != None and punchCard['childPromotions'] != None and punchCard['parentPromotion']['complete'] == False and punchCard['parentPromotion']['pointProgressMax'] != 0:
             url = punchCard['parentPromotion']['attributes']['destination']
             path = url.replace('https://account.microsoft.com/rewards/dashboard/','')
             userCode = path[:4]
@@ -520,6 +547,9 @@ def completeMorePromotions(browser: WebDriver):
                     completeMorePromotionQuiz(browser, i, 4)
                 elif promotion['pointProgressMax'] == 50:
                     completeMorePromotionThisOrThat(browser, i)
+            else:
+                if promotion['pointProgressMax'] == 100:
+                    completeMorePromotionSearch(browser, i)
 
 def getRemainingSearches(browser: WebDriver):
     dashboard = getDashboardData(browser)

@@ -290,9 +290,12 @@ def completeDailySetVariableActivity(browser: WebDriver, cardNumber: int):
     time.sleep(8)
     try :
         browser.find_element_by_xpath('//*[@id="rqStartQuiz"]').click()
-    except NoSuchElementException:
+        waitUntilVisible(browser, By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 3)
+    except (NoSuchElementException, TimeoutException):
         try:
-            for question in range(3):
+            counter = str(browser.find_element_by_xpath('//*[@id="QuestionPane0"]/div[2]').get_attribute('innerHTML'))[:-1][1:]
+            numberOfQuestions = max([int(s) for s in counter.split() if s.isdigit()])
+            for question in range(numberOfQuestions):
                 browser.execute_script('document.evaluate("//*[@id=\'QuestionPane' + str(question) + '\']/div[1]/div[2]/a[' + str(random.randint(1, 3)) + ']/div", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click()')
                 time.sleep(5)
                 browser.find_element_by_xpath('//*[@id="AnswerPane' + str(question) + '"]/div[1]/div[2]/div[4]/a/div/span/input').click()
@@ -302,6 +305,7 @@ def completeDailySetVariableActivity(browser: WebDriver, cardNumber: int):
             time.sleep(2)
             browser.switch_to.window(window_name=browser.window_handles[0])
             time.sleep(2)
+            return
         except NoSuchElementException:
             time.sleep(random.randint(5, 9))
             browser.close()
@@ -309,7 +313,6 @@ def completeDailySetVariableActivity(browser: WebDriver, cardNumber: int):
             browser.switch_to.window(window_name = browser.window_handles[0])
             time.sleep(2)
             return
-    waitUntilVisible(browser, By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
     time.sleep(3)
     correctAnswer = browser.execute_script("return _w.rewardsQuizRenderInfo.correctAnswer")
     if browser.find_element_by_id("rqAnswerOption0").get_attribute("data-option") == correctAnswer:

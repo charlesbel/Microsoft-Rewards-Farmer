@@ -180,60 +180,45 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
     for word in search_terms :
         i += 1
         print('[BING]', str(i) + "/" + str(numberOfSearches))
-        browser.get('https://bing.com')
-        time.sleep(2)
-        searchbar = browser.find_element_by_id('sb_form_q')
-        searchbar.send_keys(word)
-        searchbar.submit()
-        time.sleep(random.randint(10, 15))
-        points = 0
-        if not isMobile:
-            points = int(browser.find_element_by_id('id_rc').get_attribute('innerHTML'))
-        else :
-            try :
-                browser.find_element_by_id('mHamburger').click()
-            except UnexpectedAlertPresentException:
-                try :
-                    browser.switch_to.alert.accept()
-                    time.sleep(1)
-                    browser.find_element_by_id('mHamburger').click()
-                except NoAlertPresentException :
-                    pass
-            time.sleep(1)
-            try :
-                points = int(browser.find_element_by_id('fly_id_rc').get_attribute('innerHTML'))
-            except NoSuchElementException:
-                pass
-        if points == POINTS_COUNTER :
+        points = bingSearch(browser, word, isMobile)
+        if points <= POINTS_COUNTER :
             relatedTerms = getRelatedTerms(word)
             for term in relatedTerms :
-                browser.get('https://bing.com')
-                time.sleep(2)
-                searchbar = browser.find_element_by_id('sb_form_q')
-                searchbar.send_keys(random.choice(term))
-                searchbar.submit()
-                time.sleep(random.randint(10, 15))
-                if not isMobile:
-                    points = int(browser.find_element_by_id('id_rc').get_attribute('innerHTML'))
-                else :
-                    try:
-                        browser.find_element_by_id('mHamburger').click()
-                    except UnexpectedAlertPresentException:
-                        try :
-                            browser.switch_to.alert.accept()
-                            time.sleep(1)
-                            browser.find_element_by_id('mHamburger').click()
-                        except NoAlertPresentException :
-                            pass
-                    time.sleep(1)
-                    try :
-                        points = int(browser.find_element_by_id('fly_id_rc').get_attribute('innerHTML'))
-                    except NoSuchElementException:
-                        pass
-                if not points == POINTS_COUNTER :
+                points = bingSearch(browser, term, isMobile)
+                if not points <= POINTS_COUNTER :
                     break
-
+        
         POINTS_COUNTER = points
+
+def bingSearch(browser: WebDriver, word: str, isMobile: bool):
+    browser.get('https://bing.com')
+    time.sleep(2)
+    searchbar = browser.find_element_by_id('sb_form_q')
+    searchbar.send_keys(word)
+    searchbar.submit()
+    time.sleep(random.randint(10, 15))
+    points = 0
+    if not isMobile:
+        try :
+            points = int(browser.find_element_by_id('id_rc').get_attribute('innerHTML'))
+        except (NoSuchElementException, ValueError) as e:
+            pass
+    else :
+        try :
+            browser.find_element_by_id('mHamburger').click()
+        except UnexpectedAlertPresentException:
+            try :
+                browser.switch_to.alert.accept()
+                time.sleep(1)
+                browser.find_element_by_id('mHamburger').click()
+            except NoAlertPresentException :
+                pass
+        time.sleep(1)
+        try :
+            points = int(browser.find_element_by_id('fly_id_rc').get_attribute('innerHTML'))
+        except (NoSuchElementException, ValueError) as e:
+            pass
+    return points
 
 def completeDailySetSearch(browser: WebDriver, cardNumber: int):
     time.sleep(5)
@@ -601,11 +586,11 @@ for account in ACCOUNTS:
     print('[MORE PROMO]', 'Trying to complete More Promotions...')
     completeMorePromotions(browser)
     print('[MORE PROMO]', 'Completed More Promotions successfully !')
-    print('[BING]', 'Starting Desktop and Edge Bing searches...')
     remainingSearches, remainingSearchesM = getRemainingSearches(browser)
     if remainingSearches != 0:
+        print('[BING]', 'Starting Desktop and Edge Bing searches...')
         bingSearches(browser, remainingSearches)
-    print('[BING]', 'Finished Desktop and Edge Bing searches !')
+        print('[BING]', 'Finished Desktop and Edge Bing searches !')
     browser.quit()
 
     if remainingSearchesM != 0:

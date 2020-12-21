@@ -173,6 +173,21 @@ def getRelatedTerms(word: str) -> int:
     r = requests.get('https://api.bing.com/osjson.aspx?query=' + word, headers = {'User-agent': PC_USER_AGENT})
     return r.json()[1]
 
+def resetTabs(browser: WebDriver):
+    curr = browser.current_window_handle
+
+    for handle in browser.window_handles:
+        if handle != curr:
+            browser.switch_to.window(handle)
+            time.sleep(0.5)
+            browser.close()
+            time.sleep(0.5)
+
+    browser.switch_to.window(curr)
+    time.sleep(0.5)
+    browser.get('https://account.microsoft.com/rewards/')
+    
+
 def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = False):
     global POINTS_COUNTER
     i = 0
@@ -260,6 +275,21 @@ def completeDailySetQuiz(browser: WebDriver, cardNumber: int, numberOfQuestions:
             browser.find_element_by_id("rqAnswerOption" + str(answer)).click()
             time.sleep(5)
             answer += 1
+
+            tries = 0
+            while True:
+                try:
+                    browser.find_elements_by_class_name('rqECredits')[0]
+                    break
+                except IndexError:
+                    if tries < 10:
+                        tries += 1
+                        time.sleep(0.5)
+                    else:
+                        browser.refresh()
+                        tries = 0
+                        time.sleep(5)
+                        
         time.sleep(5)
     time.sleep(5)
     browser.close()
@@ -358,34 +388,37 @@ def completeDailySet(browser: WebDriver):
         if date == todayDate:
             todayPack = data
     for activity in todayPack:
-        if activity['complete'] == False:
-            cardNumber = int(activity['offerId'][-1:])
-            if activity['promotionType'] == "urlreward":
-                print('[DAILY SET]', 'Completing search of card ' + str(cardNumber))
-                completeDailySetSearch(browser, cardNumber)
-            if activity['promotionType'] == "quiz":
-                if activity['pointProgressMax'] == 50:
-                    print('[DAILY SET]', 'Completing This or That of card ' + str(cardNumber))
-                    completeDailySetThisOrThat(browser, cardNumber)
-                elif activity['pointProgressMax'] == 40:
-                    print('[DAILY SET]', 'Completing quiz of card ' + str(cardNumber))
-                    completeDailySetQuiz(browser, cardNumber, 4)
-                elif activity['pointProgressMax'] == 30:
-                    print('[DAILY SET]', 'Completing quiz of card ' + str(cardNumber))
-                    completeDailySetQuiz(browser, cardNumber, 3)
-                elif activity['pointProgressMax'] == 10:
-                    searchUrl = urllib.parse.unquote(urllib.parse.parse_qs(urllib.parse.urlparse(activity['destinationUrl']).query)['ru'][0])
-                    searchUrlQueries = urllib.parse.parse_qs(urllib.parse.urlparse(searchUrl).query)
-                    filters = {}
-                    for filter in searchUrlQueries['filters'][0].split(" "):
-                        filter = filter.split(':', 1)
-                        filters[filter[0]] = filter[1]
-                    if "PollScenarioId" in filters:
-                        print('[DAILY SET]', 'Completing poll of card ' + str(cardNumber))
-                        completeDailySetSurvey(browser, cardNumber)
-                    else:
+        try:
+            if activity['complete'] == False:
+                cardNumber = int(activity['offerId'][-1:])
+                if activity['promotionType'] == "urlreward":
+                    print('[DAILY SET]', 'Completing search of card ' + str(cardNumber))
+                    completeDailySetSearch(browser, cardNumber)
+                if activity['promotionType'] == "quiz":
+                    if activity['pointProgressMax'] == 50:
+                        print('[DAILY SET]', 'Completing This or That of card ' + str(cardNumber))
+                        completeDailySetThisOrThat(browser, cardNumber)
+                    elif activity['pointProgressMax'] == 40:
                         print('[DAILY SET]', 'Completing quiz of card ' + str(cardNumber))
-                        completeDailySetVariableActivity(browser, cardNumber)
+                        completeDailySetQuiz(browser, cardNumber, 4)
+                    elif activity['pointProgressMax'] == 30:
+                        print('[DAILY SET]', 'Completing quiz of card ' + str(cardNumber))
+                        completeDailySetQuiz(browser, cardNumber, 3)
+                    elif activity['pointProgressMax'] == 10:
+                        searchUrl = urllib.parse.unquote(urllib.parse.parse_qs(urllib.parse.urlparse(activity['destinationUrl']).query)['ru'][0])
+                        searchUrlQueries = urllib.parse.parse_qs(urllib.parse.urlparse(searchUrl).query)
+                        filters = {}
+                        for filter in searchUrlQueries['filters'][0].split(" "):
+                            filter = filter.split(':', 1)
+                            filters[filter[0]] = filter[1]
+                        if "PollScenarioId" in filters:
+                            print('[DAILY SET]', 'Completing poll of card ' + str(cardNumber))
+                            completeDailySetSurvey(browser, cardNumber)
+                        else:
+                            print('[DAILY SET]', 'Completing quiz of card ' + str(cardNumber))
+                            completeDailySetVariableActivity(browser, cardNumber)
+        except:
+            resetTabs(browser)
 
 def getAccountPoints(browser: WebDriver) -> int:
     return getDashboardData(browser)['userStatus']['availablePoints']
@@ -424,12 +457,15 @@ def completePunchCard(browser: WebDriver, url: str, childPromotions: dict):
 def completePunchCards(browser: WebDriver):
     punchCards = getDashboardData(browser)['punchCards']
     for punchCard in punchCards:
-        if punchCard['parentPromotion'] != None and punchCard['childPromotions'] != None and punchCard['parentPromotion']['complete'] == False and punchCard['parentPromotion']['pointProgressMax'] != 0:
-            url = punchCard['parentPromotion']['attributes']['destination']
-            path = url.replace('https://account.microsoft.com/rewards/dashboard/','')
-            userCode = path[:4]
-            dest = 'https://account.microsoft.com/rewards/dashboard/' + userCode + path.split(userCode)[1]
-            completePunchCard(browser, dest, punchCard['childPromotions'])
+        try:
+            if punchCard['parentPromotion'] != None and punchCard['childPromotions'] != None and punchCard['parentPromotion']['complete'] == False and punchCard['parentPromotion']['pointProgressMax'] != 0:
+                url = punchCard['parentPromotion']['attributes']['destination']
+                path = url.replace('https://account.microsoft.com/rewards/dashboard/','')
+                userCode = path[:4]
+                dest = 'https://account.microsoft.com/rewards/dashboard/' + userCode + path.split(userCode)[1]
+                completePunchCard(browser, dest, punchCard['childPromotions'])
+        except:
+            resetTabs(browser)
     time.sleep(2)
     browser.get('https://account.microsoft.com/rewards/')
     time.sleep(2)
@@ -459,6 +495,21 @@ def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int, numberOfQuest
             browser.find_element_by_id("rqAnswerOption" + str(answer)).click()
             time.sleep(5)
             answer += 1
+
+            tries = 0
+            while True:
+                try:
+                    browser.find_elements_by_class_name('rqECredits')[0]
+                    break
+                except IndexError:
+                    if tries < 10:
+                        tries += 1
+                        time.sleep(0.5)
+                    else:
+                        browser.refresh()
+                        tries = 0
+                        time.sleep(5)
+
         time.sleep(5)
     time.sleep(5)
     browser.close()
@@ -522,22 +573,25 @@ def completeMorePromotions(browser: WebDriver):
     morePromotions = getDashboardData(browser)['morePromotions']
     i = 0
     for promotion in morePromotions:
-        i += 1
-        if promotion['complete'] == False and promotion['pointProgressMax'] != 0:
-            if promotion['promotionType'] == "urlreward":
-                completeMorePromotionSearch(browser, i)
-            elif promotion['promotionType'] == "quiz":
-                if promotion['pointProgressMax'] == 10:
-                    completeMorePromotionABC(browser, i)
-                elif promotion['pointProgressMax'] == 30:
-                    completeMorePromotionQuiz(browser, i, 3)
-                elif promotion['pointProgressMax'] == 40:
-                    completeMorePromotionQuiz(browser, i, 4)
-                elif promotion['pointProgressMax'] == 50:
-                    completeMorePromotionThisOrThat(browser, i)
-            else:
-                if promotion['pointProgressMax'] == 100 or promotion['pointProgressMax'] == 200:
+        try:
+            i += 1
+            if promotion['complete'] == False and promotion['pointProgressMax'] != 0:
+                if promotion['promotionType'] == "urlreward":
                     completeMorePromotionSearch(browser, i)
+                elif promotion['promotionType'] == "quiz":
+                    if promotion['pointProgressMax'] == 10:
+                        completeMorePromotionABC(browser, i)
+                    elif promotion['pointProgressMax'] == 30:
+                        completeMorePromotionQuiz(browser, i, 3)
+                    elif promotion['pointProgressMax'] == 40:
+                        completeMorePromotionQuiz(browser, i, 4)
+                    elif promotion['pointProgressMax'] == 50:
+                        completeMorePromotionThisOrThat(browser, i)
+                else:
+                    if promotion['pointProgressMax'] == 100 or promotion['pointProgressMax'] == 200:
+                        completeMorePromotionSearch(browser, i)
+        except:
+            resetTabs(browser)
 
 def getRemainingSearches(browser: WebDriver):
     dashboard = getDashboardData(browser)

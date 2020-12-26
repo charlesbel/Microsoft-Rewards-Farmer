@@ -619,6 +619,16 @@ def getRemainingSearches(browser: WebDriver):
         remainingMobile = int((targetMobile - progressMobile) / searchPoints)
     return(remainingDesktop, remainingMobile)
 
+print("""
+███╗   ███╗███████╗    ███████╗ █████╗ ██████╗ ███╗   ███╗███████╗██████╗ 
+████╗ ████║██╔════╝    ██╔════╝██╔══██╗██╔══██╗████╗ ████║██╔════╝██╔══██╗
+██╔████╔██║███████╗    █████╗  ███████║██████╔╝██╔████╔██║█████╗  ██████╔╝
+██║╚██╔╝██║╚════██║    ██╔══╝  ██╔══██║██╔══██╗██║╚██╔╝██║██╔══╝  ██╔══██╗
+██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
+╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝
+        by Charles Bel (@charlesbel)               version 1.0
+""")
+
 LANG, GEO, TZ = getCCodeLangAndOffset()
 
 for account in ACCOUNTS:
@@ -658,3 +668,4 @@ for account in ACCOUNTS:
         browser.quit()
     
     print('[POINTS]', 'You have earned', str(POINTS_COUNTER - startingPoints), 'points today !', '\n')
+    print('[POINTS]', 'You are now at', POINTS_COUNTER, 'points !', '\n')

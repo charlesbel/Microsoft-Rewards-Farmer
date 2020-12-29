@@ -619,42 +619,50 @@ def getRemainingSearches(browser: WebDriver):
         remainingMobile = int((targetMobile - progressMobile) / searchPoints)
     return(remainingDesktop, remainingMobile)
 
-print("""
+def prRed(prt):
+    print("\033[91m{}\033[00m".format(prt))
+def prGreen(prt):
+    print("\033[92m{}\033[00m".format(prt))
+def prPurple(prt):
+    print("\033[95m{}\033[00m".format(prt))
+def prYellow(prt):
+    print("\033[93m{}\033[00m".format(prt))
+
+prRed("""
 ███╗   ███╗███████╗    ███████╗ █████╗ ██████╗ ███╗   ███╗███████╗██████╗ 
 ████╗ ████║██╔════╝    ██╔════╝██╔══██╗██╔══██╗████╗ ████║██╔════╝██╔══██╗
 ██╔████╔██║███████╗    █████╗  ███████║██████╔╝██╔████╔██║█████╗  ██████╔╝
 ██║╚██╔╝██║╚════██║    ██╔══╝  ██╔══██║██╔══██╗██║╚██╔╝██║██╔══╝  ██╔══██╗
 ██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
-╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝
-        by Charles Bel (@charlesbel)               version 1.0
-""")
+╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝""")
+prPurple("        by Charles Bel (@charlesbel)               version 1.0\n")
 
 LANG, GEO, TZ = getCCodeLangAndOffset()
 
 for account in ACCOUNTS:
 
-    print('********************' + account['username'] + '********************')
+    prYellow('********************' + account['username'] + '********************')
     browser = browserSetup(True, PC_USER_AGENT)
     print('[LOGIN]', 'Logging-in...')
     login(browser, account['username'], account['password'])
-    print('[LOGIN]', 'Logged-in successfully !')
+    prGreen('[LOGIN] Logged-in successfully !')
     startingPoints = POINTS_COUNTER
-    print('[POINTS]', 'You have', POINTS_COUNTER, 'points on your account !')
+    prGreen('[POINTS] You have ' + str(POINTS_COUNTER) + ' points on your account !')
     browser.get('https://account.microsoft.com/rewards/')
     print('[DAILY SET]', 'Trying to complete the Daily Set...')
     completeDailySet(browser)
-    print('[DAILY SET]', 'Completed the Daily Set successfully !')
+    prGreen('[DAILY SET] Completed the Daily Set successfully !')
     print('[PUNCH CARDS]', 'Trying to complete the Punch Cards...')
     completePunchCards(browser)
-    print('[PUNCH CARDS]', 'Completed the Punch Cards successfully !')
+    prGreen('[PUNCH CARDS] Completed the Punch Cards successfully !')
     print('[MORE PROMO]', 'Trying to complete More Promotions...')
     completeMorePromotions(browser)
-    print('[MORE PROMO]', 'Completed More Promotions successfully !')
+    prGreen('[MORE PROMO] Completed More Promotions successfully !')
     remainingSearches, remainingSearchesM = getRemainingSearches(browser)
     if remainingSearches != 0:
         print('[BING]', 'Starting Desktop and Edge Bing searches...')
         bingSearches(browser, remainingSearches)
-        print('[BING]', 'Finished Desktop and Edge Bing searches !')
+        prGreen('[BING] Finished Desktop and Edge Bing searches !')
     browser.quit()
 
     if remainingSearchesM != 0:
@@ -664,8 +672,8 @@ for account in ACCOUNTS:
         print('[LOGIN]', 'Logged-in successfully !')
         print('[BING]', 'Starting Mobile Bing searches...')
         bingSearches(browser, remainingSearchesM, True)
-        print('[BING]', 'Finished Mobile Bing searches !')
+        prGreen('[BING] Finished Mobile Bing searches !')
         browser.quit()
     
-    print('[POINTS]', 'You have earned', str(POINTS_COUNTER - startingPoints), 'points today !', '\n')
-    print('[POINTS]', 'You are now at', POINTS_COUNTER, 'points !', '\n')
+    prGreen('[POINTS] You have earned ' + str(POINTS_COUNTER - startingPoints) + ' points today !')
+    prGreen('[POINTS] You are now at ' + str(POINTS_COUNTER) + ' points !\n')

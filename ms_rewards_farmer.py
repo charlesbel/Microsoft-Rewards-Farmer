@@ -85,7 +85,6 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
     print('[LOGIN]', 'Ensuring login on Bing...')
     checkBingLogin(browser, isMobile)
 
-
 def checkBingLogin(browser: WebDriver, isMobile: bool = False):
     global POINTS_COUNTER
     #Access Bing.com
@@ -95,24 +94,32 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
     #Accept Cookies
     try:
         browser.find_element_by_id('bnp_btn_accept').click()
-    except (NoSuchElementException, ElementNotInteractableException) as e:
+    except:
         pass
     if isMobile:
         try:
             time.sleep(1)
             browser.find_element_by_id('mHamburger').click()
-        except (NoSuchElementException, ElementNotInteractableException) as e:
-            pass
+        except:
+            try:
+                browser.find_element_by_id('bnp_btn_accept').click()
+            except:
+                pass
+            time.sleep(1)
+            try:
+                browser.find_element_by_id('mHamburger').click()
+            except:
+                pass
         try:
             time.sleep(1)
             browser.find_element_by_id('HBSignIn').click()
-        except (NoSuchElementException, ElementNotInteractableException) as e:
+        except:
             pass
         try:
             time.sleep(2)
             browser.find_element_by_id('iShowSkip').click()
             time.sleep(3)
-        except (NoSuchElementException, ElementNotInteractableException) as e:
+        except:
             if str(browser.current_url).split('?')[0] == "https://account.live.com/proofs/Add":
                 input('[LOGIN] Please complete the Security Check on ' + browser.current_url)
                 exit()
@@ -127,10 +134,18 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
         if not isMobile:
             POINTS_COUNTER = int(browser.find_element_by_id('id_rc').get_attribute('innerHTML'))
         else:
-            browser.find_element_by_id('mHamburger').click()
+            try:
+                browser.find_element_by_id('mHamburger').click()
+            except:
+                try:
+                    browser.find_element_by_id('bnp_btn_accept').click()
+                except:
+                    pass
+                time.sleep(1)
+                browser.find_element_by_id('mHamburger').click()
             time.sleep(1)
             POINTS_COUNTER = int(browser.find_element_by_id('fly_id_rc').get_attribute('innerHTML'))
-    except (ValueError, NoSuchElementException) as e:
+    except:
         checkBingLogin(browser, isMobile)
 
 def waitUntilVisible(browser: WebDriver, by_: By, selector: str, time_to_wait: int = 10):

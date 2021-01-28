@@ -201,7 +201,13 @@ def resetTabs(browser: WebDriver):
     browser.switch_to.window(curr)
     time.sleep(0.5)
     browser.get('https://account.microsoft.com/rewards/')
-    
+
+def getAnswerCode(key: str, string: str) -> str:
+	t = 0
+	for i in range(len(string)):
+		t += ord(string[i])
+	t += int(key[-2:], 16)
+	return str(t)
 
 def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = False):
     global POINTS_COUNTER
@@ -274,38 +280,68 @@ def completeDailySetSurvey(browser: WebDriver, cardNumber: int):
     browser.switch_to.window(window_name = browser.window_handles[0])
     time.sleep(2)
 
-def completeDailySetQuiz(browser: WebDriver, cardNumber: int, numberOfQuestions: int):
+def completeDailySetQuiz(browser: WebDriver, cardNumber: int):
     time.sleep(2)
     browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name = browser.window_handles[1])
     time.sleep(8)
+    loaded = False
+    while(loaded == False):
+        try:
+            browser.find_element_by_xpath('//*[@id="rqStartQuiz"]')
+            loaded = True
+        except:
+            time.sleep(0.5)
     browser.find_element_by_xpath('//*[@id="rqStartQuiz"]').click()
     waitUntilVisible(browser, By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
     time.sleep(3)
+    numberOfQuestions = browser.execute_script("return _w.rewardsQuizRenderInfo.maxQuestions")
+    numberOfOptions = browser.execute_script("return _w.rewardsQuizRenderInfo.numberOfOptions")
     for question in range(numberOfQuestions):
-        points = int((browser.find_elements_by_class_name('rqECredits')[0]).get_attribute("innerHTML"))
-        answer = 0
-        while (int((browser.find_elements_by_class_name('rqECredits')[0]).get_attribute("innerHTML")) == points) :
-            browser.find_element_by_id("rqAnswerOption" + str(answer)).click()
+        if numberOfOptions == 8:
+            answers = []
+            for i in range(8):
+                if browser.find_element_by_id("rqAnswerOption" + str(i)).get_attribute("iscorrectoption") == "True":
+                    answers.append("rqAnswerOption" + str(i))
+            for answer in answers:
+                browser.find_element_by_id(answer).click()
+                time.sleep(5)
+                tries = 0
+                while True:
+                    try:
+                        browser.find_elements_by_class_name('rqECredits')[0]
+                        break
+                    except IndexError:
+                        if tries < 10:
+                            tries += 1
+                            time.sleep(0.5)
+                        else:
+                            browser.refresh()
+                            tries = 0
+                            time.sleep(5)
             time.sleep(5)
-            answer += 1
-
-            tries = 0
-            while True:
-                try:
-                    browser.find_elements_by_class_name('rqECredits')[0]
+        elif numberOfOptions == 4:
+            correctOption = browser.execute_script("return _w.rewardsQuizRenderInfo.correctAnswer")
+            for i in range(4):
+                if browser.find_element_by_id("rqAnswerOption" + str(i)).get_attribute("data-option") == correctOption:
+                    browser.find_element_by_id("rqAnswerOption" + str(i)).click()
+                    time.sleep(5)
+                    tries = 0
+                    while True:
+                        try:
+                            browser.find_elements_by_class_name('rqECredits')[0]
+                            break
+                        except IndexError:
+                            if tries < 10:
+                                tries += 1
+                                time.sleep(0.5)
+                            else:
+                                browser.refresh()
+                                tries = 0
+                                time.sleep(5)
                     break
-                except IndexError:
-                    if tries < 10:
-                        tries += 1
-                        time.sleep(0.5)
-                    else:
-                        browser.refresh()
-                        tries = 0
-                        time.sleep(5)
-                        
-        time.sleep(5)
+            time.sleep(5)
     time.sleep(5)
     browser.close()
     time.sleep(2)
@@ -361,6 +397,13 @@ def completeDailySetThisOrThat(browser: WebDriver, cardNumber: int):
     time.sleep(1)
     browser.switch_to.window(window_name=browser.window_handles[1])
     time.sleep(8)
+    loaded = False
+    while(loaded == False):
+        try:
+            browser.find_element_by_xpath('//*[@id="rqStartQuiz"]')
+            loaded = True
+        except:
+            time.sleep(0.5)
     browser.find_element_by_xpath('//*[@id="rqStartQuiz"]').click()
     waitUntilVisible(browser, By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
     time.sleep(3)
@@ -369,11 +412,11 @@ def completeDailySetThisOrThat(browser: WebDriver, cardNumber: int):
 
         answer1 = browser.find_element_by_id("rqAnswerOption0")
         answer1Title = answer1.get_attribute('data-option')
-        answer1Code = browser.execute_script("var IG = \"" + answerEncodeKey + "\"; function getAnswerCode(n){for (var r, t = 0, i = 0; i < n.length; i++) t += n.charCodeAt(i); return r = parseInt(IG.substr(IG.length - 2), 16), t += r, t.toString();} return getAnswerCode(\"" + answer1Title + "\");")
+        answer1Code = getAnswerCode(answerEncodeKey, answer1Title)
 
         answer2 = browser.find_element_by_id("rqAnswerOption1")
         answer2Title = answer2.get_attribute('data-option')
-        answer2Code = browser.execute_script("var IG = \"" + answerEncodeKey + "\"; function getAnswerCode(n){for (var r, t = 0, i = 0; i < n.length; i++) t += n.charCodeAt(i); return r = parseInt(IG.substr(IG.length - 2), 16), t += r, t.toString();} return getAnswerCode(\"" + answer2Title + "\");")
+        answer2Code = getAnswerCode(answerEncodeKey, answer2Title)
 
         correctAnswerCode = browser.execute_script("return _w.rewardsQuizRenderInfo.correctAnswer")
 
@@ -413,12 +456,9 @@ def completeDailySet(browser: WebDriver):
                     if activity['pointProgressMax'] == 50:
                         print('[DAILY SET]', 'Completing This or That of card ' + str(cardNumber))
                         completeDailySetThisOrThat(browser, cardNumber)
-                    elif activity['pointProgressMax'] == 40:
+                    elif activity['pointProgressMax'] == 40 or activity['pointProgressMax'] == 30:
                         print('[DAILY SET]', 'Completing quiz of card ' + str(cardNumber))
-                        completeDailySetQuiz(browser, cardNumber, 4)
-                    elif activity['pointProgressMax'] == 30:
-                        print('[DAILY SET]', 'Completing quiz of card ' + str(cardNumber))
-                        completeDailySetQuiz(browser, cardNumber, 3)
+                        completeDailySetQuiz(browser, cardNumber)
                     elif activity['pointProgressMax'] == 10:
                         searchUrl = urllib.parse.unquote(urllib.parse.parse_qs(urllib.parse.urlparse(activity['destinationUrl']).query)['ru'][0])
                         searchUrlQueries = urllib.parse.parse_qs(urllib.parse.urlparse(searchUrl).query)
@@ -495,37 +535,67 @@ def completeMorePromotionSearch(browser: WebDriver, cardNumber: int):
     browser.switch_to.window(window_name = browser.window_handles[0])
     time.sleep(2)
 
-def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int, numberOfQuestions: int):
+def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
     browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name=browser.window_handles[1])
     time.sleep(8)
+    loaded = False
+    while(loaded == False):
+        try:
+            browser.find_element_by_xpath('//*[@id="rqStartQuiz"]')
+            loaded = True
+        except:
+            time.sleep(0.5)
     browser.find_element_by_xpath('//*[@id="rqStartQuiz"]').click()
     waitUntilVisible(browser, By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
     time.sleep(3)
+    numberOfQuestions = browser.execute_script("return _w.rewardsQuizRenderInfo.maxQuestions")
+    numberOfOptions = browser.execute_script("return _w.rewardsQuizRenderInfo.numberOfOptions")
     for question in range(numberOfQuestions):
-        points = int((browser.find_elements_by_class_name('rqECredits')[0]).get_attribute("innerHTML"))
-        answer = 0
-        while (int((browser.find_elements_by_class_name('rqECredits')[0]).get_attribute("innerHTML")) == points):
-            browser.find_element_by_id("rqAnswerOption" + str(answer)).click()
+        if numberOfOptions == 8:
+            answers = []
+            for i in range(8):
+                if browser.find_element_by_id("rqAnswerOption" + str(i)).get_attribute("iscorrectoption") == "True":
+                    answers.append("rqAnswerOption" + str(i))
+            for answer in answers:
+                browser.find_element_by_id(answer).click()
+                time.sleep(5)
+                tries = 0
+                while True:
+                    try:
+                        browser.find_elements_by_class_name('rqECredits')[0]
+                        break
+                    except IndexError:
+                        if tries < 10:
+                            tries += 1
+                            time.sleep(0.5)
+                        else:
+                            browser.refresh()
+                            tries = 0
+                            time.sleep(5)
             time.sleep(5)
-            answer += 1
-
-            tries = 0
-            while True:
-                try:
-                    browser.find_elements_by_class_name('rqECredits')[0]
+        elif numberOfOptions == 4:
+            correctOption = browser.execute_script("return _w.rewardsQuizRenderInfo.correctAnswer")
+            for i in range(4):
+                if browser.find_element_by_id("rqAnswerOption" + str(i)).get_attribute("data-option") == correctOption:
+                    browser.find_element_by_id("rqAnswerOption" + str(i)).click()
+                    time.sleep(5)
+                    tries = 0
+                    while True:
+                        try:
+                            browser.find_elements_by_class_name('rqECredits')[0]
+                            break
+                        except IndexError:
+                            if tries < 10:
+                                tries += 1
+                                time.sleep(0.5)
+                            else:
+                                browser.refresh()
+                                tries = 0
+                                time.sleep(5)
                     break
-                except IndexError:
-                    if tries < 10:
-                        tries += 1
-                        time.sleep(0.5)
-                    else:
-                        browser.refresh()
-                        tries = 0
-                        time.sleep(5)
-
-        time.sleep(5)
+            time.sleep(5)
     time.sleep(5)
     browser.close()
     time.sleep(2)
@@ -555,6 +625,13 @@ def completeMorePromotionThisOrThat(browser: WebDriver, cardNumber: int):
     time.sleep(1)
     browser.switch_to.window(window_name=browser.window_handles[1])
     time.sleep(8)
+    loaded = False
+    while(loaded == False):
+        try:
+            browser.find_element_by_xpath('//*[@id="rqStartQuiz"]')
+            loaded = True
+        except:
+            time.sleep(0.5)
     browser.find_element_by_xpath('//*[@id="rqStartQuiz"]').click()
     waitUntilVisible(browser, By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
     time.sleep(3)
@@ -563,11 +640,11 @@ def completeMorePromotionThisOrThat(browser: WebDriver, cardNumber: int):
 
         answer1 = browser.find_element_by_id("rqAnswerOption0")
         answer1Title = answer1.get_attribute('data-option')
-        answer1Code = browser.execute_script("var IG = \"" + answerEncodeKey + "\"; function getAnswerCode(n){for (var r, t = 0, i = 0; i < n.length; i++) t += n.charCodeAt(i); return r = parseInt(IG.substr(IG.length - 2), 16), t += r, t.toString();} return getAnswerCode(\"" + answer1Title + "\");")
+        answer1Code = getAnswerCode(answerEncodeKey, answer1Title)
 
         answer2 = browser.find_element_by_id("rqAnswerOption1")
         answer2Title = answer2.get_attribute('data-option')
-        answer2Code = browser.execute_script("var IG = \"" + answerEncodeKey + "\"; function getAnswerCode(n){for (var r, t = 0, i = 0; i < n.length; i++) t += n.charCodeAt(i); return r = parseInt(IG.substr(IG.length - 2), 16), t += r, t.toString();} return getAnswerCode(\"" + answer2Title + "\");")
+        answer2Code = getAnswerCode(answerEncodeKey, answer2Title)
 
         correctAnswerCode = browser.execute_script("return _w.rewardsQuizRenderInfo.correctAnswer")
 
@@ -596,10 +673,8 @@ def completeMorePromotions(browser: WebDriver):
                 elif promotion['promotionType'] == "quiz":
                     if promotion['pointProgressMax'] == 10:
                         completeMorePromotionABC(browser, i)
-                    elif promotion['pointProgressMax'] == 30:
-                        completeMorePromotionQuiz(browser, i, 3)
-                    elif promotion['pointProgressMax'] == 40:
-                        completeMorePromotionQuiz(browser, i, 4)
+                    elif promotion['pointProgressMax'] == 30 or promotion['pointProgressMax'] == 40:
+                        completeMorePromotionQuiz(browser, i)
                     elif promotion['pointProgressMax'] == 50:
                         completeMorePromotionThisOrThat(browser, i)
                 else:
@@ -650,7 +725,7 @@ prRed("""
 ██║╚██╔╝██║╚════██║    ██╔══╝  ██╔══██║██╔══██╗██║╚██╔╝██║██╔══╝  ██╔══██╗
 ██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
 ╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝""")
-prPurple("        by Charles Bel (@charlesbel)               version 1.0\n")
+prPurple("        by Charles Bel (@charlesbel)               version 1.1\n")
 
 LANG, GEO, TZ = getCCodeLangAndOffset()
 

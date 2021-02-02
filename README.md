@@ -3,8 +3,8 @@
 [![ForTheBadge uses-git](http://ForTheBadge.com/images/badges/uses-git.svg)](https://GitHub.com/)
 [![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://github.com/charlesbel/Microsoft-Rewards-Farmer/)
 
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/charlesbel/Microsoft-Rewards-Farmer/graphs/commit-activity)
-[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)](https://github.com/charlesbel/Microsoft-Rewards-Farmer/graphs/commit-activity)
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://lbesson.mit-license.org/)
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/charlesbel/Microsoft-Rewards-Farmer.svg)](http://isitmaintained.com/project/charlesbel/Shopify-Checkout-Bypasser "Average time to resolve an issue")
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/charlesbel/Microsoft-Rewards-Farmer.svg)](http://isitmaintained.com/project/charlesbel/Shopify-Checkout-Bypasser "Percentage of issues still open")
 

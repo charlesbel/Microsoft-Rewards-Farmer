@@ -698,7 +698,7 @@ def getRemainingSearches(browser: WebDriver):
     elif targetDesktop == 102 :
         #Level 2 EU
         searchPoints = 3
-    elif targetDesktop == 170 :
+    elif targetDesktop >= 170 :
         #Level 2 US
         searchPoints = 5
     remainingDesktop = int((targetDesktop - progressDesktop) / searchPoints)

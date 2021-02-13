@@ -302,7 +302,7 @@ def completeDailySetQuiz(browser: WebDriver, cardNumber: int):
         if numberOfOptions == 8:
             answers = []
             for i in range(8):
-                if browser.find_element_by_id("rqAnswerOption" + str(i)).get_attribute("iscorrectoption") == "True":
+                if browser.find_element_by_id("rqAnswerOption" + str(i)).get_attribute("iscorrectoption").lower() == "true":
                     answers.append("rqAnswerOption" + str(i))
             for answer in answers:
                 browser.find_element_by_id(answer).click()
@@ -556,7 +556,7 @@ def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
         if numberOfOptions == 8:
             answers = []
             for i in range(8):
-                if browser.find_element_by_id("rqAnswerOption" + str(i)).get_attribute("iscorrectoption") == "True":
+                if browser.find_element_by_id("rqAnswerOption" + str(i)).get_attribute("iscorrectoption").lower() == "true":
                     answers.append("rqAnswerOption" + str(i))
             for answer in answers:
                 browser.find_element_by_id(answer).click()

@@ -234,26 +234,13 @@ def bingSearch(browser: WebDriver, word: str, isMobile: bool):
     searchbar.submit()
     time.sleep(random.randint(10, 15))
     points = 0
-    if not isMobile:
-        try :
+    try:
+        if not isMobile:
             points = int(browser.find_element_by_id('id_rc').get_attribute('innerHTML'))
-        except (NoSuchElementException, ValueError) as e:
-            pass
-    else :
-        try :
-            browser.find_element_by_id('mHamburger').click()
-        except UnexpectedAlertPresentException:
-            try :
-                browser.switch_to.alert.accept()
-                time.sleep(1)
-                browser.find_element_by_id('mHamburger').click()
-            except NoAlertPresentException :
-                pass
-        time.sleep(1)
-        try :
-            points = int(browser.find_element_by_id('fly_id_rc').get_attribute('innerHTML'))
-        except (NoSuchElementException, ValueError) as e:
-            pass
+        else:
+            points = int(browser.execute_script('return document.getElementById("fly_id_rc").innerText'))
+    except:
+        pass
     return points
 
 def completeDailySetSearch(browser: WebDriver, cardNumber: int):

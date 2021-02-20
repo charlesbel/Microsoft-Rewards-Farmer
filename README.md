@@ -37,11 +37,11 @@ A simple bot that uses selenium to farm Microsoft Rewards written in Python.
 * Run the following commands from within your files folder to build the image:
   * `docker build -t yournamehere/msrewardfarmer`
 * Run one of the following commands below to start the container
-  * `docker run --name msrewardfarmer -d yournamehere/msrewardfarmer`
+  * `docker run --name msrewardfarmer -v /data:/path/to/your/data -d yournamehere/msrewardfarmer`
 
 You can add some environment variables as well for further control over things like scheduling (early stages).
 
-Example: `docker run --name msrewardfarmer --env MRF_AUTO_RUN_DAILY=True -d yournamehere/msrewardfarmer`
+Example: `docker run --name msrewardfarmer -v /data:/path/to/your/data --env MRF_AUTO_RUN_DAILY=True -d yournamehere/msrewardfarmer`
 
 | Environment Var Name | Expected Type | Default Value | Description                                                                                                                                                        |
 |----------------------|---------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|

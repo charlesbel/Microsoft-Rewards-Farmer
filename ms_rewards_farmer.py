@@ -1,10 +1,12 @@
 import time
+import schedule
 import json
 from datetime import date, timedelta, datetime
 import requests
 import random
 import urllib.parse
 import ipapi
+import os
 
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -13,24 +15,25 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException, UnexpectedAlertPresentException, NoAlertPresentException
 
-ACCOUNTS = [
-    {
-        "username": "Your Email",
-        "password": "Your Password"
-    }
-]
-
 # Define user-agents
 PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36 Edg/86.0.622.63'
 MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 10; Pixel 3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0. 3945.79 Mobile Safari/537.36'
 
 POINTS_COUNTER = 0
+DOCKER_IMAGE = os.environ.get("MRF_DOCKER", False)
+DOCKER_AUTO_RUN_DAILY = os.environ.get("MRF_AUTO_RUN_DAILY", False)
+DOCKER_AUTO_RUN_HOUR = os.environ.get("MRF_AUTO_RUN_HOUR", "12")
+
+def getLoginInfo():
+    with open('ms_accounts.json', 'r') as f:
+        return json.load(f)
 
 # Define browser setup function
 def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -> WebDriver:
     # Create Chrome browser
     from selenium.webdriver.chrome.options import Options
     options = Options()
+    options.add_argument('--no-sandbox')
     options.add_argument("user-agent=" + user_agent)
     options.add_argument('lang=' + LANG.split("-")[0])
     if headless_mode :
@@ -715,6 +718,46 @@ def prPurple(prt):
 def prYellow(prt):
     print("\033[93m{}\033[00m".format(prt))
 
+def farmAccounts():
+    for account in ACCOUNTS:
+
+        prYellow('********************' + account['username'] + '********************')
+        browser = browserSetup(True, PC_USER_AGENT)
+        print('[LOGIN]', 'Logging-in...')
+        login(browser, account['username'], account['password'])
+        prGreen('[LOGIN] Logged-in successfully !')
+        startingPoints = POINTS_COUNTER
+        prGreen('[POINTS] You have ' + str(POINTS_COUNTER) + ' points on your account !')
+        browser.get('https://account.microsoft.com/rewards/')
+        print('[DAILY SET]', 'Trying to complete the Daily Set...')
+        completeDailySet(browser)
+        prGreen('[DAILY SET] Completed the Daily Set successfully !')
+        print('[PUNCH CARDS]', 'Trying to complete the Punch Cards...')
+        completePunchCards(browser)
+        prGreen('[PUNCH CARDS] Completed the Punch Cards successfully !')
+        print('[MORE PROMO]', 'Trying to complete More Promotions...')
+        completeMorePromotions(browser)
+        prGreen('[MORE PROMO] Completed More Promotions successfully !')
+        remainingSearches, remainingSearchesM = getRemainingSearches(browser)
+        if remainingSearches != 0:
+            print('[BING]', 'Starting Desktop and Edge Bing searches...')
+            bingSearches(browser, remainingSearches)
+            prGreen('[BING] Finished Desktop and Edge Bing searches !')
+        browser.quit()
+
+        if remainingSearchesM != 0:
+            browser = browserSetup(True, MOBILE_USER_AGENT)
+            print('[LOGIN]', 'Logging-in...')
+            login(browser, account['username'], account['password'], True)
+            print('[LOGIN]', 'Logged-in successfully !')
+            print('[BING]', 'Starting Mobile Bing searches...')
+            bingSearches(browser, remainingSearchesM, True)
+            prGreen('[BING] Finished Mobile Bing searches !')
+            browser.quit()
+        
+        prGreen('[POINTS] You have earned ' + str(POINTS_COUNTER - startingPoints) + ' points today !')
+        prGreen('[POINTS] You are now at ' + str(POINTS_COUNTER) + ' points !\n')
+
 prRed("""
 ███╗   ███╗███████╗    ███████╗ █████╗ ██████╗ ███╗   ███╗███████╗██████╗ 
 ████╗ ████║██╔════╝    ██╔════╝██╔══██╗██╔══██╗████╗ ████║██╔════╝██╔══██╗
@@ -725,42 +768,14 @@ prRed("""
 prPurple("        by Charles Bel (@charlesbel)               version 1.1\n")
 
 LANG, GEO, TZ = getCCodeLangAndOffset()
+ACCOUNTS = getLoginInfo()
 
-for account in ACCOUNTS:
-
-    prYellow('********************' + account['username'] + '********************')
-    browser = browserSetup(True, PC_USER_AGENT)
-    print('[LOGIN]', 'Logging-in...')
-    login(browser, account['username'], account['password'])
-    prGreen('[LOGIN] Logged-in successfully !')
-    startingPoints = POINTS_COUNTER
-    prGreen('[POINTS] You have ' + str(POINTS_COUNTER) + ' points on your account !')
-    browser.get('https://account.microsoft.com/rewards/')
-    print('[DAILY SET]', 'Trying to complete the Daily Set...')
-    completeDailySet(browser)
-    prGreen('[DAILY SET] Completed the Daily Set successfully !')
-    print('[PUNCH CARDS]', 'Trying to complete the Punch Cards...')
-    completePunchCards(browser)
-    prGreen('[PUNCH CARDS] Completed the Punch Cards successfully !')
-    print('[MORE PROMO]', 'Trying to complete More Promotions...')
-    completeMorePromotions(browser)
-    prGreen('[MORE PROMO] Completed More Promotions successfully !')
-    remainingSearches, remainingSearchesM = getRemainingSearches(browser)
-    if remainingSearches != 0:
-        print('[BING]', 'Starting Desktop and Edge Bing searches...')
-        bingSearches(browser, remainingSearches)
-        prGreen('[BING] Finished Desktop and Edge Bing searches !')
-    browser.quit()
-
-    if remainingSearchesM != 0:
-        browser = browserSetup(True, MOBILE_USER_AGENT)
-        print('[LOGIN]', 'Logging-in...')
-        login(browser, account['username'], account['password'], True)
-        print('[LOGIN]', 'Logged-in successfully !')
-        print('[BING]', 'Starting Mobile Bing searches...')
-        bingSearches(browser, remainingSearchesM, True)
-        prGreen('[BING] Finished Mobile Bing searches !')
-        browser.quit()
-    
-    prGreen('[POINTS] You have earned ' + str(POINTS_COUNTER - startingPoints) + ' points today !')
-    prGreen('[POINTS] You are now at ' + str(POINTS_COUNTER) + ' points !\n')
+if bool(DOCKER_IMAGE) and bool(DOCKER_AUTO_RUN_DAILY):
+    prGreen("Scheduled to run every day at "+str(DOCKER_AUTO_RUN_HOUR)+":00!")
+    schedule.every().day.at(str(DOCKER_AUTO_RUN_HOUR)+":00").do(farmAccounts)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+else:
+    prGreen("Running once then exiting...")
+    farmAccounts()

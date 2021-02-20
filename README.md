@@ -11,6 +11,14 @@
 # Microsoft Rewards Farmer
 A simple bot that uses selenium to farm Microsoft Rewards written in Python.
 
+# Features
+- Bing searches (Desktop, Mobile and Edge) with User-Agents
+- Complete automatically the daily set
+- Complete automatically punch cards
+- Complete automatically the others promotions
+- Headless Mode
+- Multi-Account Management
+
 # Installation
 * Install requirements with the following command : `pip install -r requirements.txt`
 * Make sure you have Chrome installed
@@ -19,13 +27,26 @@ A simple bot that uses selenium to farm Microsoft Rewards written in Python.
   - Place the file in X:\Windows (X as your Windows disk letter)
 * MacOS or Linux :
   - `brew cask install chromedriver`
-* Edit the script and change your emails and passwords in the ACCOUNT variable
+* Rename the `ms_accounts.json.sample` to `ms_accounts.json` and update with your account information.
 * Run the script
 
-# Features
-- Bing searches (Desktop, Mobile and Edge) with User-Agents
-- Complete automatically the daily set
-- Complete automatically punch cards
-- Complete automatically the others promotions
-- Headless Mode
-- Multi-Account Management
+# Docker Installation
+> Note: At this time there is no public repository where this project is. However you can build it yourself!
+
+* Put the files on the docker server
+* Run the following commands from within your files folder to build the image:
+  * `docker build -t yournamehere/msrewardfarmer`
+* Run one of the following commands below to start the container
+  * `docker run --name msrewardfarmer -d yournamehere/msrewardfarmer`
+
+You can add some environment variables as well for further control over things like scheduling (early stages).
+
+Example: `docker run --name msrewardfarmer --env MRF_AUTO_RUN_DAILY=True -d yournamehere/msrewardfarmer`
+
+| Environment Var Name | Expected Type | Default Value | Description                                                                                                                                                        |
+|----------------------|---------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| MRF_DOCKER           | Boolean       | True          | Leave this to true. Its a simple variable to let the script know its in a Docker container                                                                         |
+| MRF_AUTO_RUN_DAILY   | Boolean       | False         | Tells the script to setup a schedule for running once a day or not (True = Schedule; False = Run Once). Otherwise the docker container will exit with Exit Code 0. |
+| MRF_AUTO_RUN_HOUR    | Boolean       | 12            | Tells the script on which hour to run. For example: 14 would run at 14:00 every day. This number should be between 00-23 depending on when you want it to run.     |
+
+

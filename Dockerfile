@@ -16,6 +16,10 @@ RUN apt-get install -yqq unzip
 RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
 RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
 
+# Set TZ
+RUN apt-get install -y tzdata
+ENV TZ=America/New_York
+
 COPY . /data
 WORKDIR /data
 RUN pip install --no-cache-dir -r requirements.txt
@@ -27,6 +31,7 @@ ENV DISPLAY=:99
 ENV MRF_DOCKER=True
 ENV MRF_AUTO_RUN_DAILY=False
 ENV MRF_AUTO_RUN_HOUR=12
+ENV MRF_AUTO_RUN_MINUTE=00
 
 # Run the command on container startup
 CMD ["python3", "-u", "/data/ms_rewards_farmer.py"]

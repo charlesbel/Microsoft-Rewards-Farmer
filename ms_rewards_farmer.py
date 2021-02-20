@@ -23,6 +23,7 @@ POINTS_COUNTER = 0
 DOCKER_IMAGE = os.environ.get("MRF_DOCKER", False)
 DOCKER_AUTO_RUN_DAILY = os.environ.get("MRF_AUTO_RUN_DAILY", False)
 DOCKER_AUTO_RUN_HOUR = os.environ.get("MRF_AUTO_RUN_HOUR", "12")
+DOCKER_AUTO_RUN_MINUTE = os.environ.get("MRF_AUTO_RUN_MINUTE", "00")
 
 def getLoginInfo():
     with open('ms_accounts.json', 'r') as f:
@@ -717,6 +718,16 @@ def prPurple(prt):
     print("\033[95m{}\033[00m".format(prt))
 def prYellow(prt):
     print("\033[93m{}\033[00m".format(prt))
+def prDateTime():
+    now = datetime.now().strftime("%A, %B %d, %Y %H:%M:%S")
+    prGreen("[DATETIME] " + now + " (" + os.environ.get("TZ") + ")")
+
+def configureSchedule():
+    schHour = str(DOCKER_AUTO_RUN_HOUR).zfill(2)
+    schMinute = str(DOCKER_AUTO_RUN_MINUTE).zfill(2)
+    schHourMinute = schHour + ":" + schMinute
+    prGreen("[SCHEDULE] Scheduled to run every day at "+schHourMinute+"!")
+    schedule.every().day.at(schHourMinute).do(farmAccounts)
 
 def farmAccounts():
     for account in ACCOUNTS:
@@ -771,11 +782,11 @@ LANG, GEO, TZ = getCCodeLangAndOffset()
 ACCOUNTS = getLoginInfo()
 
 if bool(DOCKER_IMAGE) and bool(DOCKER_AUTO_RUN_DAILY):
-    prGreen("Scheduled to run every day at "+str(DOCKER_AUTO_RUN_HOUR)+":00!")
-    schedule.every().day.at(str(DOCKER_AUTO_RUN_HOUR)+":00").do(farmAccounts)
+    prDateTime()
+    configureSchedule()
     while True:
         schedule.run_pending()
         time.sleep(1)
 else:
-    prGreen("Running once then exiting...")
+    prGreen("[INFO] Running once then exiting...")
     farmAccounts()

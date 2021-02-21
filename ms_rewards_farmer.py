@@ -20,8 +20,8 @@ PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (K
 MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 10; Pixel 3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0. 3945.79 Mobile Safari/537.36'
 
 POINTS_COUNTER = 0
-DOCKER_IMAGE = os.environ.get("MRF_DOCKER", False)
-DOCKER_AUTO_RUN_DAILY = os.environ.get("MRF_AUTO_RUN_DAILY", False)
+DOCKER_IMAGE = os.environ.get("MRF_DOCKER", "False")
+DOCKER_AUTO_RUN_DAILY = os.environ.get("MRF_AUTO_RUN_DAILY", "False")
 DOCKER_AUTO_RUN_HOUR = os.environ.get("MRF_AUTO_RUN_HOUR", "12")
 DOCKER_AUTO_RUN_MINUTE = os.environ.get("MRF_AUTO_RUN_MINUTE", "00")
 
@@ -34,7 +34,9 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
     # Create Chrome browser
     from selenium.webdriver.chrome.options import Options
     options = Options()
-    options.add_argument('--no-sandbox')
+    if DOCKER_IMAGE.lower() == 'true':
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
     options.add_argument("user-agent=" + user_agent)
     options.add_argument('lang=' + LANG.split("-")[0])
     if headless_mode :
@@ -769,6 +771,12 @@ def farmAccounts():
         prGreen('[POINTS] You have earned ' + str(POINTS_COUNTER - startingPoints) + ' points today !')
         prGreen('[POINTS] You are now at ' + str(POINTS_COUNTER) + ' points !\n')
 
+def parseBool(parseStr):
+    rtnBool = False
+    if parseStr.lower() == "true":
+        rtnBool = True    
+    return rtnBool
+
 prRed("""
 ███╗   ███╗███████╗    ███████╗ █████╗ ██████╗ ███╗   ███╗███████╗██████╗ 
 ████╗ ████║██╔════╝    ██╔════╝██╔══██╗██╔══██╗████╗ ████║██╔════╝██╔══██╗
@@ -781,7 +789,9 @@ prPurple("        by Charles Bel (@charlesbel)               version 1.1\n")
 LANG, GEO, TZ = getCCodeLangAndOffset()
 ACCOUNTS = getLoginInfo()
 
-if bool(DOCKER_IMAGE) and bool(DOCKER_AUTO_RUN_DAILY):
+prRed(DOCKER_AUTO_RUN_DAILY)
+prRed(parseBool(DOCKER_AUTO_RUN_DAILY))
+if parseBool(DOCKER_IMAGE) and parseBool(DOCKER_AUTO_RUN_DAILY):
     prDateTime()
     configureSchedule()
     while True:

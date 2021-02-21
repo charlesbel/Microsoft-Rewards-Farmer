@@ -789,8 +789,6 @@ prPurple("        by Charles Bel (@charlesbel)               version 1.1\n")
 LANG, GEO, TZ = getCCodeLangAndOffset()
 ACCOUNTS = getLoginInfo()
 
-prRed(DOCKER_AUTO_RUN_DAILY)
-prRed(parseBool(DOCKER_AUTO_RUN_DAILY))
 if parseBool(DOCKER_IMAGE) and parseBool(DOCKER_AUTO_RUN_DAILY):
     prDateTime()
     configureSchedule()

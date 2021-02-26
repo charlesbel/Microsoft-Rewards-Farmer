@@ -166,7 +166,10 @@ def getCCodeLangAndOffset():
     nfo = ipapi.location()
     lang = nfo['languages'].split(',')[0]
     geo = nfo['country']
-    tz = str(round(int(nfo['utc_offset']) / 100 * 60))
+    if nfo['utc_offset'] == None:
+        tz = str(0)
+    else:
+        tz = str(round(int(nfo['utc_offset']) / 100 * 60))
     return(lang, geo, tz)
 
 def getGoogleTrends(numberOfwords: int) -> list:

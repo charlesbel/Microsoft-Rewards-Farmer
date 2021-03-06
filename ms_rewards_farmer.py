@@ -729,6 +729,22 @@ prPurple("        by Charles Bel (@charlesbel)               version 1.1\n")
 
 LANG, GEO, TZ = getCCodeLangAndOffset()
 
+try:
+    ACCOUNTS = json.load(open("account.json", "r"))
+except FileNotFoundError:
+    with open('account.json', 'w') as f:
+        f.write(json.dumps([{
+            "username": "Your Email",
+            "password": "Your Password"
+        }], indent=4))
+    prPurple("""
+[ACCOUNT] Account credential file "account.json" created.
+[ACCOUNT] Edit with your credentials and save, then press any key to continue...
+    """)
+    import os
+    input()
+    ACCOUNTS = json.load(open("account.json", "r"))
+
 for account in ACCOUNTS:
 
     prYellow('********************' + account['username'] + '********************')

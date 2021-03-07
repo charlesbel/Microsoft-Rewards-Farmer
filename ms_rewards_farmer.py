@@ -724,7 +724,7 @@ prPurple("        by Charles Bel (@charlesbel)               version 1.1\n")
 LANG, GEO, TZ = getCCodeLangAndOffset()
 
 try:
-    account_path = os.path.dirname(os.path.abspath(__file__)) + '/account.json'
+    account_path = os.path.dirname(os.path.abspath(__file__)) + '/accounts.json'
     ACCOUNTS = json.load(open(account_path, "r"))
 except FileNotFoundError:
     with open(account_path, 'w') as f:

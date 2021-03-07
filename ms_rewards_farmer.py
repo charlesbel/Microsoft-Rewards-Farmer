@@ -5,6 +5,7 @@ import requests
 import random
 import urllib.parse
 import ipapi
+import os
 
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -12,13 +13,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException, UnexpectedAlertPresentException, NoAlertPresentException
-
-ACCOUNTS = [
-    {
-        "username": "Your Email",
-        "password": "Your Password"
-    }
-]
 
 # Define user-agents
 PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36 Edg/86.0.622.63'
@@ -728,6 +722,22 @@ prRed("""
 prPurple("        by Charles Bel (@charlesbel)               version 1.1\n")
 
 LANG, GEO, TZ = getCCodeLangAndOffset()
+
+try:
+    account_path = os.path.dirname(os.path.abspath(__file__)) + '/account.json'
+    ACCOUNTS = json.load(open(account_path, "r"))
+except FileNotFoundError:
+    with open(account_path, 'w') as f:
+        f.write(json.dumps([{
+            "username": "Your Email",
+            "password": "Your Password"
+        }], indent=4))
+    prPurple("""
+[ACCOUNT] Account credential file "account.json" created.
+[ACCOUNT] Edit with your credentials and save, then press any key to continue...
+    """)
+    input()
+    ACCOUNTS = json.load(open(account_path, "r"))
 
 for account in ACCOUNTS:
 

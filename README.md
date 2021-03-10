@@ -27,7 +27,7 @@ A simple bot that uses selenium to farm Microsoft Rewards written in Python.
   - Place the file in X:\Windows (X as your Windows disk letter)
 * MacOS or Linux :
   - `brew cask install chromedriver`
-* Edit the script and change your emails and passwords in the ACCOUNT variable
+* Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end
 * Run the script
 
 # Docker Installation

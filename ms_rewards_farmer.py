@@ -16,8 +16,8 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException, UnexpectedAlertPresentException, NoAlertPresentException
 
 # Define user-agents
-PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36 Edg/86.0.622.63'
-MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 10; Pixel 3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0. 3945.79 Mobile Safari/537.36'
+PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36 Edg/89.0.774.45'
+MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.116 Mobile Safari/537.36 EdgA/46.02.4.5147'
 
 POINTS_COUNTER = 0
 DOCKER_IMAGE = os.environ.get("MRF_DOCKER", "False")
@@ -26,8 +26,21 @@ DOCKER_AUTO_RUN_HOUR = os.environ.get("MRF_AUTO_RUN_HOUR", "12")
 DOCKER_AUTO_RUN_MINUTE = os.environ.get("MRF_AUTO_RUN_MINUTE", "00")
 
 def getLoginInfo():
-    with open('ms_accounts.json', 'r') as f:
-        return json.load(f)
+    try:
+        account_path = os.path.dirname(os.path.abspath(__file__)) + '/accounts.json'
+        return json.load(open(account_path, "r"))
+    except FileNotFoundError:
+        with open(account_path, 'w') as f:
+            f.write(json.dumps([{
+                "username": "Your Email",
+                "password": "Your Password"
+            }], indent=4))
+        prPurple("""
+    [ACCOUNT] Account credential file "account.json" created.
+    [ACCOUNT] Edit with your credentials and save, then press any key to continue...
+        """)
+        input()
+        return json.load(open(account_path, "r"))
 
 # Define browser setup function
 def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -> WebDriver:
@@ -172,7 +185,10 @@ def getCCodeLangAndOffset():
     nfo = ipapi.location()
     lang = nfo['languages'].split(',')[0]
     geo = nfo['country']
-    tz = str(round(int(nfo['utc_offset']) / 100 * 60))
+    if nfo['utc_offset'] == None:
+        tz = str(0)
+    else:
+        tz = str(round(int(nfo['utc_offset']) / 100 * 60))
     return(lang, geo, tz)
 
 def getGoogleTrends(numberOfwords: int) -> list:
@@ -752,6 +768,7 @@ def farmAccounts():
         completeMorePromotions(browser)
         prGreen('[MORE PROMO] Completed More Promotions successfully !')
         remainingSearches, remainingSearchesM = getRemainingSearches(browser)
+
         if remainingSearches != 0:
             print('[BING]', 'Starting Desktop and Edge Bing searches...')
             bingSearches(browser, remainingSearches)
@@ -771,6 +788,7 @@ def farmAccounts():
         prGreen('[POINTS] You have earned ' + str(POINTS_COUNTER - startingPoints) + ' points today !')
         prGreen('[POINTS] You are now at ' + str(POINTS_COUNTER) + ' points !\n')
 
+
 def parseBool(parseStr):
     rtnBool = False
     if parseStr.lower() == "true":
@@ -789,8 +807,6 @@ prPurple("        by Charles Bel (@charlesbel)               version 1.1\n")
 LANG, GEO, TZ = getCCodeLangAndOffset()
 ACCOUNTS = getLoginInfo()
 
-prRed(DOCKER_AUTO_RUN_DAILY)
-prRed(parseBool(DOCKER_AUTO_RUN_DAILY))
 if parseBool(DOCKER_IMAGE) and parseBool(DOCKER_AUTO_RUN_DAILY):
     prDateTime()
     configureSchedule()

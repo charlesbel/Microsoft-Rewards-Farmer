@@ -733,11 +733,13 @@ except FileNotFoundError:
             "password": "Your Password"
         }], indent=4))
     prPurple("""
-[ACCOUNT] Account credential file "account.json" created.
+[ACCOUNT] Accounts credential file "accounts.json" created.
 [ACCOUNT] Edit with your credentials and save, then press any key to continue...
     """)
     input()
     ACCOUNTS = json.load(open(account_path, "r"))
+
+random.shuffle(ACCOUNTS)
 
 for account in ACCOUNTS:
 

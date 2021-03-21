@@ -20,25 +20,37 @@
   <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge"/>
 </p>
 
-# Microsoft Rewards Farmer
-A simple bot that uses selenium to farm Microsoft Rewards written in Python.
+<h2 align="center">👋 Welcome to the future of automation</h2>
+<h3 align="center">A simple bot that uses selenium to farm Microsoft Rewards written in Python.</h3>
 
-# Installation
-* Install requirements with the following command : `pip install -r requirements.txt`
-* Make sure you have Chrome installed
-* Windows :
-  - Download Chrome WebDriver : https://chromedriver.chromium.org/downloads
-  - Place the file in X:\Windows (X as your Windows disk letter)
-* MacOS or Linux :
-  - `apt install chromium-chromedriver`
-  - or if you have brew : `brew cask install chromedriver`
-* Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end
-* Run the script
+<h2 align="center">Installation</h2>
+<p align="center">
+  <ul>
+    <li>Install requirements with the following command : <pre>pip install -r requirements.txt</pre></li>
+    <li>Make sure you have Chrome installed</li>
+    <li>Install ChromeDriver :<ul>
+      <li>Windows :<ul>
+        <li>Download Chrome WebDriver : https://chromedriver.chromium.org/downloads</li>
+        <li>Place the file in X:\Windows (X as your Windows disk letter)</li>
+      </ul>
+      <li>MacOS or Linux :<ul>
+        <li><pre>apt install chromium-chromedriver</pre></li>
+        <li>or if you have brew : <pre>brew cask install chromedriver</pre></li>
+      </ul>
+    </ul></li>
+    <li>Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end</li>
+    <li>Run the script</li>
+   </ul>
+</p>
 
-# Features
-- Bing searches (Desktop, Mobile and Edge) with User-Agents
-- Complete automatically the daily set
-- Complete automatically punch cards
-- Complete automatically the others promotions
-- Headless Mode
-- Multi-Account Management
+<h2 align="center">Features</h2>
+<p align="center">
+<ul>
+  <li>Bing searches (Desktop, Mobile and Edge) with User-Agents</li>
+  <li>Complete automatically the daily set</li>
+  <li>Complete automatically punch cards</li>
+  <li>Complete automatically the others promotions</li>
+  <li>Headless Mode</li>
+  <li>Multi-Account Management</li>
+</ul>
+</p>

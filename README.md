@@ -1,12 +1,24 @@
-[![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://github.com/charlesbel/Microsoft-Rewards-Farmer/)
-[![ForTheBadge built-by-developers](http://ForTheBadge.com/images/badges/built-by-developers.svg)](https://github.com/charlesbel/Microsoft-Rewards-Farmer/)
-[![ForTheBadge uses-git](http://ForTheBadge.com/images/badges/uses-git.svg)](https://GitHub.com/)
-[![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://github.com/charlesbel/Microsoft-Rewards-Farmer/)
+<p align="center">
+  <img src="https://forthebadge.com/images/badges/made-with-python.svg"/>
+  <img src="http://ForTheBadge.com/images/badges/built-by-developers.svg"/>
+  <img src="http://ForTheBadge.com/images/badges/uses-git.svg"/>
+  <img src="http://ForTheBadge.com/images/badges/built-with-love.svg"/>
+</p>
 
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)](https://github.com/charlesbel/Microsoft-Rewards-Farmer/graphs/commit-activity)
-[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://lbesson.mit-license.org/)
-[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/charlesbel/Microsoft-Rewards-Farmer.svg)](http://isitmaintained.com/project/charlesbel/Shopify-Checkout-Bypasser "Average time to resolve an issue")
-[![Percentage of issues still open](http://isitmaintained.com/badge/open/charlesbel/Microsoft-Rewards-Farmer.svg)](http://isitmaintained.com/project/charlesbel/Shopify-Checkout-Bypasser "Percentage of issues still open")
+<pre align="center">
+███╗   ███╗███████╗    ███████╗ █████╗ ██████╗ ███╗   ███╗███████╗██████╗ 
+████╗ ████║██╔════╝    ██╔════╝██╔══██╗██╔══██╗████╗ ████║██╔════╝██╔══██╗
+██╔████╔██║███████╗    █████╗  ███████║██████╔╝██╔████╔██║█████╗  ██████╔╝
+██║╚██╔╝██║╚════██║    ██╔══╝  ██╔══██║██╔══██╗██║╚██╔╝██║██╔══╝  ██╔══██╗
+██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
+╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝
+       by Charles Bel (@charlesbel)          version 1.1
+</pre>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge"/>
+</p>
 
 # Microsoft Rewards Farmer
 A simple bot that uses selenium to farm Microsoft Rewards written in Python.
@@ -18,7 +30,8 @@ A simple bot that uses selenium to farm Microsoft Rewards written in Python.
   - Download Chrome WebDriver : https://chromedriver.chromium.org/downloads
   - Place the file in X:\Windows (X as your Windows disk letter)
 * MacOS or Linux :
-  - `brew cask install chromedriver`
+  - `apt install chromium-chromedriver`
+  - or if you have brew : `brew cask install chromedriver`
 * Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end
 * Run the script
 

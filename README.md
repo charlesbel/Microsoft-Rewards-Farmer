@@ -38,7 +38,15 @@
         <li>or if you have brew : <pre>brew cask install chromedriver</pre></li>
       </ul>
     </ul></li>
-    <li>Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end</li>
+    <li>Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end<br/>
+    If you want to add more than one account, the syntax is the following : <pre>[{
+        "username": "Your Email",
+        "password": "Your Password"
+    },
+    {
+        "username": "Your Email 2",
+        "password": "Your Password 2"
+}]</pre></li>
     <li>Run the script</li>
    </ul>
 </p>

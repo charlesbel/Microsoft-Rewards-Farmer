@@ -351,7 +351,7 @@ def completeDailySetQuiz(browser: WebDriver, cardNumber: int):
     time.sleep(3)
     numberOfQuestions = browser.execute_script("return _w.rewardsQuizRenderInfo.maxQuestions")
     numberOfOptions = browser.execute_script("return _w.rewardsQuizRenderInfo.numberOfOptions")
-    for question in range(numberOfQuestions):
+    for _ in range(numberOfQuestions):
         if numberOfOptions == 8:
             answers = []
             for i in range(8):
@@ -434,7 +434,7 @@ def completeDailySetThisOrThat(browser: WebDriver, cardNumber: int):
     browser.find_element_by_xpath('//*[@id="rqStartQuiz"]').click()
     waitUntilVisible(browser, By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
     time.sleep(3)
-    for question in range(10):
+    for _ in range(10):
         answerEncodeKey = browser.execute_script("return _G.IG")
 
         answer1 = browser.find_element_by_id("rqAnswerOption0")
@@ -575,7 +575,7 @@ def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
     time.sleep(3)
     numberOfQuestions = browser.execute_script("return _w.rewardsQuizRenderInfo.maxQuestions")
     numberOfOptions = browser.execute_script("return _w.rewardsQuizRenderInfo.numberOfOptions")
-    for question in range(numberOfQuestions):
+    for _ in range(numberOfQuestions):
         if numberOfOptions == 8:
             answers = []
             for i in range(8):
@@ -632,7 +632,7 @@ def completeMorePromotionThisOrThat(browser: WebDriver, cardNumber: int):
     browser.find_element_by_xpath('//*[@id="rqStartQuiz"]').click()
     waitUntilVisible(browser, By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
     time.sleep(3)
-    for question in range(10):
+    for _ in range(10):
         answerEncodeKey = browser.execute_script("return _G.IG")
 
         answer1 = browser.find_element_by_id("rqAnswerOption0")

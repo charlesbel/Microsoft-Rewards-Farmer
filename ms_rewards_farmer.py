@@ -684,6 +684,8 @@ def getRemainingSearches(browser: WebDriver):
     dashboard = getDashboardData(browser)
     searchPoints = 1
     counters = dashboard['userStatus']['counters']
+    if not 'pcSearch' in counters:
+	return 0, 0
     progressDesktop = counters['pcSearch'][0]['pointProgress'] + counters['pcSearch'][1]['pointProgress']
     targetDesktop = counters['pcSearch'][0]['pointProgressMax'] + counters['pcSearch'][1]['pointProgressMax']
     if targetDesktop == 33 :
@@ -704,7 +706,7 @@ def getRemainingSearches(browser: WebDriver):
         progressMobile = counters['mobileSearch'][0]['pointProgress']
         targetMobile = counters['mobileSearch'][0]['pointProgressMax']
         remainingMobile = int((targetMobile - progressMobile) / searchPoints)
-    return(remainingDesktop, remainingMobile)
+    return remainingDesktop, remainingMobile
 
 def prRed(prt):
     print("\033[91m{}\033[00m".format(prt))

@@ -1,53 +1,64 @@
-[![forthebadge](https://forthebadge.com/images/badges/made-with-python.svg)](https://github.com/charlesbel/Microsoft-Rewards-Farmer/)
-[![ForTheBadge built-by-developers](http://ForTheBadge.com/images/badges/built-by-developers.svg)](https://github.com/charlesbel/Microsoft-Rewards-Farmer/)
-[![ForTheBadge uses-git](http://ForTheBadge.com/images/badges/uses-git.svg)](https://GitHub.com/)
-[![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://github.com/charlesbel/Microsoft-Rewards-Farmer/)
+<p align="center">
+  <img src="https://forthebadge.com/images/badges/made-with-python.svg"/>
+  <img src="http://ForTheBadge.com/images/badges/built-by-developers.svg"/>
+  <img src="http://ForTheBadge.com/images/badges/uses-git.svg"/>
+  <img src="http://ForTheBadge.com/images/badges/built-with-love.svg"/>
+</p>
 
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)](https://github.com/charlesbel/Microsoft-Rewards-Farmer/graphs/commit-activity)
-[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://lbesson.mit-license.org/)
-[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/charlesbel/Microsoft-Rewards-Farmer.svg)](http://isitmaintained.com/project/charlesbel/Shopify-Checkout-Bypasser "Average time to resolve an issue")
-[![Percentage of issues still open](http://isitmaintained.com/badge/open/charlesbel/Microsoft-Rewards-Farmer.svg)](http://isitmaintained.com/project/charlesbel/Shopify-Checkout-Bypasser "Percentage of issues still open")
+<pre align="center">
+███╗   ███╗███████╗    ███████╗ █████╗ ██████╗ ███╗   ███╗███████╗██████╗ 
+████╗ ████║██╔════╝    ██╔════╝██╔══██╗██╔══██╗████╗ ████║██╔════╝██╔══██╗
+██╔████╔██║███████╗    █████╗  ███████║██████╔╝██╔████╔██║█████╗  ██████╔╝
+██║╚██╔╝██║╚════██║    ██╔══╝  ██╔══██║██╔══██╗██║╚██╔╝██║██╔══╝  ██╔══██╗
+██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
+╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝
+       by Charles Bel (@charlesbel)          version 1.1
+</pre>
 
-# Microsoft Rewards Farmer
-A simple bot that uses selenium to farm Microsoft Rewards written in Python.
+<p align="center">
+  <img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge"/>
+</p>
 
-# Features
-- Bing searches (Desktop, Mobile and Edge) with User-Agents
-- Complete automatically the daily set
-- Complete automatically punch cards
-- Complete automatically the others promotions
-- Headless Mode
-- Multi-Account Management
+<h2 align="center">👋 Welcome to the future of automation</h2>
+<h3 align="center">A simple bot that uses selenium to farm Microsoft Rewards written in Python.</h3>
 
-# Installation
-* Install requirements with the following command : `pip install -r requirements.txt`
-* Make sure you have Chrome installed
-* Windows :
-  - Download Chrome WebDriver : https://chromedriver.chromium.org/downloads
-  - Place the file in X:\Windows (X as your Windows disk letter)
-* MacOS or Linux :
-  - `brew cask install chromedriver`
-* Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end
-* Run the script
+<h2 align="center">Installation</h2>
+<p align="center">
+  <ul>
+    <li>Install requirements with the following command : <pre>pip install -r requirements.txt</pre></li>
+    <li>Make sure you have Chrome installed</li>
+    <li>Install ChromeDriver :<ul>
+      <li>Windows :<ul>
+        <li>Download Chrome WebDriver : https://chromedriver.chromium.org/downloads</li>
+        <li>Place the file in X:\Windows (X as your Windows disk letter)</li>
+      </ul>
+      <li>MacOS or Linux :<ul>
+        <li><pre>apt install chromium-chromedriver</pre></li>
+        <li>or if you have brew : <pre>brew cask install chromedriver</pre></li>
+      </ul>
+    </ul></li>
+    <li>Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end<br/>
+    If you want to add more than one account, the syntax is the following : <pre>[{
+        "username": "Your Email",
+        "password": "Your Password"
+    },
+    {
+        "username": "Your Email 2",
+        "password": "Your Password 2"
+}]</pre></li>
+    <li>Run the script</li>
+   </ul>
+</p>
 
-# Docker Installation
-> Note: At this time there is no public repository where this project is. However you can build it yourself!
-
-* Put the files on the docker server
-* Run the following commands from within your files folder to build the image:
-  * `docker build -t yournamehere/msrewardfarmer`
-* Run one of the following commands below to start the container with all default values:
-  * Accept all default values: `docker run --name msrewardfarmer -d yournamehere/msrewardfarmer`
-
-You can add some environment variables as well for further control over things like scheduling (early stages).
-
-To run the container daily at 2:07PM in the US East Coast timezone, you would run something like this:
-Example: `docker run --name msrewardfarmer --env MRF_AUTO_RUN_DAILY=True --env MRF_AUTO_RUN_HOUR=14 --env MRF_AUTO_RUN_MINUTE=07 --env TZ=America/New_York -d yournamehere/msrewardfarmer`
-
-| Environment Var Name | Expected Type | Default Value | Description                                                                                                                                                        |
-|----------------------|---------------|---------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| TZ    | String       | America/New_York            | Tells the script which timezone you want the code to run in. See this [List of tz database time zones](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)     |
-| MRF_DOCKER           | Boolean       | True          | Leave this to true. Its a simple variable to let the script know its in a Docker container                                                                         |
-| MRF_AUTO_RUN_DAILY   | Boolean       | False         | Tells the script to setup a schedule for running once a day or not (True = Schedule; False = Run Once). Otherwise the docker container will exit with Exit Code 0. |
-| MRF_AUTO_RUN_HOUR    | String       | 12            | Tells the script on which hour to run. For example: 14 would run at 14:00 every day. This number should be between 00-23 depending on when you want it to run.     |
-| MRF_AUTO_RUN_MINUTE    | String       | 00            | Tells the script on which minute of the hour to run. For example: 03 would run at on the 3rd minute of every day (in conjunction with hour). This number should be between 00-59 depending on when you want it to run.     |
+<h2 align="center">Features</h2>
+<p align="center">
+<ul>
+  <li>Bing searches (Desktop, Mobile and Edge) with User-Agents</li>
+  <li>Complete automatically the daily set</li>
+  <li>Complete automatically punch cards</li>
+  <li>Complete automatically the others promotions</li>
+  <li>Headless Mode</li>
+  <li>Multi-Account Management</li>
+</ul>
+</p>

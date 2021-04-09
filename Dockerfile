@@ -27,11 +27,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 # set display port to avoid crash
 ENV DISPLAY=:99
 
-# other env
-ENV MRF_DOCKER=True
-ENV MRF_AUTO_RUN_DAILY=False
-ENV MRF_AUTO_RUN_HOUR=12
-ENV MRF_AUTO_RUN_MINUTE=00
-
 # Run the command on container startup
 CMD ["python3", "-u", "/data/ms_rewards_farmer.py"]

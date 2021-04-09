@@ -22,6 +22,9 @@ logging.basicConfig(filename='app.log', filemode='w', format='%(asctime)s - %(me
 PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36 Edg/89.0.774.45'
 MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.116 Mobile Safari/537.36 EdgA/46.02.4.5147'
 
+# Env Variables
+DOCKER_IMAGE = os.environ.get("DOCKER_IMAGE", "False")
+
 POINTS_COUNTER = 0
 
 # Define browser setup function
@@ -29,6 +32,10 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
     # Create Chrome browser
     from selenium.webdriver.chrome.options import Options
     options = Options()
+    if DOCKER_IMAGE.lower() == 'true':
+        prNoColor("[DOCKER] Setting flags for Docker")
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
     options.add_argument("user-agent=" + user_agent)
     options.add_argument('lang=' + LANG.split("-")[0])
     if headless_mode :

@@ -27,5 +27,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # set display port to avoid crash
 ENV DISPLAY=:99
 
+# Custom Env Vars
+ENV DOCKER_IMAGE=true
+
 # Run the command on container startup
 CMD ["python3", "-u", "/data/ms_rewards_farmer.py"]

@@ -142,6 +142,9 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
     except:
         checkBingLogin(browser, isMobile)
 
+def waitForElement(browser: Webdriver, by_: By, selector: str, time_to_wait: int = 10):
+    WebDriverWait(browser, time_to_wait).until(ec.presence_of_element_located((by_, selector)))
+
 def waitUntilVisible(browser: WebDriver, by_: By, selector: str, time_to_wait: int = 10):
     WebDriverWait(browser, time_to_wait).until(ec.visibility_of_element_located((by_, selector)))
 

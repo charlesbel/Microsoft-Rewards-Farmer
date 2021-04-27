@@ -83,35 +83,29 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
     global POINTS_COUNTER
     #Access Bing.com
     browser.get('https://bing.com/')
-    # Wait 8 seconds
-    time.sleep(8)
     #Accept Cookies
     try:
-        browser.find_element_by_id('bnp_btn_accept').click()
+        waitForElement(browser, By.ID,'bnp_btn_accept').click()
     except:
         pass
     if isMobile:
         try:
-            time.sleep(1)
-            browser.find_element_by_id('mHamburger').click()
+            waitForElement(browser, By.ID, 'mHamburger').click()
         except:
             try:
-                browser.find_element_by_id('bnp_btn_accept').click()
+                waitForElement(browser, By.ID, 'bnp_btn_accept').click()
             except:
                 pass
-            time.sleep(1)
             try:
-                browser.find_element_by_id('mHamburger').click()
+                waitForElement(browser, By.ID, 'mHamburger').click()
             except:
                 pass
         try:
-            time.sleep(1)
-            browser.find_element_by_id('HBSignIn').click()
+            waitForElement(browser, By.ID, 'HBSignIn').click()
         except:
             pass
         try:
-            time.sleep(2)
-            browser.find_element_by_id('iShowSkip').click()
+            waitForElement(browser, By.ID, 'iShowSkip').click()
             time.sleep(3)
         except:
             if str(browser.current_url).split('?')[0] == "https://account.live.com/proofs/Add":
@@ -122,23 +116,21 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
     # Refresh page
     browser.get('https://bing.com/')
     # Wait 5 seconds
-    time.sleep(10)
+    time.sleep(5)
     #Update Counter
     try:
         if not isMobile:
-            POINTS_COUNTER = int(browser.find_element_by_id('id_rc').get_attribute('innerHTML'))
+            POINTS_COUNTER = int(waitForElement(browser, By.ID, 'id_rc').get_attribute('innerHTML'))
         else:
             try:
-                browser.find_element_by_id('mHamburger').click()
+                waitForElement(browser, By.ID, 'mHamburger').click()
             except:
                 try:
-                    browser.find_element_by_id('bnp_btn_accept').click()
+                    browser.waitForElement(browser, By.ID, 'bnp_btn_accept').click()
                 except:
                     pass
-                time.sleep(1)
-                browser.find_element_by_id('mHamburger').click()
-            time.sleep(1)
-            POINTS_COUNTER = int(browser.find_element_by_id('fly_id_rc').get_attribute('innerHTML'))
+                waitForElement(browser, By.ID, 'mHamburger').click()
+            POINTS_COUNTER = int(waitForElement(browser, By.ID, 'fly_id_rc').get_attribute('innerHTML'))
     except:
         checkBingLogin(browser, isMobile)
 
@@ -276,15 +268,14 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
 
 def bingSearch(browser: WebDriver, word: str, isMobile: bool):
     browser.get('https://bing.com')
-    time.sleep(2)
-    searchbar = browser.find_element_by_id('sb_form_q')
+    searchbar = waitForElement(browser, By.ID, 'sb_form_q')
     searchbar.send_keys(word)
     searchbar.submit()
     time.sleep(random.randint(10, 15))
     points = 0
     try:
         if not isMobile:
-            points = int(browser.find_element_by_id('id_rc').get_attribute('innerHTML'))
+            points = int(waitForElement(browser, By.ID, 'id_rc').get_attribute('innerHTML'))
         else:
             try :
                 browser.find_element_by_id('mHamburger').click()

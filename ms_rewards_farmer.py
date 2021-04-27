@@ -41,9 +41,9 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
     waitUntilVisible(browser, By.ID, 'loginHeader', 10)
     # Enter email
     print('[LOGIN]', 'Writing email...')
-    browser.find_element_by_name("loginfmt").send_keys(email)
+    waitForElement(browser, By.NAME, "loginfmt").send_keys(email)
     # Click next
-    browser.find_element_by_id('idSIButton9').click()
+    waitForElement(browser, By.ID, 'idSIButton9').click()
     # Wait 2 seconds
     time.sleep(2)
     # Wait complete loading
@@ -53,13 +53,13 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
     browser.execute_script("document.getElementById('i0118').value = '" + pwd + "';")
     print('[LOGIN]', 'Writing password...')
     # Click next
-    browser.find_element_by_id('idSIButton9').click()
+    waitForElement(browser, By.ID, 'idSIButton9').click()
     # Wait 5 seconds
     time.sleep(5)
     # Click Security Check
     print('[LOGIN]', 'Passing security checks...')
     try:
-        browser.find_element_by_id('iLandingViewAction').click()
+        waitForElement(browser, By.ID, 'iLandingViewAction').click()
     except (NoSuchElementException, ElementNotInteractableException) as e:
         pass
     # Wait complete loading

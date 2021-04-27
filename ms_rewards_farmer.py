@@ -59,7 +59,7 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
     # Click Security Check
     print('[LOGIN]', 'Passing security checks...')
     try:
-        waitForElement(browser, By.ID, 'iLandingViewAction').click()
+        browser.find_element_by_id('iLandingViewAction').click()
     except (NoSuchElementException, ElementNotInteractableException) as e:
         pass
     # Wait complete loading
@@ -752,7 +752,7 @@ random.shuffle(ACCOUNTS)
 for account in ACCOUNTS:
 
     prYellow('********************' + account['username'] + '********************')
-    browser = browserSetup(False, PC_USER_AGENT)
+    browser = browserSetup(True, PC_USER_AGENT)
     print('[LOGIN]', 'Logging-in...')
     login(browser, account['username'], account['password'])
     prGreen('[LOGIN] Logged-in successfully !')

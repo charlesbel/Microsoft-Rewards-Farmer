@@ -23,4 +23,4 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag joshuagarrison27/msrewardfarmer:$(date +%s)
     - name: Docker Push
-      run: docker push ${{secrets.DOCKER_USER}}/
+      run: docker push ${{secrets.DOCKER_USER}}/msrewardfarmer

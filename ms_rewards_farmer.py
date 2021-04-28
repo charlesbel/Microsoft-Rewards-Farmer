@@ -278,16 +278,15 @@ def bingSearch(browser: WebDriver, word: str, isMobile: bool):
             points = int(waitForElement(browser, By.ID, 'id_rc').get_attribute('innerHTML'))
         else:
             try :
-                browser.find_element_by_id('mHamburger').click()
+                waitForElement(browser, By.ID, 'mHamburger').click()
             except UnexpectedAlertPresentException:
                 try :
                     browser.switch_to.alert.accept()
                     time.sleep(1)
-                    browser.find_element_by_id('mHamburger').click()
+                    waitForElement(browser, By.ID, 'mHamburger').click()
                 except NoAlertPresentException :
                     pass
-            time.sleep(1)
-            points = int(browser.find_element_by_id('fly_id_rc').get_attribute('innerHTML'))
+            points = int(waitForElement(browser, By.ID, 'fly_id_rc').get_attribute('innerHTML'))
     except:
         pass
     return points
@@ -356,7 +355,6 @@ def completeDailySetQuiz(browser: WebDriver, cardNumber: int):
                 time.sleep(5)
                 if not waitUntilQuestionRefresh(browser):
                     return
-            time.sleep(5)
         elif numberOfOptions == 4:
             correctOption = browser.execute_script("return _w.rewardsQuizRenderInfo.correctAnswer")
             for i in range(4):
@@ -366,16 +364,14 @@ def completeDailySetQuiz(browser: WebDriver, cardNumber: int):
                     if not waitUntilQuestionRefresh(browser):
                         return
                     break
-            time.sleep(5)
-    time.sleep(5)
+        time.sleep(5)
     browser.close()
     time.sleep(2)
     browser.switch_to.window(window_name = browser.window_handles[0])
     time.sleep(2)
 
 def completeDailySetVariableActivity(browser: WebDriver, cardNumber: int):
-    time.sleep(2)
-    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
+    waitForElement(browser, By.XPATH, '//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name = browser.window_handles[1])
     time.sleep(8)
@@ -417,8 +413,7 @@ def completeDailySetVariableActivity(browser: WebDriver, cardNumber: int):
     time.sleep(2)
 
 def completeDailySetThisOrThat(browser: WebDriver, cardNumber: int):
-    time.sleep(2)
-    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
+    waitForElement(browser, By.XPATH, '//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name=browser.window_handles[1])
     time.sleep(8)

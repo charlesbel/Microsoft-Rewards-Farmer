@@ -24,4 +24,4 @@ jobs:
       run: docker build . --file Dockerfile --tag binarynexus/msrewardfarmer:$(date +%s)
       
     - name: Docker Push
-      run: docker push binarynexus/msrewardfarmer
+      run: docker push binarynexus/msrewardfarmer:latest

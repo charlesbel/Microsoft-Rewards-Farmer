@@ -6,6 +6,7 @@ import random
 import urllib.parse
 import ipapi
 import os
+import logging
 
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -14,9 +15,15 @@ from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException, UnexpectedAlertPresentException, NoAlertPresentException
 
+# Define logging
+logging.basicConfig(filename='app.log', filemode='w', format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S', level=logging.INFO)
+
 # Define user-agents
-PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36 Edg/86.0.622.63'
-MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 10; Pixel 3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0. 3945.79 Mobile Safari/537.36'
+PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36 Edg/89.0.774.45'
+MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 11; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.116 Mobile Safari/537.36 EdgA/46.02.4.5147'
+
+# Env Variables
+DOCKER_IMAGE = os.environ.get("DOCKER_IMAGE", "False")
 
 POINTS_COUNTER = 0
 
@@ -25,6 +32,10 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
     # Create Chrome browser
     from selenium.webdriver.chrome.options import Options
     options = Options()
+    if DOCKER_IMAGE.lower() == 'true':
+        prNoColor("[DOCKER] Setting flags for Docker")
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-dev-shm-usage')
     options.add_argument("user-agent=" + user_agent)
     options.add_argument('lang=' + LANG.split("-")[0])
     if headless_mode :
@@ -40,7 +51,7 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
     # Wait complete loading
     waitUntilVisible(browser, By.ID, 'loginHeader', 10)
     # Enter email
-    print('[LOGIN]', 'Writing email...')
+    prNoColor('[LOGIN] Writing email...')
     browser.find_element_by_name("loginfmt").send_keys(email)
     # Click next
     browser.find_element_by_id('idSIButton9').click()
@@ -51,13 +62,13 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
     # Enter password
     #browser.find_element_by_id("i0118").send_keys(pwd)
     browser.execute_script("document.getElementById('i0118').value = '" + pwd + "';")
-    print('[LOGIN]', 'Writing password...')
+    prNoColor('[LOGIN] Writing password...')
     # Click next
     browser.find_element_by_id('idSIButton9').click()
     # Wait 5 seconds
     time.sleep(5)
     # Click Security Check
-    print('[LOGIN]', 'Passing security checks...')
+    prNoColor('[LOGIN] Passing security checks...')
     try:
         browser.find_element_by_id('iLandingViewAction').click()
     except (NoSuchElementException, ElementNotInteractableException) as e:
@@ -74,9 +85,9 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         time.sleep(5)
     except (NoSuchElementException, ElementNotInteractableException) as e:
         pass
-    print('[LOGIN]', 'Logged-in !')
+    prNoColor('[LOGIN] Logged-in !')
     # Check Login
-    print('[LOGIN]', 'Ensuring login on Bing...')
+    prNoColor('[LOGIN] Ensuring login on Bing...')
     checkBingLogin(browser, isMobile)
 
 def checkBingLogin(browser: WebDriver, isMobile: bool = False):
@@ -258,7 +269,7 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
     search_terms = getGoogleTrends(numberOfSearches)
     for word in search_terms :
         i += 1
-        print('[BING]', str(i) + "/" + str(numberOfSearches))
+        prNoColor('[BING] ' + str(i) + "/" + str(numberOfSearches))
         points = bingSearch(browser, word, isMobile)
         if points <= POINTS_COUNTER :
             relatedTerms = getRelatedTerms(word)
@@ -477,14 +488,14 @@ def completeDailySet(browser: WebDriver):
             if activity['complete'] == False:
                 cardNumber = int(activity['offerId'][-1:])
                 if activity['promotionType'] == "urlreward":
-                    print('[DAILY SET]', 'Completing search of card ' + str(cardNumber))
+                    prNoColor('[DAILY SET] Completing search of card ' + str(cardNumber))
                     completeDailySetSearch(browser, cardNumber)
                 if activity['promotionType'] == "quiz":
                     if activity['pointProgressMax'] == 50 and activity['pointProgress'] == 0:
-                        print('[DAILY SET]', 'Completing This or That of card ' + str(cardNumber))
+                        prNoColor('[DAILY SET] Completing This or That of card ' + str(cardNumber))
                         completeDailySetThisOrThat(browser, cardNumber)
                     elif (activity['pointProgressMax'] == 40 or activity['pointProgressMax'] == 30) and activity['pointProgress'] == 0:
-                        print('[DAILY SET]', 'Completing quiz of card ' + str(cardNumber))
+                        prNoColor('[DAILY SET] Completing quiz of card ' + str(cardNumber))
                         completeDailySetQuiz(browser, cardNumber)
                     elif activity['pointProgressMax'] == 10 and activity['pointProgress'] == 0:
                         searchUrl = urllib.parse.unquote(urllib.parse.parse_qs(urllib.parse.urlparse(activity['destinationUrl']).query)['ru'][0])
@@ -494,10 +505,10 @@ def completeDailySet(browser: WebDriver):
                             filter = filter.split(':', 1)
                             filters[filter[0]] = filter[1]
                         if "PollScenarioId" in filters:
-                            print('[DAILY SET]', 'Completing poll of card ' + str(cardNumber))
+                            prNoColor('[DAILY SET] Completing poll of card ' + str(cardNumber))
                             completeDailySetSurvey(browser, cardNumber)
                         else:
-                            print('[DAILY SET]', 'Completing quiz of card ' + str(cardNumber))
+                            prNoColor('[DAILY SET] Completing quiz of card ' + str(cardNumber))
                             completeDailySetVariableActivity(browser, cardNumber)
         except:
             resetTabs(browser)
@@ -708,14 +719,26 @@ def getRemainingSearches(browser: WebDriver):
         remainingMobile = int((targetMobile - progressMobile) / searchPoints)
     return remainingDesktop, remainingMobile
 
-def prRed(prt):
+def prNoColor(prt, logToLogger=True):
+    print(prt)
+    if (logToLogger):
+        logging.info(prt)
+def prRed(prt, logToLogger=True):
     print("\033[91m{}\033[00m".format(prt))
-def prGreen(prt):
+    if (logToLogger):
+        logging.info(prt)
+def prGreen(prt, logToLogger=True):
     print("\033[92m{}\033[00m".format(prt))
-def prPurple(prt):
+    if (logToLogger):
+        logging.info(prt)
+def prPurple(prt, logToLogger=True):
     print("\033[95m{}\033[00m".format(prt))
-def prYellow(prt):
+    if (logToLogger):
+        logging.info(prt)
+def prYellow(prt, logToLogger=True):
     print("\033[93m{}\033[00m".format(prt))
+    if (logToLogger):
+        logging.info(prt)
 
 prRed("""
 ███╗   ███╗███████╗    ███████╗ █████╗ ██████╗ ███╗   ███╗███████╗██████╗ 
@@ -723,8 +746,8 @@ prRed("""
 ██╔████╔██║███████╗    █████╗  ███████║██████╔╝██╔████╔██║█████╗  ██████╔╝
 ██║╚██╔╝██║╚════██║    ██╔══╝  ██╔══██║██╔══██╗██║╚██╔╝██║██╔══╝  ██╔══██╗
 ██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
-╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝""")
-prPurple("        by Charles Bel (@charlesbel)               version 1.1\n")
+╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝""", False)
+prPurple("        by Charles Bel (@charlesbel)               version 1.1\n", False)
 
 LANG, GEO, TZ = getCCodeLangAndOffset()
 
@@ -750,34 +773,34 @@ for account in ACCOUNTS:
 
     prYellow('********************' + account['username'] + '********************')
     browser = browserSetup(True, PC_USER_AGENT)
-    print('[LOGIN]', 'Logging-in...')
+    prNoColor('[LOGIN] Logging-in...')
     login(browser, account['username'], account['password'])
     prGreen('[LOGIN] Logged-in successfully !')
     startingPoints = POINTS_COUNTER
     prGreen('[POINTS] You have ' + str(POINTS_COUNTER) + ' points on your account !')
     browser.get('https://account.microsoft.com/rewards/')
-    print('[DAILY SET]', 'Trying to complete the Daily Set...')
+    prNoColor('[DAILY SET] Trying to complete the Daily Set...')
     completeDailySet(browser)
     prGreen('[DAILY SET] Completed the Daily Set successfully !')
-    print('[PUNCH CARDS]', 'Trying to complete the Punch Cards...')
+    prNoColor('[PUNCH CARDS] Trying to complete the Punch Cards...')
     completePunchCards(browser)
     prGreen('[PUNCH CARDS] Completed the Punch Cards successfully !')
-    print('[MORE PROMO]', 'Trying to complete More Promotions...')
+    prNoColor('[MORE PROMO] Trying to complete More Promotions...')
     completeMorePromotions(browser)
     prGreen('[MORE PROMO] Completed More Promotions successfully !')
     remainingSearches, remainingSearchesM = getRemainingSearches(browser)
     if remainingSearches != 0:
-        print('[BING]', 'Starting Desktop and Edge Bing searches...')
+        prNoColor('[BING] Starting Desktop and Edge Bing searches...')
         bingSearches(browser, remainingSearches)
         prGreen('[BING] Finished Desktop and Edge Bing searches !')
     browser.quit()
 
     if remainingSearchesM != 0:
         browser = browserSetup(True, MOBILE_USER_AGENT)
-        print('[LOGIN]', 'Logging-in...')
+        prNoColor('[LOGIN] Logging-in...')
         login(browser, account['username'], account['password'], True)
-        print('[LOGIN]', 'Logged-in successfully !')
-        print('[BING]', 'Starting Mobile Bing searches...')
+        prNoColor('[LOGIN] Logged-in successfully !')
+        prNoColor('[BING] Starting Mobile Bing searches...')
         bingSearches(browser, remainingSearchesM, True)
         prGreen('[BING] Finished Mobile Bing searches !')
         browser.quit()

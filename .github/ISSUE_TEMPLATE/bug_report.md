@@ -7,8 +7,6 @@ assignees: ''
 
 ---
 
-*MAKE SURE THE ERROR IS NOT FROM YOU, THIS IS THE MOST FREQUENT CASE*
-
 **Error Log**
 Paste the error log here.
 

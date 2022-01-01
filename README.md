@@ -22,6 +22,13 @@
 
 <h2 align="center">👋 Welcome to the future of automation</h2>
 <h3 align="center">A simple bot that uses selenium to farm Microsoft Rewards written in Python.</h3>
+<h3 align="center">
+
+```diff
+- Use it at your own risk, Microsoft may ban your account (and I would not be responsible for it) -
+```
+
+</h3>
 
 <h2 align="center">Installation</h2>
 <p align="center">

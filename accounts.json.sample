@@ -1,4 +1,10 @@
-[{
-    "username": "Your Email",
-    "password": "Your Password"
-}]
+[
+    {
+        "username": "Your Email",
+        "password": "Your Password"
+    },
+    {
+        "username": "Your Email",
+        "password": "Your Password"
+    }
+]

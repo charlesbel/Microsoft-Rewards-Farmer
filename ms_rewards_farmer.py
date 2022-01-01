@@ -20,6 +20,8 @@ MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 10; Pixel 3) AppleWebKit/537.36
 
 POINTS_COUNTER = 0
 
+BASE_URL = ""
+
 # Define browser setup function
 def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -> WebDriver:
     # Create Chrome browser
@@ -62,6 +64,10 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         browser.find_element_by_id('iLandingViewAction').click()
     except (NoSuchElementException, ElementNotInteractableException) as e:
         pass
+    try:
+        browser.find_element_by_id('iNext').click()
+    except:
+        pass
     # Wait complete loading
     try:
         waitUntilVisible(browser, By.ID, 'KmsiCheckboxField', 10)
@@ -99,6 +105,10 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
                 browser.find_element_by_id('bnp_btn_accept').click()
             except:
                 pass
+            try:
+                browser.find_element_by_id('bnp_ttc_close').click()
+            except:
+                pass
             time.sleep(1)
             try:
                 browser.find_element_by_id('mHamburger').click()
@@ -133,6 +143,10 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
             except:
                 try:
                     browser.find_element_by_id('bnp_btn_accept').click()
+                except:
+                    pass
+                try:
+                    browser.find_element_by_id('bnp_ttc_close').click()
                 except:
                     pass
                 time.sleep(1)
@@ -197,14 +211,14 @@ def findBetween(s: str, first: str, last: str) -> str:
         return ""
 
 def getCCodeLangAndOffset() -> tuple:
-    nfo = ipapi.location()
-    lang = nfo['languages'].split(',')[0]
-    geo = nfo['country']
-    if nfo['utc_offset'] == None:
-        tz = str(0)
-    else:
+    try:
+        nfo = ipapi.location()
+        lang = nfo['languages'].split(',')[0]
+        geo = nfo['country']
         tz = str(round(int(nfo['utc_offset']) / 100 * 60))
-    return(lang, geo, tz)
+        return(lang, geo, tz)
+    except:
+        return('fr-FR', 'FR', '120')
 
 def getGoogleTrends(numberOfwords: int) -> list:
     search_terms = []
@@ -241,9 +255,9 @@ def resetTabs(browser: WebDriver):
 
         browser.switch_to.window(curr)
         time.sleep(0.5)
-        browser.get('https://account.microsoft.com/rewards/')
+        browser.get(BASE_URL)
     except:
-        browser.get('https://account.microsoft.com/rewards/')
+        browser.get(BASE_URL)
 
 def getAnswerCode(key: str, string: str) -> str:
 	t = 0
@@ -301,8 +315,8 @@ def bingSearch(browser: WebDriver, word: str, isMobile: bool):
 def completePromotionalItems(browser: WebDriver):
     try:
         item = getDashboardData(browser)["promotionalItem"]
-        if (item["pointProgressMax"] == 100 or item["pointProgressMax"] == 200) and item["complete"] == False and item["destinationUrl"] == "https://account.microsoft.com/rewards":
-            browser.find_element_by_xpath('//*[@id="promo-item"]/section/div/div/div/a').click()
+        if (item["pointProgressMax"] == 100 or item["pointProgressMax"] == 200) and item["complete"] == False and (item["destinationUrl"] == BASE_URL or item["destinationUrl"].startswith("https://www.bing.com/")):
+            browser.find_element_by_xpath('//*[@id="promo-item"]/section/div/div/div/span').click()
             time.sleep(1)
             browser.switch_to.window(window_name = browser.window_handles[1])
             time.sleep(8)
@@ -315,7 +329,7 @@ def completePromotionalItems(browser: WebDriver):
 
 def completeDailySetSearch(browser: WebDriver, cardNumber: int):
     time.sleep(5)
-    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name = browser.window_handles[1])
     time.sleep(random.randint(13, 17))
@@ -326,7 +340,7 @@ def completeDailySetSearch(browser: WebDriver, cardNumber: int):
 
 def completeDailySetSurvey(browser: WebDriver, cardNumber: int):
     time.sleep(5)
-    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name = browser.window_handles[1])
     time.sleep(8)
@@ -339,7 +353,7 @@ def completeDailySetSurvey(browser: WebDriver, cardNumber: int):
 
 def completeDailySetQuiz(browser: WebDriver, cardNumber: int):
     time.sleep(2)
-    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name = browser.window_handles[1])
     time.sleep(8)
@@ -381,7 +395,7 @@ def completeDailySetQuiz(browser: WebDriver, cardNumber: int):
 
 def completeDailySetVariableActivity(browser: WebDriver, cardNumber: int):
     time.sleep(2)
-    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name = browser.window_handles[1])
     time.sleep(8)
@@ -424,7 +438,7 @@ def completeDailySetVariableActivity(browser: WebDriver, cardNumber: int):
 
 def completeDailySetThisOrThat(browser: WebDriver, cardNumber: int):
     time.sleep(2)
-    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name=browser.window_handles[1])
     time.sleep(8)
@@ -541,19 +555,24 @@ def completePunchCards(browser: WebDriver):
     for punchCard in punchCards:
         try:
             if punchCard['parentPromotion'] != None and punchCard['childPromotions'] != None and punchCard['parentPromotion']['complete'] == False and punchCard['parentPromotion']['pointProgressMax'] != 0:
-                url = punchCard['parentPromotion']['attributes']['destination']
-                path = url.replace('https://account.microsoft.com/rewards/dashboard/','')
-                userCode = path[:4]
-                dest = 'https://account.microsoft.com/rewards/dashboard/' + userCode + path.split(userCode)[1]
-                completePunchCard(browser, dest, punchCard['childPromotions'])
+                if BASE_URL == "https://rewards.microsoft.com":
+                    completePunchCard(browser, punchCard['parentPromotion']['attributes']['destination'], punchCard['childPromotions'])
+                else:
+                    url = punchCard['parentPromotion']['attributes']['destination']
+                    path = url.replace(
+                        'https://account.microsoft.com/rewards/dashboard/', '')
+                    userCode = path[:4]
+                    dest = 'https://account.microsoft.com/rewards/dashboard/' + \
+                        userCode + path.split(userCode)[1]
+                    completePunchCard(browser, url, punchCard['childPromotions'])
         except:
             resetTabs(browser)
     time.sleep(2)
-    browser.get('https://account.microsoft.com/rewards/')
+    browser.get(BASE_URL)
     time.sleep(2)
 
 def completeMorePromotionSearch(browser: WebDriver, cardNumber: int):
-    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name = browser.window_handles[1])
     time.sleep(random.randint(13, 17))
@@ -563,7 +582,7 @@ def completeMorePromotionSearch(browser: WebDriver, cardNumber: int):
     time.sleep(2)
 
 def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
-    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name=browser.window_handles[1])
     time.sleep(8)
@@ -604,7 +623,7 @@ def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
     time.sleep(2)
 
 def completeMorePromotionABC(browser: WebDriver, cardNumber: int):
-    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name=browser.window_handles[1])
     time.sleep(8)
@@ -622,7 +641,7 @@ def completeMorePromotionABC(browser: WebDriver, cardNumber: int):
     time.sleep(2)
 
 def completeMorePromotionThisOrThat(browser: WebDriver, cardNumber: int):
-    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/div[3]/a').click()
+    browser.find_element_by_xpath('//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/a').click()
     time.sleep(1)
     browser.switch_to.window(window_name=browser.window_handles[1])
     time.sleep(8)
@@ -755,7 +774,22 @@ for account in ACCOUNTS:
     prGreen('[LOGIN] Logged-in successfully !')
     startingPoints = POINTS_COUNTER
     prGreen('[POINTS] You have ' + str(POINTS_COUNTER) + ' points on your account !')
-    browser.get('https://account.microsoft.com/rewards/')
+
+    browser.get('https://account.microsoft.com/')
+    waitUntilVisible(browser, By.XPATH, '//*[@id="navs"]/div/div/div/div/div[4]/a', 20)
+
+    if browser.find_element_by_xpath('//*[@id="navs"]/div/div/div/div/div[4]/a').get_attribute('target') == '_blank':
+        BASE_URL = 'https://rewards.microsoft.com'
+        browser.find_element_by_xpath('//*[@id="navs"]/div/div/div/div/div[4]/a').click()
+        time.sleep(1)
+        browser.switch_to.window(window_name=browser.window_handles[0])
+        browser.close()
+        browser.switch_to.window(window_name=browser.window_handles[0])
+        time.sleep(10)
+    else:
+        BASE_URL = 'https://account.microsoft.com/rewards'
+        browser.get(BASE_URL)
+
     print('[DAILY SET]', 'Trying to complete the Daily Set...')
     completeDailySet(browser)
     prGreen('[DAILY SET] Completed the Daily Set successfully !')
@@ -781,6 +815,6 @@ for account in ACCOUNTS:
         bingSearches(browser, remainingSearchesM, True)
         prGreen('[BING] Finished Mobile Bing searches !')
         browser.quit()
-    
+
     prGreen('[POINTS] You have earned ' + str(POINTS_COUNTER - startingPoints) + ' points today !')
     prGreen('[POINTS] You are now at ' + str(POINTS_COUNTER) + ' points !\n')

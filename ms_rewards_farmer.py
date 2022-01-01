@@ -743,7 +743,7 @@ prRed("""
 ██║╚██╔╝██║╚════██║    ██╔══╝  ██╔══██║██╔══██╗██║╚██╔╝██║██╔══╝  ██╔══██╗
 ██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
 ╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝""")
-prPurple("        by Charles Bel (@charlesbel)               version 1.1\n")
+prPurple("        by Charles Bel (@charlesbel)               version 2.0\n")
 
 LANG, GEO, TZ = getCCodeLangAndOffset()
 

@@ -223,6 +223,7 @@ def getCCodeLangAndOffset() -> tuple:
 def getGoogleTrends(numberOfwords: int) -> list:
     search_terms = []
     i = 0
+    global LANG, GEO
     if (str(requests.get('https://trends.google.com/trends/api/dailytrends?hl=' + LANG + '&geo=' + GEO)) != "<Response [200]>"):
         LANG = "US"
         GEO = "US"

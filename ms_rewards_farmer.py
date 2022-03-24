@@ -223,6 +223,9 @@ def getCCodeLangAndOffset() -> tuple:
 def getGoogleTrends(numberOfwords: int) -> list:
     search_terms = []
     i = 0
+    if (str(requests.get('https://trends.google.com/trends/api/dailytrends?hl=' + LANG + '&geo=' + GEO)) != "<Response [200]>"):
+        LANG = "US"
+        GEO = "US"
     while len(search_terms) < numberOfwords :
         i += 1
         r = requests.get('https://trends.google.com/trends/api/dailytrends?hl=' + LANG + '&ed=' + str((date.today() - timedelta(days = i)).strftime('%Y%m%d')) + '&geo=' + GEO + '&ns=15')

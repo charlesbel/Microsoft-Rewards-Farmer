@@ -12,4 +12,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: test
-        run: echo "First test conect with runner"
+        run: pip install -r requirements.txt
+
+        

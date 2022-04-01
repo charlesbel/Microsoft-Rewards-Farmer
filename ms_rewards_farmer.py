@@ -29,6 +29,8 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
     options = Options()
     options.add_argument("user-agent=" + user_agent)
     options.add_argument('lang=' + LANG.split("-")[0])
+    options.addArguments("--no-sandbox");
+    options.addArguments("--disable-dev-shm-usage");
     if headless_mode :
         options.add_argument("--headless")
     options.add_argument('log-level=3')

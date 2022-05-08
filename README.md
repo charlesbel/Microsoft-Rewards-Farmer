@@ -41,7 +41,10 @@
         <li>Place the file in X:\Windows (X as your Windows disk letter)</li>
       </ul>
       <li>MacOS or Linux :<ul>
+        <li>Ubuntu</li>
         <li><pre>apt install chromium-chromedriver</pre></li>
+        <li>Debian</li>
+        <li><pre>apt install chromium-driver</pre></li>
         <li>or if you have brew : <pre>brew cask install chromedriver</pre></li>
       </ul>
     </ul></li>

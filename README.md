@@ -45,7 +45,7 @@ python MicrosoftRewardsBot -h -a user:pass user2:pass2
 * Headless Mode
 * Multi-Account Management
 * Command-line options
-* Github Actions
+* Workflow script
 
 ## Credits
 Credits to the original author of the repo : [charlesbel](https://github.com/charlesbel)

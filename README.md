@@ -29,7 +29,7 @@ If you want to add more than one account, the syntax is the following :
  ```
 python MicrosoftRewardsBot -h -a user:pass user2:pass2
  ```
- Where '-h' is for headless-mode and 'user:pass' is for 'Your Email:Your Password'.
+ Where `-h` is for headless-mode and `user:pass` is for `Your Email:Your Password`.
  
 ## Features
 * Bing searches (Desktop, Mobile and Edge) with User-Agents

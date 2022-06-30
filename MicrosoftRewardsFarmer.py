@@ -26,7 +26,7 @@ POINTS_COUNTER = 0
 BASE_URL = ""
 
 def argparser():
-    parser = argparse.ArgumentParser()
+	parser = argparse.ArgumentParser()
 	parser.add_argument("-a", "--account", nargs="*")
 	return parser.parse_args()
 

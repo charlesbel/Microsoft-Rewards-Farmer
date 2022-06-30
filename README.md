@@ -1,4 +1,4 @@
-# Microsoft Rewards Farmer
+# Microsoft Rewards Bot
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](LICENSE)
 [![Version](https://img.shields.io/badge/version-v0.1-blue.svg?style=flat)](#)
 

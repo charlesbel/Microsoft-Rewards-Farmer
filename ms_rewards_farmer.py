@@ -13,6 +13,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException, UnexpectedAlertPresentException, NoAlertPresentException
+from webdriver_manager.chrome import ChromeDriverManager
 
 # Define user-agents
 PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36 Edg/86.0.622.63'
@@ -32,7 +33,7 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
     if headless_mode :
         options.add_argument("--headless")
     options.add_argument('log-level=3')
-    chrome_browser_obj = webdriver.Chrome(options=options)
+    chrome_browser_obj = webdriver.Chrome(ChromeDriverManager().install(), options=options)
     return chrome_browser_obj
 
 # Define login function

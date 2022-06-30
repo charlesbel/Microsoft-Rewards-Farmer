@@ -28,6 +28,7 @@ BASE_URL = ""
 def argparser():
     parser = argparse.ArgumentParser()
     parser.add_argument("-a", "--account", nargs="*")
+    parser.add_argument("-h", "--headless", action="store_true")
     return parser.parse_args()
 
 # Define browser setup function
@@ -781,7 +782,7 @@ random.shuffle(ACCOUNTS)
 for account in ACCOUNTS:
 
     prYellow('********************' + account['username'] + '********************')
-    browser = browserSetup(True, PC_USER_AGENT)
+    browser = browserSetup(argparser().headless, PC_USER_AGENT)
     print('[LOGIN]', 'Logging-in...')
     login(browser, account['username'], account['password'])
     prGreen('[LOGIN] Logged-in successfully !')
@@ -820,7 +821,7 @@ for account in ACCOUNTS:
     browser.quit()
 
     if remainingSearchesM != 0:
-        browser = browserSetup(True, MOBILE_USER_AGENT)
+        browser = browserSetup(argparser().headless, MOBILE_USER_AGENT)
         print('[LOGIN]', 'Logging-in...')
         login(browser, account['username'], account['password'], True)
         print('[LOGIN]', 'Logged-in successfully !')

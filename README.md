@@ -5,12 +5,12 @@
 A simple bot that uses selenium to farm Microsoft Rewards written in Python.
 
 ## Installation
- * Install requirements with the following command :
+* Install requirements with the following command :
 ```
 pip install -r requirements.txt
 ```
- * Make sure you have Chrome installed.
- * Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end
+* Make sure you have Chrome installed.
+* Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end
 If you want to add more than one account, the syntax is the following :
 ```json
 {
@@ -22,15 +22,15 @@ If you want to add more than one account, the syntax is the following :
   "password": "Your Password"
 }
 ```
- * Run the script
+* Run the script
  
 ## Features
- * Bing searches (Desktop, Mobile and Edge) with User-Agents
- * Complete automatically the daily set
- * Complete automatically punch cards
- * Complete automatically the others promotions
- * Headless Mode
- * Multi-Account Management
+* Bing searches (Desktop, Mobile and Edge) with User-Agents
+* Complete automatically the daily set
+* Complete automatically punch cards
+* Complete automatically the others promotions
+* Headless Mode
+* Multi-Account Management
 
 ## Credits
 Credits to the original author of the repo : @charlesbel

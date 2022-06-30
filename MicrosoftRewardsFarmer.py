@@ -25,9 +25,10 @@ POINTS_COUNTER = 0
 
 BASE_URL = ""
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-a", "--account", nargs="*")
-args = parser.parse_args()
+def argparser():
+    parser = argparse.ArgumentParser()
+	parser.add_argument("-a", "--account", nargs="*")
+	return parser.parse_args()
 
 # Define browser setup function
 def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -> WebDriver:
@@ -754,9 +755,9 @@ prPurple("        by Charles Bel (@charlesbel)               version 2.0\n")
 
 LANG, GEO, TZ = getCCodeLangAndOffset()
 
-if args.account:
+if argparser().account:
     ACCOUNTS = []
-    for arg in args.account:
+    for arg in argparser().account:
         ACCOUNTS.append({"username": arg.split(":")[0], "password": arg.split(":")[1]})
 else:
     try:

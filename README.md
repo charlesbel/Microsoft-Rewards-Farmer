@@ -2,7 +2,6 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](LICENSE)
 [![Version](https://img.shields.io/badge/version-v0.1-blue.svg?style=flat)](#)
 
-<p align="center">
  ```
     _____  .__                                 _____  __   
   /     \ |__| ___________  ____  ___________/ ____\/  |_ 
@@ -23,7 +22,6 @@ ___________
  \___  /  (____  /__|  |__|_|  /\___  >__|                
      \/        \/            \/     \/                    
  ```
- </p>
 
 A simple bot that uses selenium to farm Microsoft Rewards written in Python.
 

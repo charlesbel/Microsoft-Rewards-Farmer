@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/badge/version-v0.1-blue.svg?style=flat)](#)
 
 
-<pre>
+<pre align="center">
     _____  .__                                 _____  __   
   /     \ |__| ___________  ____  ___________/ ____\/  |_ 
  /  \ /  \|  |/ ___\_  __ \/  _ \/  ___/  _ \   __\\   __\

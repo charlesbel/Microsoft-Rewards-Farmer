@@ -1,0 +1,19 @@
+name: Deploy
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: 0 0 * * *
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.0.2
+      - name: Set up Python
+        uses: actions/setup-python@v4.0.0
+        with:
+          python-version: 3.x
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+      - name: Run Script
+        run: python ms_rewards_farmer.py -a ${{ secrets.ACCOUNTS }}

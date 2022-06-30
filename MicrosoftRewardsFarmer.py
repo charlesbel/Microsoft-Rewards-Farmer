@@ -26,9 +26,9 @@ POINTS_COUNTER = 0
 BASE_URL = ""
 
 def argparser():
-	parser = argparse.ArgumentParser()
-	parser.add_argument("-a", "--account", nargs="*")
-	return parser.parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-a", "--account", nargs="*")
+    return parser.parse_args()
 
 # Define browser setup function
 def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -> WebDriver:

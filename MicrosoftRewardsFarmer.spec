@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['ms_rewards_farmer.py'],
+    ['MicrosoftRewardsFarmer.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -27,7 +27,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='ms_rewards_farmer',
+    name='MicrosoftRewardsFarmer',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

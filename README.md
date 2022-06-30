@@ -6,9 +6,9 @@ A simple bot that uses selenium to farm Microsoft Rewards written in Python.
 
 ## Installation
 * Install requirements with the following command :
-```
-pip install -r requirements.txt
-```
+  ```
+  pip install -r requirements.txt
+  ```
 * Make sure you have Chrome installed.
 * Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end
 If you want to add more than one account, the syntax is the following :

@@ -1,6 +1,5 @@
 <p align="center">
   <img src="https://forthebadge.com/images/badges/made-with-python.svg"/>
-  <img src="http://ForTheBadge.com/images/badges/built-by-developers.svg"/>
   <img src="http://ForTheBadge.com/images/badges/uses-git.svg"/>
   <img src="http://ForTheBadge.com/images/badges/built-with-love.svg"/>
 </p>
@@ -35,16 +34,6 @@
   <ul>
     <li>Install requirements with the following command : <pre>pip install -r requirements.txt</pre></li>
     <li>Make sure you have Chrome installed</li>
-    <li>Install ChromeDriver :<ul>
-      <li>Windows :<ul>
-        <li>Download Chrome WebDriver : https://chromedriver.chromium.org/downloads</li>
-        <li>Place the file in X:\Windows (X as your Windows disk letter)</li>
-      </ul>
-      <li>MacOS or Linux :<ul>
-        <li><pre>apt install chromium-chromedriver</pre></li>
-        <li>or if you have brew : <pre>brew cask install chromedriver</pre></li>
-      </ul>
-    </ul></li>
     <li>Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end<br/>
     If you want to add more than one account, the syntax is the following : <pre>[
     {

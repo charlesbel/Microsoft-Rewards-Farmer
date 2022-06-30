@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: Release
+    types: requested
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3.0.2
+    - name: Package Application
+      uses: JackMcKew/pyinstaller-action-windows@v0.1.2
+      with:
+        path: ./
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        name: ${{ github.workflow }}
+        path: dist/windows
+    - name: Delete Workflow Runs
+      uses: Mattraks/delete-workflow-runs@v2.0.3
+      with:
+        token: ${{ github.token }}
+        repository: ${{ github.repository }}
+        delete_workflow_pattern: ${{ github.workflow }}
+        retain_days: 0
+        keep_minimum_runs: 0

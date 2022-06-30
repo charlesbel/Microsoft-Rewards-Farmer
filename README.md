@@ -33,4 +33,4 @@ If you want to add more than one account, the syntax is the following :
 * Multi-Account Management
 
 ## Credits
-Credits to the original author of the repo : @charlesbel
+Credits to the original author of the repo : [charlesbel](https://github.com/charlesbel)

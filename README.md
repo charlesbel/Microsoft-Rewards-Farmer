@@ -2,7 +2,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green.svg?style=flat)](LICENSE)
 [![Version](https://img.shields.io/badge/version-v0.1-blue.svg?style=flat)](#)
 
-A simple bot that uses selenium to farm Microsoft Rewards written in Python.
+An automated solution for earning daily Microsoft Rewards points using Python and Selenium.
 
 ## Installation
 * Install requirements with the following command :

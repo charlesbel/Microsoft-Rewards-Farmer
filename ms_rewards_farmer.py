@@ -6,6 +6,7 @@ import random
 import urllib.parse
 import ipapi
 import os
+import argparse
 
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -22,6 +23,10 @@ MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 10; Pixel 3) AppleWebKit/537.36
 POINTS_COUNTER = 0
 
 BASE_URL = ""
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-a", "--account", nargs="*")
+args = parser.parse_args()
 
 # Define browser setup function
 def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -> WebDriver:
@@ -748,21 +753,26 @@ prPurple("        by Charles Bel (@charlesbel)               version 2.0\n")
 
 LANG, GEO, TZ = getCCodeLangAndOffset()
 
-try:
-    account_path = os.path.dirname(os.path.abspath(__file__)) + '/accounts.json'
-    ACCOUNTS = json.load(open(account_path, "r"))
-except FileNotFoundError:
-    with open(account_path, 'w') as f:
-        f.write(json.dumps([{
-            "username": "Your Email",
-            "password": "Your Password"
-        }], indent=4))
-    prPurple("""
-[ACCOUNT] Accounts credential file "accounts.json" created.
-[ACCOUNT] Edit with your credentials and save, then press any key to continue...
-    """)
-    input()
-    ACCOUNTS = json.load(open(account_path, "r"))
+if args.account:
+    ACCOUNTS = []
+    for arg in args.account:
+        ACCOUNTS.append({"username": arg.split(":")[0], "password": arg.split(":")[1]})
+else:
+    try:
+        account_path = os.path.dirname(os.path.abspath(__file__)) + '/accounts.json'
+        ACCOUNTS = json.load(open(account_path, "r"))
+    except FileNotFoundError:
+        with open(account_path, 'w') as f:
+            f.write(json.dumps([{
+                "username": "Your Email",
+                "password": "Your Password"
+            }], indent=4))
+        prPurple("""
+    [ACCOUNT] Accounts credential file "accounts.json" created.
+    [ACCOUNT] Edit with your credentials and save, then press any key to continue...
+        """)
+        input()
+        ACCOUNTS = json.load(open(account_path, "r"))
 
 random.shuffle(ACCOUNTS)
 

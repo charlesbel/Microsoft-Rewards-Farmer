@@ -1,0 +1,23 @@
+name: Release
+
+on:
+  push:
+    tags: v*
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@3.0.2
+    - name: Wait for Build
+      uses: lewagon/wait-on-check-action@v1.1.1
+      with:
+          ref: ${{ github.ref }}
+          check-name: build
+          repo-token: ${{ github.token }}
+    - name: Push Release
+      uses: marvinpinto/action-automatic-releases@vv1.2.1
+      with:
+        repo_token: ${{ github.token }}
+        prerelease: false
+        files: dist/windows

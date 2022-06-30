@@ -5,6 +5,7 @@
 An automated solution for earning daily Microsoft Rewards points using Python and Selenium.
 
 ## Installation
+### Using config file
 * Install requirements with the following command :
  ```
  pip install -r requirements.txt
@@ -23,6 +24,12 @@ If you want to add more than one account, the syntax is the following :
 }
 ```
 * Run the script
+### Using command-line
+* Run the the script with the following arguments :
+ ```
+python MicrosoftRewardsBot -h -a user:pass user2:pass2
+ ```
+ Where '-h' is for headless-mode and 'user:pass' is for 'Your Email:Your Password'.
  
 ## Features
 * Bing searches (Desktop, Mobile and Edge) with User-Agents

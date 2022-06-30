@@ -16,4 +16,4 @@ jobs:
       - name: Install Dependencies
         run: pip install -r requirements.txt
       - name: Run Script
-        run: python ms_rewards_farmer.py -a ${{ secrets.ACCOUNTS }}
+        run: python ms_rewards_farmer.py -h -a ${{ secrets.ACCOUNTS }}

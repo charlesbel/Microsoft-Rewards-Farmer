@@ -30,6 +30,10 @@ If you want to add more than one account, the syntax is the following :
 python MicrosoftRewardsBot -h -a user:pass user2:pass2
  ```
  Where `-h` is for headless-mode and `user:pass` is for `Your Email:Your Password`.
+### Using Github Actions
+* Fork the repo
+* Add `ACCOUNTS` secret, [More info](https://github.com/Azure/actions-workflow-samples/blob/master/assets/create-secrets-for-GitHub-workflows.md)
+* Run `Deploy` workflow
  
 ## Features
 * Bing searches (Desktop, Mobile and Edge) with User-Agents
@@ -38,6 +42,8 @@ python MicrosoftRewardsBot -h -a user:pass user2:pass2
 * Complete automatically the others promotions
 * Headless Mode
 * Multi-Account Management
+* Command-line options
+* Github Actions
 
 ## Credits
 Credits to the original author of the repo : [charlesbel](https://github.com/charlesbel)

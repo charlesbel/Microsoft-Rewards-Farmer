@@ -5,3 +5,5 @@ requests
 selenium
 urllib3
 ipapi
+webdriver_manager
+argparse

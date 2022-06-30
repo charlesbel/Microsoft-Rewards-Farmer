@@ -6,6 +6,7 @@ import random
 import urllib.parse
 import ipapi
 import os
+import argparse
 
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -13,6 +14,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException, UnexpectedAlertPresentException, NoAlertPresentException
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
 
 # Define user-agents
 PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36 Edg/86.0.622.63'
@@ -21,6 +24,12 @@ MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 10; Pixel 3) AppleWebKit/537.36
 POINTS_COUNTER = 0
 
 BASE_URL = ""
+
+def argparser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-a", "--account", nargs="*")
+    parser.add_argument("-h", "--headless", action="store_true")
+    return parser.parse_args()
 
 # Define browser setup function
 def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -> WebDriver:
@@ -32,7 +41,7 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
     if headless_mode :
         options.add_argument("--headless")
     options.add_argument('log-level=3')
-    chrome_browser_obj = webdriver.Chrome(options=options)
+    chrome_browser_obj = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
     return chrome_browser_obj
 
 # Define login function
@@ -747,28 +756,33 @@ prPurple("        by Charles Bel (@charlesbel)               version 2.0\n")
 
 LANG, GEO, TZ = getCCodeLangAndOffset()
 
-try:
-    account_path = os.path.dirname(os.path.abspath(__file__)) + '/accounts.json'
-    ACCOUNTS = json.load(open(account_path, "r"))
-except FileNotFoundError:
-    with open(account_path, 'w') as f:
-        f.write(json.dumps([{
-            "username": "Your Email",
-            "password": "Your Password"
-        }], indent=4))
-    prPurple("""
-[ACCOUNT] Accounts credential file "accounts.json" created.
-[ACCOUNT] Edit with your credentials and save, then press any key to continue...
-    """)
-    input()
-    ACCOUNTS = json.load(open(account_path, "r"))
+if argparser().account:
+    ACCOUNTS = []
+    for arg in argparser().account:
+        ACCOUNTS.append({"username": arg.split(":")[0], "password": arg.split(":")[1]})
+else:
+    try:
+        account_path = os.path.dirname(os.path.abspath(__file__)) + '/accounts.json'
+        ACCOUNTS = json.load(open(account_path, "r"))
+    except FileNotFoundError:
+        with open(account_path, 'w') as f:
+            f.write(json.dumps([{
+                "username": "Your Email",
+                "password": "Your Password"
+            }], indent=4))
+        prPurple("""
+    [ACCOUNT] Accounts credential file "accounts.json" created.
+    [ACCOUNT] Edit with your credentials and save, then press any key to continue...
+        """)
+        input()
+        ACCOUNTS = json.load(open(account_path, "r"))
 
 random.shuffle(ACCOUNTS)
 
 for account in ACCOUNTS:
 
     prYellow('********************' + account['username'] + '********************')
-    browser = browserSetup(True, PC_USER_AGENT)
+    browser = browserSetup(argparser().headless, PC_USER_AGENT)
     print('[LOGIN]', 'Logging-in...')
     login(browser, account['username'], account['password'])
     prGreen('[LOGIN] Logged-in successfully !')
@@ -807,7 +821,7 @@ for account in ACCOUNTS:
     browser.quit()
 
     if remainingSearchesM != 0:
-        browser = browserSetup(True, MOBILE_USER_AGENT)
+        browser = browserSetup(argparser().headless, MOBILE_USER_AGENT)
         print('[LOGIN]', 'Logging-in...')
         login(browser, account['username'], account['password'], True)
         print('[LOGIN]', 'Logged-in successfully !')

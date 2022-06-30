@@ -5,12 +5,14 @@
 An automated solution for earning daily Microsoft Rewards points using Python and Selenium.
 
 ## Installation
+
+### Using config file
+* Clone the repo
 * Install requirements with the following command :
  ```
  pip install -r requirements.txt
  ```
 * Make sure you have Chrome installed.
-### Using config file
 * Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end
 If you want to add more than one account, the syntax is the following :
 ```json

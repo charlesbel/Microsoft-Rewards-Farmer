@@ -6,6 +6,7 @@ import random
 import urllib.parse
 import ipapi
 import os
+import telebot
 
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -19,6 +20,7 @@ PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (K
 MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 10; Pixel 3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0. 3945.79 Mobile Safari/537.36'
 
 POINTS_COUNTER = 0
+TOTAL_POINTS_COUNTER = 0;
 
 BASE_URL = ""
 
@@ -727,6 +729,12 @@ def getRemainingSearches(browser: WebDriver):
         remainingMobile = int((targetMobile - progressMobile) / searchPoints)
     return remainingDesktop, remainingMobile
 
+def tele_msg(msg):
+    try:
+        bot.send_message(TELEGRAM['chat_id'], msg)
+    except:
+        print('', end='')
+
 def prRed(prt):
     print("\033[91m{}\033[00m".format(prt))
 def prGreen(prt):
@@ -735,6 +743,9 @@ def prPurple(prt):
     print("\033[95m{}\033[00m".format(prt))
 def prYellow(prt):
     print("\033[93m{}\033[00m".format(prt))
+
+
+LANG, GEO, TZ = getCCodeLangAndOffset()
 
 prRed("""
 ███╗   ███╗███████╗    ███████╗ █████╗ ██████╗ ███╗   ███╗███████╗██████╗ 
@@ -745,8 +756,8 @@ prRed("""
 ╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝""")
 prPurple("        by Charles Bel (@charlesbel)               version 2.0\n")
 
-LANG, GEO, TZ = getCCodeLangAndOffset()
-
+#### Load Accounts
+                 
 try:
     account_path = os.path.dirname(os.path.abspath(__file__)) + '/accounts.json'
     ACCOUNTS = json.load(open(account_path, "r"))
@@ -757,13 +768,35 @@ except FileNotFoundError:
             "password": "Your Password"
         }], indent=4))
     prPurple("""
-[ACCOUNT] Accounts credential file "accounts.json" created.
-[ACCOUNT] Edit with your credentials and save, then press any key to continue...
+             [ACCOUNT] Accounts credential file "accounts.json" created.
+             [ACCOUNT] Edit with your credentials and save, then press any key to continue...
     """)
     input()
     ACCOUNTS = json.load(open(account_path, "r"))
 
+#### Load Telegram info
+    
+try:
+    account_path = os.path.dirname(os.path.abspath(__file__)) + '/telegram.json'
+    TELEGRAM = json.load(open(account_path, "r"))
+except FileNotFoundError:
+    with open(account_path, 'w') as f:
+        f.write(json.dumps([{
+            "TOKEN": "Your Telegram API Token",
+            "chat_id": "Your Telegram Chat ID"
+        }], indent=4))
+    prPurple("""
+             [TELEGRAM] Telegram info file "telegram.json" created.
+             [TELEGRAM] If you want to use telegram bot, edit the file and save, then press any key to continue...
+    """)
+    input()
+    TELEGRAM = json.load(open(account_path, "r"))
+TELEGRAM = TELEGRAM[0]
+    
+accountIndex = 1
+bot = telebot.TeleBot(TELEGRAM['TOKEN'])
 random.shuffle(ACCOUNTS)
+tele_msg("Starting bot...")
 
 for account in ACCOUNTS:
 
@@ -818,3 +851,12 @@ for account in ACCOUNTS:
 
     prGreen('[POINTS] You have earned ' + str(POINTS_COUNTER - startingPoints) + ' points today !')
     prGreen('[POINTS] You are now at ' + str(POINTS_COUNTER) + ' points !\n')
+    tele_msg(str(accountIndex) + '/' + str(len(ACCOUNTS)) + ' ' + account['username'] + ' earned ' + str(POINTS_COUNTER - startingPoints) + ' today!\n\nNow have ' + str(POINTS_COUNTER) + ' points!')
+    TOTAL_POINTS_COUNTER += POINTS_COUNTER
+    accountIndex += 1
+
+TOTAL_POINTS_COUNTER = (format(TOTAL_POINTS_COUNTER, ',d'))
+TOTAL_POINTS_COUNTER = TOTAL_POINTS_COUNTER.replace(",", ".")
+
+prGreen("\nNow you have a total of: " + TOTAL_POINTS_COUNTER)
+tele_msg("Now you have a total of: " + TOTAL_POINTS_COUNTER)

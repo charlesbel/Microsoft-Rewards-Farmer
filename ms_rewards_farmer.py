@@ -39,23 +39,16 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
 def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
     # Access to bing.com
     browser.get('https://login.live.com/')
-    # Wait complete loading
-    waitUntilVisible(browser, By.ID, 'loginHeader', 10)
-    # Enter email
-    print('[LOGIN]', 'Writing email...')
-    browser.find_element(By.NAME, "loginfmt").send_keys(email)
-    # Click next
-    browser.find_element(By.ID, 'idSIButton9').click()
-    # Wait 2 seconds
-    time.sleep(2)
-    # Wait complete loading
-    waitUntilVisible(browser, By.ID, 'loginHeader', 10)
-    # Enter password
-    #browser.find_element(By.ID, "i0118").send_keys(pwd)
-    browser.execute_script("document.getElementById('i0118').value = '" + pwd + "';")
-    print('[LOGIN]', 'Writing password...')
-    # Click next
-    browser.find_element(By.ID, 'idSIButton9').click()
+    wait(1)   
+    print('[LOGIN] Writing email...')	
+    WebDriverWait(b, 100).until(ec.element_to_be_clickable((By.ID, "i0116"))).send_keys(gd(userid))
+    wait(1)
+    WebDriverWait(b, 100).until(ec.element_to_be_clickable((By.ID, "idSIButton9"))).click()
+    wait(1)
+    print('[LOGIN] Writing password...')
+    WebDriverWait(b, 100).until(ec.element_to_be_clickable((By.ID, "i0118"))).send_keys(gd(userid, "password"))
+    wait(1)
+    WebDriverWait(b, 100).until(ec.element_to_be_clickable((By.ID, "idSIButton9"))).click()
     # Wait 5 seconds
     time.sleep(5)
     # Click Security Check

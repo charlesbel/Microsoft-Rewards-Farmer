@@ -37,13 +37,14 @@
 ]
 ```
 
--How to Disable Headless mode to watch the script work. Comment out around line 41 and 42
+-How to Disable Headless mode to watch the script work:
+
+Comment out around line 41 and 42
 ```
 #if headless_mode : #comment out to disable headless mode (makes window visable)
 #options.add_argument("--headless")
 ```
 
 -How to run Script:
-
-Double clicking on ms_rewards_farmer.py
+	Double click on ms_rewards_farmer.py
 

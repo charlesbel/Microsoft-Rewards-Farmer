@@ -16,7 +16,9 @@
 
 -Open Microsoft-Rewards-Farmer-master, move requirements.txt to C:\Users\Alex
 
--Open command prompt. win + R>CMD, then type (without quotes): 'pip install -r requirements.txt' 	Press enter
+-Open command prompt. win + R>CMD
+type (without quotes): 'pip install -r requirements.txt'
+Press enter
 
 -Install Google Chrome.
 
@@ -37,6 +39,12 @@
         "password": "Your Password"
     }
 ]
+```
+
+-How to enable Rewards logger to create a txt file when you have more than 6500 points for a $5 gift card.
+```
+On line 30 remove the # infront of rewardsFile and change YourNameHere to your pc's Username
+To find your pc's user's name go to C:\Users
 ```
 
 -How to Disable Headless mode to watch the script work:

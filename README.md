@@ -41,7 +41,7 @@
 
 -How to Disable Headless mode to watch the script work:
 
-	Comment out around line 41 and 42
+Comment out line 41 and 42 by placing a # in front of each line.
 ```
 #if headless_mode : #comment out to disable headless mode (makes window visable)
 #options.add_argument("--headless")

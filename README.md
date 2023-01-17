@@ -44,5 +44,6 @@
 ```
 
 -How to run Script:
-Run the script by double clicking on ms_rewards_farmer.py
+
+Double clicking on ms_rewards_farmer.py
 

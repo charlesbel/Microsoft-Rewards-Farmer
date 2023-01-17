@@ -8,6 +8,7 @@
        by Charles Bel (@charlesbel)          version 2.0
 </pre>
 **How to Install:**
+```
 -Install zip from GitHub: https://github.com/charlesbel/Microsoft-Rewards-Farmer
 
 -Install Python https://www.python.org/downloads/
@@ -21,8 +22,9 @@
 
 -Install ChromeDriver from https://chromedriver.chromium.org/downloads
 	Place the file in X:\Windows (X as your Windows disk letter)
-
+```
 -Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end of the file name
+
 -If you want to add more than one account, the syntax is the following:
 ```
 [
@@ -39,12 +41,13 @@
 
 -How to Disable Headless mode to watch the script work:
 
-Comment out around line 41 and 42
+	Comment out around line 41 and 42
 ```
 #if headless_mode : #comment out to disable headless mode (makes window visable)
 #options.add_argument("--headless")
 ```
 
--How to run Script:
+-How to run Script:'
+
 	Double click on ms_rewards_farmer.py
 

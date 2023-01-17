@@ -24,6 +24,7 @@
 
 -Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end of the file name
 -If you want to add more than one account, the syntax is the following:
+```
 [
     {
         "username": "Your Email",
@@ -34,17 +35,7 @@
         "password": "Your Password"
     }
 ]
-
-
--How to Fix Mobile:
-Comment out around line 134-138 with three double quotes above and below 
-    """
-    #Refresh page
-    browser.get('https://bing.com/')
-    #Wait 5 seconds
-    time.sleep(10)
-    #Update Counter
-    """
+```
 
 -How to Disable Headless mode to watch the script work. Comment out around line 32 and 33
 #if headless_mode : #comment out to disable headless mode (makes window visable)

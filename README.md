@@ -55,7 +55,7 @@ Comment out line 41 and 42 by placing a # in front of each line.
 #options.add_argument("--headless")
 ```
 
--How to run Script:'
+-How to run Script:
 
 	Double click on ms_rewards_farmer.py
 

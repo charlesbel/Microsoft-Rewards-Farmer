@@ -351,8 +351,9 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
             else:
                 break
             searchesRemaining=(searchesRemaining-1)
-        totalTimeMobile = time.time() - totalMobileTimer
-        print('[INFO] Total Time Elapsed Doing Mobile Seaches : ' + time.strftime("%H:%M:%S", time.gmtime(totalTimeMobile)))
+        if isMobile: 
+            totalTimeMobile = time.time() - totalMobileTimer
+            print('[INFO] Total Time Elapsed Doing Mobile Seaches : ' + time.strftime("%H:%M:%S", time.gmtime(totalTimeMobile)))
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete '+ mobile +'Bing Searches.\n')
         time.sleep(random.randint(5, 9))

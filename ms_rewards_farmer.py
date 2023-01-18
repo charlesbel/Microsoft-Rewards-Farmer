@@ -26,7 +26,6 @@ ACCOUNT_COUNTER = 0
 REWARDS = 0
 FIRST_RUN = True
 FIRST_RUN_M = True
-
 #rewardsFile = 'C://Users//YourNameHere//Desktop//Microsoft.Rewards.Gift.Card.Info.txt' #change YourNameHere to your pc's Username and delete the # infront of rewardsFile 
 tempSleepTimer = random.randint(200, 300)
 
@@ -97,7 +96,7 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         print('[LOGIN]', 'Ensuring login on Bing...')
         time.sleep(2)
         if not isMobile:
-            checkBingLogin(browser, isMobile) #commented out this line to make mobileSearch work
+            checkBingLogin(browser, isMobile)
     except :
         prRed('\n[ERROR] A Login Error has Occured.\n')
         return
@@ -150,12 +149,12 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Check Bing Login.\n')
-    """
-    #Refresh page
-    browser.get('https://bing.com/')
-    #Wait 5 seconds
-    time.sleep(10)
-    """
+    if not isMobile:
+        #Refresh page
+        browser.get('https://bing.com/')
+        #Wait 5 seconds
+        time.sleep(10)
+    
     try :
     #Update Counter
         try:
@@ -329,6 +328,10 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
         i = 0
         searchesRemaining = numberOfSearches
         search_terms = getGoogleTrends(numberOfSearches)
+        if isMobile:
+            totalMobileTimer = time.time()
+            mobileTimer = time.time()
+            mobile=str("Mobile ")
         for word in search_terms :
             i += 1
             print('[BING]', str(i) + "/" + str(numberOfSearches))
@@ -337,7 +340,9 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
                 relatedTerms = getRelatedTerms(word)
                 for term in relatedTerms :
                     points = bingSearch(browser, term, isMobile)
-                    if isMobile and i>20 :
+                    timerMobileLimit = time.time() - mobileTimer
+                    if isMobile and timerMobileLimit>=900: #900=15 mins
+                        prRed('[Error] Mobile Searches Took Too Long.. Must Have Gotten Stuck !\n Re-trying Now... ')
                         break
                     if not points <= POINTS_COUNTER :
                         break
@@ -346,8 +351,16 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
             else:
                 break
             searchesRemaining=(searchesRemaining-1)
+        totalTimeMobile = time.time() - totalMobileTimer
+        print('[INFO] Total Time Elapsed Doing Mobile Seaches : ' + time.strftime("%H:%M:%S", time.gmtime(totalTimeMobile)))
     except:
-        prRed('\n[ERROR] An Error has Occured While Trying Complete Bing Searches.\n')
+        prRed('\n[ERROR] An Error has Occured While Trying to Complete '+ mobile +'Bing Searches.\n')
+        time.sleep(random.randint(5, 9))
+        browser.close()
+        time.sleep(2)
+        browser.switch_to.window(window_name = browser.window_handles[0])
+        time.sleep(2)
+
 def bingSearch(browser: WebDriver, word: str, isMobile: bool):
     try :
         browser.get('https://bing.com')
@@ -376,7 +389,12 @@ def bingSearch(browser: WebDriver, word: str, isMobile: bool):
             pass
         return points
     except:
-        prRed('\n[ERROR] An Error has Occured While Trying Complete Bing Search.\n')
+        prRed('\n[ERROR] An Error has Occured While Trying to Complete Bing Search.\n')
+        time.sleep(random.randint(5, 9))
+        browser.close()
+        time.sleep(2)
+        browser.switch_to.window(window_name = browser.window_handles[0])
+        time.sleep(2)
 
 def completePromotionalItems(browser: WebDriver):
     try :
@@ -395,6 +413,11 @@ def completePromotionalItems(browser: WebDriver):
             pass
     except:
         prRed('\n[ERROR] An Error has Occured While Trying Complete Promotional Items.\n')
+        time.sleep(random.randint(5, 9))
+        browser.close()
+        time.sleep(2)
+        browser.switch_to.window(window_name = browser.window_handles[0])
+        time.sleep(2)
 
 def completeDailySetSearch(browser: WebDriver, cardNumber: int):
     try :
@@ -409,6 +432,11 @@ def completeDailySetSearch(browser: WebDriver, cardNumber: int):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Daily Set Search.\n')
+        time.sleep(random.randint(5, 9))
+        browser.close()
+        time.sleep(2)
+        browser.switch_to.window(window_name = browser.window_handles[0])
+        time.sleep(2)
 
 def completeDailySetSurvey(browser: WebDriver, cardNumber: int):
     try :
@@ -425,6 +453,11 @@ def completeDailySetSurvey(browser: WebDriver, cardNumber: int):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Daily Set Survey.\n')
+        time.sleep(random.randint(5, 9))
+        browser.close()
+        time.sleep(2)
+        browser.switch_to.window(window_name = browser.window_handles[0])
+        time.sleep(2)
 
 def completeDailySetQuiz(browser: WebDriver, cardNumber: int):
     try :
@@ -480,6 +513,11 @@ def completeDailySetQuiz(browser: WebDriver, cardNumber: int):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Daily Set Quiz.\n')
+        time.sleep(random.randint(5, 9))
+        browser.close()
+        time.sleep(2)
+        browser.switch_to.window(window_name = browser.window_handles[0])
+        time.sleep(2)
 
 def completeDailySetVariableActivity(browser: WebDriver, cardNumber: int):
     try :
@@ -492,68 +530,53 @@ def completeDailySetVariableActivity(browser: WebDriver, cardNumber: int):
             browser.find_element(By.XPATH, '//*[@id="rqStartQuiz"]').click()
             waitUntilVisible(browser, By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 3)
         except (NoSuchElementException, TimeoutException):
-            #tests
             counter = str(browser.find_element(By.XPATH, '//*[@id="QuestionPane0"]/div[2]').get_attribute('innerHTML'))[:-1][1:]
-            try:
-                numberOfQuestions = max([int(s) for s in counter.split() if s.isdigit()])
-            except :
-                print('DailySetVariableActivity failed to find numberOfQuestions')
-                pass      
-            #added radomizer and for loop
+            numberOfQuestions = max([int(s) for s in counter.split() if s.isdigit()])          
             try :
                 counter = str(browser.find_element(By.XPATH, '//*[@id="QuestionPane0"]/div[2]').get_attribute('innerHTML'))[:-1][1:]
                 numberOfQuestions = (counter.split(" of ")[1])
-                print('numberOfQuestions='+str(numberOfQuestions)) #delete me test
-                for i in range(numberOfQuestions):
-                    browser.find_element(By.XPATH, '//*[@id="QuestionPane' + i + '"]/div[1]/div[2]/a[' + str(random.randint(1, 3)) + ']/div/div/div/span[1]/span').click()
+                for i in range(int(numberOfQuestions)):
+                    browser.find_element(By.XPATH, '//*[@id="QuestionPane' + str(i) + '"]/div[1]/div[2]/a[' + str(random.randint(1, 3)) + ']/div/div/div/span[1]/span').click()
                     time.sleep(2)
-                    browser.find_element(By.XPATH, '//*[@id="nextQuestionbtn' + i + '"]').click()
-                    time.sleep(2)
-                prRed('\n[Info] completeDailySetVariableActivity for loops completed\n') #delete me test
-            except :
-                prRed('\n[Error] completeDailySetVariableActivity for loops failed to run \n') #change or delete me test
-                try :
-                    browser.find_element(By.XPATH, '//*[@id="QuestionPane0"]/div[1]/div[2]/a[1]/div/div/div/span[1]/span').click()
-                    time.sleep(2)
-                    browser.find_element(By.XPATH, '//*[@id="nextQuestionbtn0"]').click()
-                    time.sleep(2)
-                    browser.find_element(By.XPATH, '//*[@id="QuestionPane1"]/div[1]/div[2]/a[1]/div/div/div/span[1]/span').click()
-                    time.sleep(2)
-                    browser.find_element(By.XPATH, '//*[@id="nextQuestionbtn1"]').click()
-                    time.sleep(2)
-                    browser.find_element(By.XPATH, '//*[@id="QuestionPane2"]/div[1]/div[2]/a[1]/div/div/div/span[1]/span').click()
-                    time.sleep(2)
-                    browser.find_element(By.XPATH, '//*[@id="nextQuestionbtn2"]').click()
-                    time.sleep(3)
-                    prRed('\n[Info] Hard Code Used\n') #delete me test
-                except (NoSuchElementException, TimeoutException):
-                    try:
-                        counter = str(browser.find_element(By.XPATH, '//*[@id="QuestionPane0"]/div[2]').get_attribute('innerHTML'))[:-1][1:]
-                        numberOfQuestions = max([int(s) for s in counter.split() if s.isdigit()])
-                        for question in range(numberOfQuestions):
-                            browser.execute_script('document.evaluate("//*[@id=\'QuestionPane' + str(question) + '\']/div[1]/div[2]/a[' + str(random.randint(1, 3)) + ']/div", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click()')
-                            time.sleep(5)
-                            browser.find_element(By.XPATH, '//*[@id="AnswerPane' + str(question) + '"]/div[1]/div[2]/div[4]/a/div/span/input').click()
-                            time.sleep(3)
+                    browser.find_element(By.XPATH, '//*[@id="nextQuestionbtn' + str(i) + '"]').click()
+                    time.sleep(4)
+            except (NoSuchElementException, TimeoutException):
+                prRed('\n[Error] completeDailySetVariableActivity \n') 
+                try:
+                    counter = str(browser.find_element(By.XPATH, '//*[@id="QuestionPane0"]/div[2]').get_attribute('innerHTML'))[:-1][1:]
+                    numberOfQuestions = max([int(s) for s in counter.split() if s.isdigit()])
+                    for question in range(numberOfQuestions):
+                        browser.execute_script('document.evaluate("//*[@id=\'QuestionPane' + str(question) + '\']/div[1]/div[2]/a[' + str(random.randint(1, 3)) + ']/div", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click()')
                         time.sleep(5)
-                        browser.close()
-                        time.sleep(2)
-                        browser.switch_to.window(window_name=browser.window_handles[0])
-                        time.sleep(2)
-                        return
-                    except NoSuchElementException:
-                        time.sleep(random.randint(5, 9))
-                        browser.close()
-                        time.sleep(2)
-                        browser.switch_to.window(window_name = browser.window_handles[0])
-                        time.sleep(2)
-                        return
-        time.sleep(3)
-        correctAnswer = browser.execute_script("return _w.rewardsQuizRenderInfo.correctAnswer")
-        if browser.find_element(By.ID, "rqAnswerOption0").get_attribute("data-option") == correctAnswer:
-            browser.find_element(By.ID, "rqAnswerOption0").click()
-        else :
-            browser.find_element(By.ID, "rqAnswerOption1").click()
+                        browser.find_element(By.XPATH, '//*[@id="AnswerPane' + str(question) + '"]/div[1]/div[2]/div[4]/a/div/span/input').click()
+                        time.sleep(3)
+                    time.sleep(5)
+                    browser.close()
+                    time.sleep(2)
+                    browser.switch_to.window(window_name=browser.window_handles[0])
+                    time.sleep(2)
+                    return
+                except NoSuchElementException:
+                    time.sleep(random.randint(5, 9))
+                    browser.close()
+                    time.sleep(2)
+                    browser.switch_to.window(window_name = browser.window_handles[0])
+                    time.sleep(2)
+                    return
+        try:
+            if browser.find_element(By.ID, "rqAnswerOption0").get_attribute("data-option") == correctAnswer:
+                browser.find_element(By.ID, "rqAnswerOption0").click()
+            else :
+                browser.find_element(By.ID, "rqAnswerOption1").click()
+                return
+            correctAnswer = browser.execute_script("return _w.rewardsQuizRenderInfo.correctAnswer")
+            time.sleep(3)
+            if browser.find_element(By.ID, "rqAnswerOption0").get_attribute("data-option") == correctAnswer:
+                browser.find_element(By.ID, "rqAnswerOption0").click()
+            else :
+                browser.find_element(By.ID, "rqAnswerOption1").click()
+        except :
+            pass
         time.sleep(10)
         browser.close()
         time.sleep(2)
@@ -561,6 +584,11 @@ def completeDailySetVariableActivity(browser: WebDriver, cardNumber: int):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Daily Set Variable Activity.\n')
+        time.sleep(random.randint(5, 9))
+        browser.close()
+        time.sleep(2)
+        browser.switch_to.window(window_name = browser.window_handles[0])
+        time.sleep(2)
 
 def completeDailySetThisOrThat(browser: WebDriver, cardNumber: int):
     try :
@@ -601,6 +629,11 @@ def completeDailySetThisOrThat(browser: WebDriver, cardNumber: int):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Daily Set This Or That.\n')
+        time.sleep(random.randint(5, 9))
+        browser.close()
+        time.sleep(2)
+        browser.switch_to.window(window_name = browser.window_handles[0])
+        time.sleep(2)
 
 def getDashboardData(browser: WebDriver) -> dict:
     try :
@@ -652,6 +685,11 @@ def completeDailySet(browser: WebDriver):
                 resetTabs(browser)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Daily Set.\n')
+        time.sleep(random.randint(5, 9))
+        browser.close()
+        time.sleep(2)
+        browser.switch_to.window(window_name = browser.window_handles[0])
+        time.sleep(2)
            
 def getAccountPoints(browser: WebDriver) -> int:
     try :
@@ -692,6 +730,11 @@ def completePunchCard(browser: WebDriver, url: str, childPromotions: dict):
                     time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Punch Card.\n')
+        time.sleep(random.randint(5, 9))
+        browser.close()
+        time.sleep(2)
+        browser.switch_to.window(window_name = browser.window_handles[0])
+        time.sleep(2)
 
 def completePunchCards(browser: WebDriver):
     try :
@@ -716,6 +759,11 @@ def completePunchCards(browser: WebDriver):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Punch Cards.\n')
+        time.sleep(random.randint(5, 9))
+        browser.close()
+        time.sleep(2)
+        browser.switch_to.window(window_name = browser.window_handles[0])
+        time.sleep(2)
 
 def completeMorePromotionSearch(browser: WebDriver, cardNumber: int):
     try :
@@ -729,6 +777,11 @@ def completeMorePromotionSearch(browser: WebDriver, cardNumber: int):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete More Promotion Search.\n')
+        time.sleep(random.randint(5, 9))
+        browser.close()
+        time.sleep(2)
+        browser.switch_to.window(window_name = browser.window_handles[0])
+        time.sleep(2)
 
 def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
     try :
@@ -773,6 +826,11 @@ def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete More Promotion Quiz.\n')
+        time.sleep(random.randint(5, 9))
+        browser.close()
+        time.sleep(2)
+        browser.switch_to.window(window_name = browser.window_handles[0])
+        time.sleep(2)
 
 def completeMorePromotionABC(browser: WebDriver, cardNumber: int):
     try :
@@ -799,6 +857,11 @@ def completeMorePromotionABC(browser: WebDriver, cardNumber: int):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete More Promotion ABC.\n')
+        time.sleep(random.randint(5, 9))
+        browser.close()
+        time.sleep(2)
+        browser.switch_to.window(window_name = browser.window_handles[0])
+        time.sleep(2)
 
 def completeMorePromotionThisOrThat(browser: WebDriver, cardNumber: int):
     try :
@@ -839,6 +902,11 @@ def completeMorePromotionThisOrThat(browser: WebDriver, cardNumber: int):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete More Promotion This Or That.\n')
+        time.sleep(random.randint(5, 9))
+        browser.close()
+        time.sleep(2)
+        browser.switch_to.window(window_name = browser.window_handles[0])
+        time.sleep(2)
 
 def completeMorePromotions(browser: WebDriver):
     try :
@@ -864,6 +932,11 @@ def completeMorePromotions(browser: WebDriver):
                 resetTabs(browser)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete More Promotions.\n')
+        time.sleep(random.randint(5, 9))
+        browser.close()
+        time.sleep(2)
+        browser.switch_to.window(window_name = browser.window_handles[0])
+        time.sleep(2)
 
 def getRemainingSearches(browser: WebDriver):
     try :
@@ -876,12 +949,9 @@ def getRemainingSearches(browser: WebDriver):
         targetDesktop = counters['pcSearch'][0]['pointProgressMax'] + counters['pcSearch'][1]['pointProgressMax']
         if targetDesktop == 50 : #Level 1 US
             searchPoints = 5
-        elif targetDesktop >= 150 : #Level 2 US
+        elif targetDesktop >= 170 : #Level 2 US
             searchPoints = 5
         remainingDesktop = int(((targetDesktop - progressDesktop) / searchPoints))
-        for i in range (10):
-            if remainingDesktop == 30 + i :
-                remainingDesktop = (remainingDesktop - i)
         remainingMobile = 0
         if dashboard['userStatus']['levelInfo']['activeLevel'] != "Level1":
             progressMobile = counters['mobileSearch'][0]['pointProgress']
@@ -938,7 +1008,7 @@ try:
         browser = browserSetup(True, PC_USER_AGENT)
         prGreen('[LOGIN] Logging-in as ' + account['username'] + " !")
         login(browser, account['username'], account['password'])
-        prGreen('[LOGIN] Logged-in successfully !')
+        prGreen('[LOGIN] Logged-in Successfully !')
         startingPoints = POINTS_COUNTER
         prGreen('[POINTS] You have ' + str(POINTS_COUNTER) + ' points on your account !')
 
@@ -975,25 +1045,34 @@ try:
         except :
             prRed('\n[ERROR] An Error has Occured While Completing More Promotion.\n')
         remainingSearches, remainingSearchesM = getRemainingSearches(browser)
-        retrySleep = random.randint(30, 60)
+        retrySleep = random.randint(60, 120)
+
         if remainingSearches != 0:
-            prPurple('[BING] Starting Desktop and Edge Bing searches...')
+            prPurple('[BING] Starting Desktop and Edge Bing Searches...')
             bingSearches(browser, remainingSearches)
-            prGreen('[BING] Finished Desktop and Edge Bing searches !\n')
+            i=1
+            browser.quit()
             try:
+                for x in range (1): #PC retry will run 2 times
                  if searchesRemaining != 0:
-                    prRed('remainingSearches='+str(remainingSearches))
+                    i=i+1
                     prRed('\n[Error] Desktop Seaches did not Complete !')
                     prYellow('[INFO] There are ' + str(remainingSearches) +' Searches Remaining !')
                     prYellow('[INFO] Retrying in ' + str(retrySleep) + 'seconds !')
                     time.sleep(retrySleep)
+                    browser = browserSetup(True, PC_USER_AGENT)
+                    prGreen('[LOGIN] Logging-in as ' + account['username'] + " !")
+                    login(browser, account['username'], account['password'], True)
+                    prGreen('[LOGIN] Logged-in Successfully !')
                     prPurple('[BING] Re-Trying Desktop and Edge Bing searches...')
                     bingSearches(browser, remainingSearches)
                     prGreen('[BING] Finished Re-Trying Desktop and Edge Bing searches !\n')
             except :
-                print('[ERROR] An Error has Occured While Re-Trying Desktop and edge Bing searches')
+                print('[ERROR] An Error has Occured While Re-Trying Desktop and Edge Bing Searches !')
+            if searchesRemaining == 0 and i==1:
+                prGreen('[BING] Finished Desktop and Edge Bing searches !')
             FIRST_RUN = False
-            browser.quit()
+
         if FIRST_RUN == True :
             prRed('[ERROR] ' + str(account['username']) + ' Has Already Earned PC Points today !\n')
             prYellow('[INFO] Waiting ' + str(tempSleepTimer) + 'seconds !')
@@ -1004,28 +1083,35 @@ try:
             browser = browserSetup(True, MOBILE_USER_AGENT)
             prGreen('[LOGIN] Logging-in as ' + account['username'] + " !")
             login(browser, account['username'], account['password'], True)
-            prGreen('[LOGIN] Logged-in successfully !')
+            prGreen('[LOGIN] Logged-in Successfully !')
             prPurple('[BING] Starting Mobile Bing searches...')
             bingSearches(browser, remainingSearchesM, True)
-            prGreen('[BING] Finished Mobile Bing searches !')
+            i=1
+            browser.quit()
             try:
-                if searchesRemaining != 0 : #retry mobile searches
-                    prRed('\n[Error] Mobile Seaches did not Complete !')
-                    prYellow('[INFO] There are ' + str(remainingSearches) +' Searches Remaining !')
-                    prYellow('[INFO] Retrying in ' + str(retrySleep) + 'seconds !')
-                    time.sleep(retrySleep)
-                    prPurple('[INFO] Re-Trying Mobile Account ' + str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + 'in ')
-                    browser = browserSetup(True, MOBILE_USER_AGENT)
-                    prGreen('[LOGIN] Logging-in as ' + account['username'] + " !")
-                    login(browser, account['username'], account['password'], True)
-                    prGreen('[LOGIN] Logged-in successfully !')
-                    prPurple('[BING] Starting Mobile Bing searches...')
-                    bingSearches(browser, remainingSearchesM, True)
-                    prGreen('[BING] Finished Re-Trying Mobile Bing searches !')
+                for x in range (2): #Mobile retry will run 2 times
+                    if searchesRemaining != 0 :
+                        i=i+1
+                        prRed('\n[Error] Mobile Seaches did not Complete !')
+                        prYellow('[INFO] There are ' + str(remainingSearches) +' Mobile Searches Remaining !')
+                        prYellow('[INFO] Retrying in ' + str(retrySleep) + ' seconds !')
+                        time.sleep(retrySleep)
+                        prPurple('[INFO] Re-Trying Mobile Account ' + str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)))
+                        browser = browserSetup(True, MOBILE_USER_AGENT)
+                        prGreen('[LOGIN] Logging-in as ' + account['username'] + " !")
+                        login(browser, account['username'], account['password'], True)
+                        prGreen('[LOGIN] Logged-in Successfully !')
+                        prPurple('[BING] Starting Mobile Bing searches...')
+                        bingSearches(browser, remainingSearchesM, True)
+                        prGreen('[BING] Finished Re-Trying Mobile Bing searches !')
+                        browser.quit()
             except :
-                print('[ERROR] An Error has Occured While Re-Trying Desktop and edge Bing searches')
+                print('[ERROR] An Error has Occured While Re-Trying Desktop and Edge Bing searches')
+            if searchesRemaining == 0 and i==1 :
+                prGreen('[BING] Finished Mobile Bing searches !')
             FIRST_RUN_M = False
             browser.quit()
+
         if FIRST_RUN_M == True :
             prRed('[ERROR] ' + str(account['username']) + ' Has Already Earned Mobile Points Today !\n')
             prYellow('[INFO] Waiting ' + str(tempSleepTimer) + 'seconds !')
@@ -1083,7 +1169,7 @@ finally :
     except :
         prRed('\n[ERROR] An Error has Occured While Displaying Rewards Earned.\n')
     TOTAL_TIME = time.time() - st
-    prYellow('[INFO] Total Time elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TOTAL_TIME)))
+    prYellow('[INFO] Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TOTAL_TIME)))
     prYellow('\n[INFO] Thank you for using Microsoft Rewards Farmer !\nPress Any Key to Exit !')
     input()
     prYellow('GoodBye :)\n')

@@ -5,9 +5,10 @@
 ██║╚██╔╝██║╚════██║    ██╔══╝  ██╔══██║██╔══██╗██║╚██╔╝██║██╔══╝  ██╔══██╗
 ██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
 ╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝
-       by Charles Bel (@charlesbel)          version 2.0
+         Created by  Charles Bel (@charlesbel)    Updated by Alex V (@Alexy_Galaxy)   version 3.0
 </pre>
 **How to Install:**
+```
 -Install zip from GitHub: https://github.com/charlesbel/Microsoft-Rewards-Farmer
 
 -Install Python https://www.python.org/downloads/
@@ -15,15 +16,19 @@
 
 -Open Microsoft-Rewards-Farmer-master, move requirements.txt to C:\Users\Alex
 
--Open command prompt. win + R>CMD, then type (without quotes): 'pip install -r requirements.txt' 	Press enter
+-Open command prompt. win + R>CMD
+type (without quotes): 'pip install -r requirements.txt'
+Press enter
 
 -Install Google Chrome.
 
 -Install ChromeDriver from https://chromedriver.chromium.org/downloads
 	Place the file in X:\Windows (X as your Windows disk letter)
-
+```
 -Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end of the file name
+
 -If you want to add more than one account, the syntax is the following:
+```
 [
     {
         "username": "Your Email",
@@ -34,23 +39,23 @@
         "password": "Your Password"
     }
 ]
+```
 
+-How to enable Rewards logger to create a txt file when you have more than 6500 points for a $5 gift card.
+```
+On line 30 remove the # infront of rewardsFile and change YourNameHere to your pc's Username
+To find your pc's user's name go to C:\Users
+```
 
--How to Fix Mobile:
-Comment out around line 134-138 with three double quotes above and below 
-    """
-    #Refresh page
-    browser.get('https://bing.com/')
-    #Wait 5 seconds
-    time.sleep(10)
-    #Update Counter
-    """
+-How to Disable Headless mode to watch the script work:
 
--How to Disable Headless mode to watch the script work. Comment out around line 32 and 33
+Comment out line 41 and 42 by placing a # in front of each line.
+```
 #if headless_mode : #comment out to disable headless mode (makes window visable)
 #options.add_argument("--headless")
-
+```
 
 -How to run Script:
-Run the script by double clicking on ms_rewards_farmer.py
+
+	Double click on ms_rewards_farmer.py
 

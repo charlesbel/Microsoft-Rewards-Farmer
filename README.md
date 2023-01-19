@@ -17,6 +17,9 @@
 -Open Microsoft-Rewards-Farmer-master, move requirements.txt to C:\Users\Alex
 
 -Open command prompt. win + R>CMD
+type (without quotes and with a space after): 'cd ' 
+drag the folder that contains requirements.txt into cmd
+hit enter
 type (without quotes): 'pip install -r requirements.txt'
 Press enter
 

@@ -44,6 +44,7 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
         return chrome_browser_obj
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Browser Setup.\n')
+        exit()
 
 # Define login function
 def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
@@ -149,6 +150,7 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Check Bing Login.\n')
+        exit()
     if not isMobile:
         #Refresh page
         browser.get('https://bing.com/')
@@ -215,6 +217,7 @@ def waitUntilQuestionRefresh(browser: WebDriver):
                         return False
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Wait Until Question Refresh.\n')
+        exit()
 
 def waitUntilQuizLoads(browser: WebDriver):
     try :
@@ -238,6 +241,7 @@ def waitUntilQuizLoads(browser: WebDriver):
                         return False
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Wait Until Quiz Loads.\n')
+        exit()
 
 def findBetween(s: str, first: str, last: str) -> str:
     try : 
@@ -249,6 +253,7 @@ def findBetween(s: str, first: str, last: str) -> str:
             return ""
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Find Between.\n')
+        exit()
 
 def getCCodeLangAndOffset() -> tuple:
     try :
@@ -262,6 +267,7 @@ def getCCodeLangAndOffset() -> tuple:
             return('fr-FR', 'FR', '120')
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Get CCode Lang And Offset.\n')
+        exit()
 
 def getGoogleTrends(numberOfwords: int) -> list:
     try :
@@ -280,6 +286,7 @@ def getGoogleTrends(numberOfwords: int) -> list:
         return search_terms
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Get Google Trends.\n')
+        exit()
 
 def getRelatedTerms(word: str) -> list:
     try :
@@ -290,6 +297,7 @@ def getRelatedTerms(word: str) -> list:
             return []
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Get Related Terms.\n')
+        exit()
 
 def resetTabs(browser: WebDriver):
     try :
@@ -310,6 +318,7 @@ def resetTabs(browser: WebDriver):
             browser.get(BASE_URL)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Reset Tabs.\n')
+        exit()
 
 def getAnswerCode(key: str, string: str) -> str:
     try :
@@ -320,6 +329,7 @@ def getAnswerCode(key: str, string: str) -> str:
         return str(t)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Get Answer Code.\n')
+        exit()
 
 def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = False):
     try :
@@ -328,10 +338,10 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
         i = 0
         searchesRemaining = numberOfSearches
         search_terms = getGoogleTrends(numberOfSearches)
+        totalTimer = time.time()
         if isMobile:
             totalMobileTimer = time.time()
             mobileTimer = time.time()
-            mobile=str("Mobile ")
         for word in search_terms :
             i += 1
             print('[BING]', str(i) + "/" + str(numberOfSearches))
@@ -341,7 +351,7 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
                 for term in relatedTerms :
                     points = bingSearch(browser, term, isMobile)
                     timerMobileLimit = time.time() - mobileTimer
-                    if isMobile and timerMobileLimit>=900: #900=15 mins
+                    if isMobile and timerMobileLimit>=1200: #1200=20 mins
                         prRed('[Error] Mobile Searches Took Too Long.. Must Have Gotten Stuck !\n Re-trying Now... ')
                         break
                     if not points <= POINTS_COUNTER :
@@ -353,14 +363,18 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
             searchesRemaining=(searchesRemaining-1)
         if isMobile: 
             totalTimeMobile = time.time() - totalMobileTimer
-            print('[INFO] Total Time Elapsed Doing Mobile Seaches : ' + time.strftime("%H:%M:%S", time.gmtime(totalTimeMobile)))
+            prYellow('[INFO] Mobile Seach Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(totalTimeMobile)))
+        else:
+            timeTotal = time.time()-totalTimer
+            prYellow('[INFO] PC Seach Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(timeTotal)))   
     except:
-        prRed('\n[ERROR] An Error has Occured While Trying to Complete '+ mobile +'Bing Searches.\n')
+        prRed('\n[ERROR] An Error has Occured While Trying to Complete Bing Searches.\n')
         time.sleep(random.randint(5, 9))
         browser.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
+        
 
 def bingSearch(browser: WebDriver, word: str, isMobile: bool):
     try :
@@ -369,7 +383,7 @@ def bingSearch(browser: WebDriver, word: str, isMobile: bool):
         searchbar = browser.find_element(By.ID, 'sb_form_q')
         searchbar.send_keys(word)
         searchbar.submit()
-        time.sleep(random.randint(10, 30))
+        time.sleep(random.randint(10, 15))
         points = 0
         try:
             if not isMobile:
@@ -948,9 +962,17 @@ def getRemainingSearches(browser: WebDriver):
             return 0, 0
         progressDesktop = counters['pcSearch'][0]['pointProgress'] + counters['pcSearch'][1]['pointProgress']
         targetDesktop = counters['pcSearch'][0]['pointProgressMax'] + counters['pcSearch'][1]['pointProgressMax']
-        if targetDesktop == 50 : #Level 1 US
+        if targetDesktop == 33 :
+            #Level 1 EU
+            searchPoints = 3
+        elif targetDesktop == 55 :
+            #Level 1 US
             searchPoints = 5
-        elif targetDesktop >= 170 : #Level 2 US
+        elif targetDesktop == 102 :
+            #Level 2 EU
+            searchPoints = 3
+        elif targetDesktop >= 170 :
+            #Level 2 US
             searchPoints = 5
         remainingDesktop = int(((targetDesktop - progressDesktop) / searchPoints))
         remainingMobile = 0
@@ -1090,7 +1112,7 @@ try:
             i=1
             browser.quit()
             try:
-                for x in range (2): #Mobile retry will run 2 times
+                for x in range (1): #Mobile retry will run 2 times
                     if searchesRemaining != 0 :
                         i=i+1
                         prRed('\n[Error] Mobile Seaches did not Complete !')
@@ -1142,11 +1164,11 @@ try:
             prRed('\n[ERROR] An Error has Occured When Trying to Create or Write to .txt !\n')
         try:
             if ACCOUNT_COUNTER < len(ACCOUNTS):
-                sleepTimer = random.randint(400, 600)
+                sleepTimer = random.randint(300, 500) #time waiting between mutliple accounts
                 prYellow('[INFO] Waiting ' + str(sleepTimer) +'seconds Until Continuing !\n')
                 time.sleep(sleepTimer)
             elif ACCOUNT_COUNTER < len(ACCOUNTS) and FIRST_RUN == True and FIRST_RUN_M == True:
-                longSleepTimer = random.randint(600, 800)
+                longSleepTimer = random.randint(600, 800) #time waiting between multiple accounts that already earned today's points
                 prRed('[ERROR] '+ str(account['username']) + ' Has Already Earned All Points Available Today')
                 prYellow('[INFO] Waiting ' + str(longSleepTimer) +'seconds Until Continuing !\n')
                 time.sleep(longSleepTimer)
@@ -1170,7 +1192,8 @@ finally :
     except :
         prRed('\n[ERROR] An Error has Occured While Displaying Rewards Earned.\n')
     TOTAL_TIME = time.time() - st
-    prYellow('[INFO] Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TOTAL_TIME)))
-    prYellow('\n[INFO] Thank you for using Microsoft Rewards Farmer !\nPress Any Key to Exit !')
+    prYellow('[INFO] MS Farmer Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TOTAL_TIME)))
+    prYellow('\n[INFO] Thank you for using Microsoft Rewards Farmer !')
+    prYellow('[INFO] Press Any Key to Exit !')
     input()
-    prYellow('GoodBye :)\n')
+    prYellow('Have a Good Day! GoodBye :)\n')

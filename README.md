@@ -30,6 +30,7 @@ Press enter
 ```
 -Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end of the file name
 
+
 -If you want to add more than one account, the syntax is the following:
 ```
 [
@@ -62,7 +63,7 @@ Comment out line 41 and 42 by placing a # in front of each line.
 
 	Double click on ms_rewards_farmer.py
 
--How to make Script automatically close
+-How to make Script automatically close:
 
 Comment out the second to last line of code
 (If you do this you will not know if there was any errors)

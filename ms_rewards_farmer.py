@@ -24,13 +24,14 @@ BASE_URL = ""
 POINTS_COUNTER = 0
 ACCOUNT_COUNTER = 0
 REWARDS = 0
-FIRST_RUN = False
+FIRST_RUN = True
 FIRST_RUN_M = True
 ACCOUNTISSUE = False
 RETRYING = False
 RETRYINGM = False
+COMPLETESEARCH = 0
 #rewardsFile = 'C://Users//YourNameHere//Desktop//Microsoft.Rewards.Gift.Card.Info.txt' #change YourNameHere to your pc's Username and delete the # infront of rewardsFile 
-tempSleepTimer = random.randint(60, 120) #set to 200-300secs - time waiting if account has no pc or mobile searches from start
+tempSleepTimer = random.randint(200, 300) #set to 200-300secs - time waiting if account has no pc or mobile searches from start
 longSleepTimer = random.randint(600, 800) #Set to 600-800secs - time waiting between multiple accounts that already earned today's points
 
 # Define browser setup function
@@ -41,8 +42,8 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
         options = Options()
         options.add_argument("user-agent=" + user_agent)
         options.add_argument('lang=' + LANG.split("-")[0])
-        if headless_mode : #comment out to disable headless mode (makes window visable) 
-            options.add_argument("--headless") #comment out to disable headless mode (makes window visable) 
+       #if headless_mode : #comment out to disable headless mode (makes window visable) 
+            #options.add_argument("--headless") #comment out to disable headless mode (makes window visable) 
         options.add_argument('log-level=3')
         chrome_browser_obj = webdriver.Chrome(options=options)
         return chrome_browser_obj
@@ -173,7 +174,7 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Check Bing Login.\n')
     '''    
-    if not isMobile: #test
+    if not isMobile: #test remove if nothing changes
         #Refresh page
         browser.get('https://bing.com/')
         #Wait 5 seconds
@@ -286,7 +287,7 @@ def getCCodeLangAndOffset() -> tuple:
             return('fr-FR', 'FR', '120')
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Get CCode Lang And Offset.\n')
-        
+
 def getGoogleTrends(numberOfwords: int) -> list:
     try :
         search_terms = []
@@ -350,7 +351,6 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
         global searchesRemaining
         i = 0
         searchesRemaining = numberOfSearches
-        completeSearch=0
         search_terms = getGoogleTrends(numberOfSearches)
         totalTimerSt = time.time()
         if isMobile:
@@ -358,11 +358,11 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
             mobileTimerSt = time.time()
         for word in search_terms :
             i = i + 1
-            completeSearch= completeSearch + 1
+            COMPLETESEARCH = COMPLETESEARCH + 1
             if RETRYING==False or RETRYINGM == False:
                 print('[BING]', str(i) + "/" + str(numberOfSearches))
             else :
-                print('[BING]', str(i+completeSearch) + "/" + str(numberOfSearches))
+                print('[BING]', str(i + COMPLETESEARCH) + "/" + str(numberOfSearches))
             points = bingSearch(browser, word, isMobile)
             if points <= POINTS_COUNTER :
                 relatedTerms = getRelatedTerms(word)
@@ -381,7 +381,6 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
             else:
                 break
             searchesRemaining = searchesRemaining-1
-            completeSearch = completeSearch + 1
         if isMobile: 
             TOTALMOBILETIMER = time.time() - timeMobileTotalSt
             prYellow('[INFO] Mobile Seach Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TOTALMOBILETIMER)))
@@ -393,7 +392,6 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
             prRed('\n[ERROR] An Error has Occured While Trying to Complete PC Bing Searches.\n')
         else:
             prRed('\n[ERROR] An Error has Occured While Trying to Complete Mobile Bing Searches.\n')
-            
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
@@ -405,6 +403,7 @@ def bingSearch(browser: WebDriver, word: str, isMobile: bool):
         time.sleep(2)
         searchbar = browser.find_element(By.ID, 'sb_form_q')
         searchbar.send_keys(word)
+        time.sleep(2)
         searchbar.submit()
         time.sleep(random.randint(10, 15))
         points = 0
@@ -787,12 +786,19 @@ def completeMorePromotionSearch(browser: WebDriver, cardNumber: int):
     try :
         browser.find_element(By.XPATH, '//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/a').click()
         time.sleep(2)
+        if browser.find_element(By.ID, 'legalTextBox'):
+            try:
+                browser.find_element(By.XPATH,'//*[@id="legalTextBox"]/div/div/div[3]/a/span/ng-transclude').click()
+                time.sleep(2)
+            except :
+                pass
         browser.switch_to.window(window_name = browser.window_handles[1])
         time.sleep(random.randint(13, 17))
         browser.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
+
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete More Promotion Search.\n')
         time.sleep(2)
@@ -1073,7 +1079,7 @@ try:
                 browser.quit()
                 try:
                     for x in range (2): #PC retry will run 2 times
-                        if searchesRemaining != 0 or remainingSearches == 0 :
+                        if searchesRemaining != 0 or remainingSearches != 0 :
                             i=i+1
                             RETRYING == True
                             prRed('\n[Error] Desktop Seaches did not Complete !')

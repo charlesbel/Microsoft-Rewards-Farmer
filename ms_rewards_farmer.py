@@ -1070,19 +1070,19 @@ try:
                 browser.get(BASE_URL)
             try :
                 print('[DAILY SET] Trying to complete the Daily Set...')
-                #completeDailySet(browser)
+                completeDailySet(browser)
                 prGreen('[DAILY SET] Completed the Daily Set successfully !')
             except :
                 prRed('\n[ERROR] An Error has Occured While Completing the Daily Set.\n')
             try :
                 print('[PUNCH CARDS] Trying to complete the Punch Cards...')
-                #completePunchCards(browser)
+                completePunchCards(browser)
                 prGreen('[PUNCH CARDS] Completed the Punch Cards successfully !')
             except :
                 prRed('\n[ERROR] An Error has Occured While Completing the Punch Cards.\n')
             try :
                 print('[MORE PROMO] Trying to complete More Promotions...')
-                #completeMorePromotions(browser)
+                completeMorePromotions(browser)
                 prGreen('[MORE PROMO] Completed More Promotions successfully !')
             except :
                 prRed('\n[ERROR] An Error has Occured While Completing More Promotion.\n')

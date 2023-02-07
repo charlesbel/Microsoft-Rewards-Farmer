@@ -43,7 +43,7 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
         options.add_argument("user-agent=" + user_agent)
         options.add_argument('lang=' + LANG.split("-")[0])
         if headless_mode : #comment out to disable headless mode (makes window visable) 
-            options.add_argument("--headless") #comment out to disable headless mode (makes window visable) 
+           options.add_argument("--headless") #comment out to disable headless mode (makes window visable) 
         options.add_argument('log-level=3')
         chrome_browser_obj = webdriver.Chrome(options=options)
         return chrome_browser_obj
@@ -1196,7 +1196,7 @@ try:
                 
                 if SEARCHESREMAINING == 0 :
                     prGreen('[BING] Finished Desktop and Edge Bing searches !')
-                    prGreen('\n[INFO] ' + str(account['username']) + ' Has Earned All Desktop Points today !')
+                    prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Desktop Points today !')
                     prYellow('[INFO] Waiting ' + str(tempSleepTimer) + 'seconds Until Continuing... \n')
                     time.sleep(tempSleepTimer)
                 else :
@@ -1253,14 +1253,17 @@ try:
                     except :
                         print('\n[ERROR] An Error has Occured While Re-Trying Desktop and Edge Bing searches. \n')
                     
-                    if SEARCHESREMAINING == 0  :
+                    if SEARCHESREMAINING == 0 and ACCOUNT_COUNTER == len(ACCOUNTS) :
                         prGreen('[BING] Finished Mobile Bing searches !')
-                        prGreen('\n[INFO] ' + str(account['username']) + ' Has Earned All Mobile Points Today !\n')
+                        prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Mobile Points Today \n!')
+                        break
+                    if SEARCHESREMAINING == 0 :
+                        prGreen('[BING] Finished Mobile Bing searches !')
+                        prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Mobile Points Today !')
                         prYellow('[INFO] Waiting ' + str(tempSleepTimer) + 'seconds Until Continuing... \n')
                         time.sleep(tempSleepTimer)
                     else :
                         prRed('\n[ERROR] ' + str(account['username']) + ' Has NOT Earned All Mobile Points Today !\n')
-                        print('[INFO] The Number of Searches Remaining are '+str(SEARCHESREMAINING))
                         prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
                         time.sleep(sleepTimer)
                 else :
@@ -1287,7 +1290,7 @@ try:
                     prYellow('\n[INFO] Waiting ' + str(longSleepTimer) +'seconds Until Continuing... !\n')
                     time.sleep(longSleepTimer)
                 elif ACCOUNT_COUNTER < len(ACCOUNTS):
-                    prYellow('\n[INFO] Waiting ' + str(sleepTimer) +'seconds Until Continuing... !\n')
+                    prYellow('[INFO] Waiting ' + str(sleepTimer) +'seconds Until Continuing... !\n')
                     time.sleep(sleepTimer)
             except:
                 prRed('\n[ERROR] An Error has Occured with First_run and First_runM SleepTimers !\n')
@@ -1339,7 +1342,7 @@ finally :
     except :
         prRed('\n[ERROR] An Error has Occured While Displaying Rewards Earned.\n')
     TOTAL_TIME = time.time() - st
-    prYellow('\n\n[INFO] MS Farmer Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TOTAL_TIME)))
+    prPurple('\n\n[INFO] MS Farmer Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TOTAL_TIME)))
     prYellow('\n[INFO] Thank you for using Microsoft Rewards Farmer !')
     prYellow('[INFO] Press Any Key to Exit !')
     input() #comment out or delete this line to auto exit when complete. ([WARNING] You will not see errors without this line !)

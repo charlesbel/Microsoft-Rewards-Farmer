@@ -138,8 +138,7 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         # Check Login
         print('[LOGIN]', 'Ensuring login on Bing...')
         time.sleep(random.randint(2, 3))
-        if not isMobile:
-            checkBingLogin(browser, isMobile)
+        checkBingLogin(browser, isMobile)
     except :
         if ACCOUNTISSUE == True:
             prRed('\n[WARNING] [FATAL ERROR] Check if Account is Locked, Suspended, or Banned.\n')
@@ -309,20 +308,22 @@ def getCCodeLangAndOffset() -> tuple:
         prRed('\n[ERROR] An Error has Occured While Trying to Get CCode Lang And Offset.\n')
 
 def getGoogleTrends(numberOfwords: int) -> list:
+    global SEARCH_TERMS
     try :
-        search_terms = []
+        SEARCH_TERMS = []
         i = 0
-        while len(search_terms) < numberOfwords :
+        while len(SEARCH_TERMS) < numberOfwords :
             i += 1
             r = requests.get('https://trends.google.com/trends/api/dailytrends?hl=' + LANG + '&ed=' + str((date.today() - timedelta(days = i)).strftime('%Y%m%d')) + '&geo=' + GEO + '&ns=15')
             google_trends = json.loads(r.text[6:])
             for topic in google_trends['default']['trendingSearchesDays'][0]['trendingSearches']:
-                search_terms.append(topic['title']['query'].lower())
+                SEARCH_TERMS.append(topic['title']['query'].lower())
                 for related_topic in topic['relatedQueries']:
-                    search_terms.append(related_topic['query'].lower())
-            search_terms = list(set(search_terms))
-        del search_terms[numberOfwords:(len(search_terms)+1)]
-        return search_terms
+                    SEARCH_TERMS.append(related_topic['query'].lower())
+            SEARCH_TERMS = list(set(SEARCH_TERMS))
+        del SEARCH_TERMS[numberOfwords:(len(SEARCH_TERMS)+1)]
+        return SEARCH_TERMS
+    #search_terms
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Get Google Trends.\n')
 
@@ -390,11 +391,12 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
                     time.sleep(2)
                     points = bingSearch(browser, term, isMobile)
                     time.sleep(2)
-                    timerMobileLimit = time.time() - mobileTimerSt
+                    if isMobile:
+                        timerMobileLimit = time.time() - mobileTimerSt
                     if numberOfSearches <= 1:
                         break
-                    if isMobile and timerMobileLimit>=1500: #1550=25 mins
-                        prRed('\n[Error] Mobile Searches Took Too longer than 25mins... Must Have Gotten Stuck !\n')
+                    if isMobile and timerMobileLimit>=1550: #1550=25.83 mins
+                        prRed('\n[Error] Mobile Searches Ran Longer Than 25mins... Must Have Gotten Stuck !\n')
                         print("There are " + SEARCHESREMAINING + " Searches Remaining !")
                         break
                     if not points <= POINTS_COUNTER :
@@ -410,6 +412,12 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
         else:
             TIMETOTAL = time.time()-totalTimerSt
             prYellow('[INFO] PC Seach Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TIMETOTAL)))   
+    except OSError as err:
+        prRed("\n[ERROR] OS error:", err,'\n')
+    except ValueError:
+        prRed("\n[ERROR] Could not convert data to an integer.\n")
+    except Exception as err:
+        prRed(f"\n[ERROR] Unexpected {err=}, {type(err)=}\n")
     except:
         if not isMobile:
             prRed('\n[ERROR] An Error has Occured While Trying to Complete PC Bing Searches.\n')
@@ -762,6 +770,18 @@ def completePunchCard(browser: WebDriver, url: str, childPromotions: dict):
                     time.sleep(2)
                     browser.switch_to.window(window_name = browser.window_handles[1])
                     time.sleep(8)
+                    try:#test
+                        maxQuestions1 = browser.execute_script("return _w.rewardsQuizRenderInfo.maxQuestions")#test
+                        print('maxQuestions='+str(maxQuestions1))#test
+                    except:#test
+                        print('[ERROR] completePunchCard maxQuestions1 did not work. Delete/change this code.')#test
+                        pass#test
+                    try:#test
+                        maxQuestions2 = browser.execute_script("return _w.rewardsQuizRenderInfo.maxQuestions")#test
+                        print('maxQuestions='+str(maxQuestions2))#test
+                    except:#test
+                        print('[ERROR] completePunchCard maxQuestions2 did not work. Delete/change this code.')#test
+                        pass#test
                     try:
                         try:
                             browser.find_element(By.XPATH, '//*[@id="rqStartQuiz"]').click()
@@ -1111,6 +1131,7 @@ try:
             else:
                 BASE_URL = 'https://account.microsoft.com/rewards'
                 browser.get(BASE_URL)
+            waitUntilVisible(browser, By.XPATH, '//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[1]/div/card-content/mee-rewards-daily-set-item-content/div', 10)
             try :
                 print('[DAILY SET] Trying to complete the Daily Set...')
                 completeDailySet(browser)
@@ -1138,12 +1159,12 @@ try:
                 i=1
                 FIRST_RUN = False
                 browser.quit()
-                try:#test retry desktop
+                try:
                     if SEARCHESREMAINING > 0 :
                         xy=2 #PC re-try will run 2 times
                         for x in range (xy): 
                             i=i+1
-                            RETRYING == True
+                            RETRYING = True
                             prRed('\n[Error] Desktop Seaches did not Complete !\n')
                             prYellow('[INFO] There are ' + str(SEARCHESREMAINING) +' Searches Remaining !')
                             prYellow('[INFO] Re-Trying in ' + str(retrySleep) + 'seconds !')
@@ -1207,7 +1228,7 @@ try:
                             xy=3 #Mobile re-try will run 3 times
                             for x in range (xy): 
                                 i=i+1
-                                RETRYINGM == True
+                                RETRYINGM = True
                                 prRed('\n[Error] Mobile Seaches did not Complete !\n')
                                 prYellow('[INFO] There are ' + str(SEARCHESREMAINING) + ' Mobile Searches Remaining !')
                                 prYellow('[INFO] Retrying in ' + str(retrySleep) + ' seconds !')

@@ -160,8 +160,12 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
             pass
         if isMobile:
             try:
-                time.sleep(2)
-                browser.find_element(By.ID, 'mHamburger').click()
+                time.sleep(4)
+                try:
+                    browser.find_element(By.XPATH,'//*[@id="mHamburger"]').click()
+                except:
+                    browser.find_element(By.ID, 'mHamburger').click()
+                    pass
             except:
                 try:
                     browser.find_element(By.ID, 'bnp_btn_accept').click()
@@ -1156,14 +1160,13 @@ try:
             if remainingSearches != 0:
                 prPurple('[BING] Starting Desktop and Edge Bing Searches...')
                 bingSearches(browser, remainingSearches)
-                i=1
+
                 FIRST_RUN = False
                 browser.quit()
                 try:
                     if SEARCHESREMAINING > 0 :
                         xy=2 #PC re-try will run 2 times
                         for x in range (xy): 
-                            i=i+1
                             RETRYING = True
                             prRed('\n[Error] Desktop Seaches did not Complete !\n')
                             prYellow('[INFO] There are ' + str(SEARCHESREMAINING) +' Searches Remaining !')
@@ -1182,13 +1185,13 @@ try:
                             time.sleep(1)
                             bingSearches(browser, SEARCHESREMAINING)
                             browser.quit()
-                        
+                
                     if SEARCHESREMAINING != 0 and RETRYING == True:
                         RETRYING = False
                         prRed('[ERROR] Re-Try Desktop Did Not Complete !')
                         prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
                         time.sleep(sleepTimer)
-                    if SEARCHESREMAINING == 0 and RETRYING == True and i >= 2:
+                    if SEARCHESREMAINING == 0 and RETRYING == True:
                         RETRYING = False
                         prGreen('[BING] Finished Re-Trying Desktop and Edge Bing searches !\n')
                 except :
@@ -1220,14 +1223,12 @@ try:
                     prGreen('[LOGIN] Logged-in Successfully !')
                     prPurple('[BING] Starting Mobile Bing searches...')
                     bingSearches(browser, remainingSearchesM, True)
-                    i=1
                     FIRST_RUN_M = False
                     browser.quit()
                     try:
                         if SEARCHESREMAINING > 0 :
                             xy=3 #Mobile re-try will run 3 times
                             for x in range (xy): 
-                                i=i+1
                                 RETRYINGM = True
                                 prRed('\n[Error] Mobile Seaches did not Complete !\n')
                                 prYellow('[INFO] There are ' + str(SEARCHESREMAINING) + ' Mobile Searches Remaining !')
@@ -1241,13 +1242,17 @@ try:
                                 prGreen('[LOGIN] Logged-in Successfully !')
                                 prPurple('[BING] Starting Mobile Bing searches...')
                                 bingSearches(browser, SEARCHESREMAINING, True)
+                                print('[TEST] SEARCHESREMAINING= '+str(SEARCHESREMAINING))
+                                print('[TEST] RETRYINGM= '+str(RETRYINGM))
                                 browser.quit()
+
+
                         if SEARCHESREMAINING != 0 and RETRYINGM == True:
                             RETRYINGM = False
                             prRed('[ERROR] Re-Try Mobile Did Not Complete !')
                             prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
                             time.sleep(sleepTimer)
-                        if SEARCHESREMAINING == 0 and RETRYINGM == True and i >= 2:
+                        if SEARCHESREMAINING == 0 and RETRYINGM == True:
                             RETRYINGM = False
                             prGreen('[BING] Finished Re-Trying Mobile Bing searches !')
                     except :
@@ -1255,7 +1260,7 @@ try:
                     
                     if SEARCHESREMAINING == 0 and ACCOUNT_COUNTER == len(ACCOUNTS) :
                         prGreen('[BING] Finished Mobile Bing searches !')
-                        prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Mobile Points Today \n!')
+                        prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Mobile Points Today !\n')
                         break
                     if SEARCHESREMAINING == 0 :
                         prGreen('[BING] Finished Mobile Bing searches !')
@@ -1263,11 +1268,11 @@ try:
                         prYellow('[INFO] Waiting ' + str(tempSleepTimer) + 'seconds Until Continuing... \n')
                         time.sleep(tempSleepTimer)
                     else :
-                        prRed('\n[ERROR] ' + str(account['username']) + ' Has NOT Earned All Mobile Points Today !\n')
+                        prRed('\n[ERROR] ' + str(account['username']) + ' Has NOT Earned All Mobile Points Today.\n')
                         prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
                         time.sleep(sleepTimer)
                 else :
-                    prRed('\n[INFO] '+ str(account['username']) + ' Has Already Earned All Mobile Points Available Today\n')
+                    prRed('\n[INFO] '+ str(account['username']) + ' Has Already Earned All Mobile Points Available Today !\n')
                     prYellow('\n[INFO] Waiting ' + str(longSleepTimer) +'seconds Until Continuing... !\n')
                     time.sleep(longSleepTimer)
             except:
@@ -1346,4 +1351,4 @@ finally :
     prYellow('\n[INFO] Thank you for using Microsoft Rewards Farmer !')
     prYellow('[INFO] Press Any Key to Exit !')
     input() #comment out or delete this line to auto exit when complete. ([WARNING] You will not see errors without this line !)
-    prYellow('[INFO] Have a Good Day! GoodBye :)\n')
+    prPurple('[INFO] Have a Good Day! GoodBye :)\n')

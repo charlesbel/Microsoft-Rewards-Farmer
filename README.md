@@ -8,12 +8,13 @@
          Created by  Charles Bel (@charlesbel)    Updated by Alex V (@Alexy_Galaxy)   version 3.0
 </pre>
 **How to Install:**
-```
--Install zip from GitHub: https://github.com/charlesbel/Microsoft-Rewards-Farmer
+
+-Install zip from GitHub: https://github.com/AlexyGalaxy/Microsoft-Rewards-Farmer
 
 -Install Python https://www.python.org/downloads/
 	Select custom installation, change nothing hit yes until installed. 
-
+-Windows
+```
 -Open Microsoft-Rewards-Farmer-master, move requirements.txt to C:\Users\Alex
 
 -Open command prompt. win + R>CMD
@@ -28,6 +29,15 @@ Press enter
 -Install ChromeDriver from https://chromedriver.chromium.org/downloads
 	Place the file in X:\Windows (X as your Windows disk letter)
 ```
+-MacOS or Linux :
+```
+apt install chromium-chromedriver
+```
+-or if you have brew :
+```
+brew cask install chromedriver
+```
+
 -Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end of the file name
 
 

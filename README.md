@@ -7,15 +7,21 @@
 ╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝
          Created by  Charles Bel (@charlesbel)    Updated by Alex V (@Alexy_Galaxy)   version 3.0
 </pre>
+- **Use at your own risk, Microsoft may ban your account (and I would not be responsible for it)** -
+-How to avoid getting banned
+```
+**Do not use more than one phone number per 5 accounts. **
+**Do not Redeem more than one reward per day**
+```
 **How to Install:**
 
 -Install zip from GitHub: https://github.com/AlexyGalaxy/Microsoft-Rewards-Farmer
 
 -Install Python https://www.python.org/downloads/
 	Select custom installation, change nothing hit yes until installed. 
--Windows
+
 ```
--Open Microsoft-Rewards-Farmer-master, move requirements.txt to C:\Users\Alex
+-Open Microsoft-Rewards-Farmer-master, move requirements.txt to C:\Users\YOURNAMEHERE
 
 -Open command prompt. win + R>CMD
 type (without quotes and with a space after): 'cd ' 
@@ -25,7 +31,9 @@ type (without quotes): 'pip install -r requirements.txt'
 Press enter
 
 -Install Google Chrome.
-
+```
+-Windows
+```
 -Install ChromeDriver from https://chromedriver.chromium.org/downloads
 	Place the file in X:\Windows (X as your Windows disk letter)
 ```

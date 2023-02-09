@@ -399,9 +399,10 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
                         timerMobileLimit = time.time() - mobileTimerSt
                     if numberOfSearches <= 1:
                         break
-                    if isMobile and timerMobileLimit>=1550: #1550=25.83 mins
+                    if isMobile and timerMobileLimit>=1800: #1800=30 mins
                         prRed('\n[Error] Mobile Searches Ran Longer Than 25mins... Must Have Gotten Stuck !\n')
-                        print("There are " + SEARCHESREMAINING + " Searches Remaining !")
+                        print("There are " + str(SEARCHESREMAINING) + " Searches Remaining !")
+                        print('[INFO] Mobile Seach Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(timerMobileLimit)))
                         break
                     if not points <= POINTS_COUNTER :
                         break
@@ -1186,14 +1187,17 @@ try:
                             bingSearches(browser, SEARCHESREMAINING)
                             browser.quit()
                 
-                    if SEARCHESREMAINING != 0 and RETRYING == True:
-                        RETRYING = False
-                        prRed('[ERROR] Re-Try Desktop Did Not Complete !')
-                        prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
-                        time.sleep(sleepTimer)
-                    if SEARCHESREMAINING == 0 and RETRYING == True:
-                        RETRYING = False
-                        prGreen('[BING] Finished Re-Trying Desktop and Edge Bing searches !\n')
+                    if RETRYINGM == True :
+                        if SEARCHESREMAINING == 0:
+                            RETRYING = False
+                            prGreen('[BING] Finished Re-Trying Desktop and Edge Bing searches !\n')
+                            break
+                        else:
+                            RETRYING = False
+                            prRed('[ERROR] Re-Try Desktop Did Not Complete !')
+                            prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
+                            time.sleep(sleepTimer)
+                   
                 except :
                     prRed('\n[ERROR] An Error has Occured While Re-Trying Desktop and Edge Bing Searches !\n')
                 
@@ -1242,35 +1246,37 @@ try:
                                 prGreen('[LOGIN] Logged-in Successfully !')
                                 prPurple('[BING] Starting Mobile Bing searches...')
                                 bingSearches(browser, SEARCHESREMAINING, True)
-                                print('[TEST] SEARCHESREMAINING= '+str(SEARCHESREMAINING))
-                                print('[TEST] RETRYINGM= '+str(RETRYINGM))
+                                print('[TEST] SEARCHESREMAINING= '+str(SEARCHESREMAINING)) #delete
+                                print('[TEST] RETRYINGM= '+str(RETRYINGM))#delete
                                 browser.quit()
 
-
-                        if SEARCHESREMAINING != 0 and RETRYINGM == True:
-                            RETRYINGM = False
-                            prRed('[ERROR] Re-Try Mobile Did Not Complete !')
-                            prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
-                            time.sleep(sleepTimer)
-                        if SEARCHESREMAINING == 0 and RETRYINGM == True:
-                            RETRYINGM = False
-                            prGreen('[BING] Finished Re-Trying Mobile Bing searches !')
+                        if RETRYINGM == True :
+                            if SEARCHESREMAINING == 0:
+                                RETRYINGM = False
+                                prGreen('[BING] Finished Re-Trying Mobile Bing searches !')
+                                break
+                            else :
+                                RETRYINGM = False
+                                prRed('[ERROR] Re-Try Mobile Did Not Complete !')
+                                prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
+                                time.sleep(sleepTimer)
+                        
                     except :
                         print('\n[ERROR] An Error has Occured While Re-Trying Desktop and Edge Bing searches. \n')
-                    
-                    if SEARCHESREMAINING == 0 and ACCOUNT_COUNTER == len(ACCOUNTS) :
-                        prGreen('[BING] Finished Mobile Bing searches !')
-                        prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Mobile Points Today !\n')
-                        break
-                    if SEARCHESREMAINING == 0 :
-                        prGreen('[BING] Finished Mobile Bing searches !')
-                        prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Mobile Points Today !')
-                        prYellow('[INFO] Waiting ' + str(tempSleepTimer) + 'seconds Until Continuing... \n')
-                        time.sleep(tempSleepTimer)
-                    else :
-                        prRed('\n[ERROR] ' + str(account['username']) + ' Has NOT Earned All Mobile Points Today.\n')
-                        prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
-                        time.sleep(sleepTimer)
+                    if ACCOUNT_COUNTER == len(ACCOUNTS):
+                        if SEARCHESREMAINING == 0 :
+                            prGreen('[BING] Finished Mobile Bing searches !')
+                            prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Mobile Points Today !\n')
+                    else: 
+                        if SEARCHESREMAINING == 0 :
+                            prGreen('[BING] Finished Mobile Bing searches !')
+                            prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Mobile Points Today !')
+                            prYellow('[INFO] Waiting ' + str(tempSleepTimer) + 'seconds Until Continuing... \n')
+                            time.sleep(tempSleepTimer)
+                        else :
+                            prRed('\n[ERROR] ' + str(account['username']) + ' Has NOT Earned All Mobile Points Today.\n')
+                            prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
+                            time.sleep(sleepTimer)
                 else :
                     prRed('\n[INFO] '+ str(account['username']) + ' Has Already Earned All Mobile Points Available Today !\n')
                     prYellow('\n[INFO] Waiting ' + str(longSleepTimer) +'seconds Until Continuing... !\n')
@@ -1341,9 +1347,9 @@ except :
 finally :
     try :
         if REWARDS == 1 :
-            prGreen('[INFO] You have ' + str(REWARDS) + ' Gift Card Waiting to be Redeemed !\n [INFO] Check Microsoft.Rewards.Gift.Card.Info.txt For More Information')
+            prGreen('[INFO] You have ' + str(REWARDS) + ' Gift Card Waiting to be Redeemed ! \n[INFO] Check Microsoft.Rewards.Gift.Card.Info.txt For More Information')
         elif REWARDS >= 1 :
-            prGreen('[INFO] You have ' + str(REWARDS) + ' Gift Cards Waiting to be Redeemed !\n [INFO] Check Microsoft.Rewards.Gift.Card.Info.txt For More Information\n')
+            prGreen('[INFO] You have ' + str(REWARDS) + ' Gift Cards Waiting to be Redeemed ! \n[INFO] Check Microsoft.Rewards.Gift.Card.Info.txt For More Information')
     except :
         prRed('\n[ERROR] An Error has Occured While Displaying Rewards Earned.\n')
     TOTAL_TIME = time.time() - st

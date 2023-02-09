@@ -88,7 +88,7 @@ Comment out line 41 and 42 by placing a # in front of each line.
 
 	Double click on ms_rewards_farmer.py
 
-<h2 align="center">-How to make Script automatically close:<h2
+<h2 align="center">How to make Script automatically close:<h2>
 
 -Comment out the second to last line of code
 (If you do this you will not know if there was any errors)

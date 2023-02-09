@@ -5,7 +5,7 @@
 ██║╚██╔╝██║╚════██║    ██╔══╝  ██╔══██║██╔══██╗██║╚██╔╝██║██╔══╝  ██╔══██╗
 ██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
 ╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝
-      Created by  Charles Bel (@charlesbel)    Updated by Alex V (@Alexy_Galaxy)   version 3.0
+      Created by  Charles Bel (@charlesbel)  Updated by Alex V (@Alexy_Galaxy)   version 3.0
 </pre>
 <h3 align="center">
 ```
@@ -90,7 +90,7 @@ Comment out line 41 and 42 by placing a # in front of each line.
 
 <h2 align="center">-How to make Script automatically close:<h2
 
-Comment out the second to last line of code
+-Comment out the second to last line of code
 (If you do this you will not know if there was any errors)
 ```
 #input()

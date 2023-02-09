@@ -8,16 +8,18 @@
       Created by  Charles Bel (@charlesbel)    Updated by Alex V (@Alexy_Galaxy)   version 3.0
 </pre>
 <h3 align="center">
-```diff
+```
 - Use at your own risk, Microsoft may ban your account (and I would not be responsible for it) -
 ```
 </h3>
 <h2 align="center">How to avoid getting banned</h2>
 
 ```
-**Do not use more than one phone number per 5 accounts. **
-**Do not Redeem more than one reward per day**
+Do not run more than one account at a time.
+Do not use more than one phone number per 5 accounts.
+Do not Redeem more than one reward per day.
 ```
+
 <h2 align="center">How to Install:</h2>
 
 -Install zip from GitHub: https://github.com/AlexyGalaxy/Microsoft-Rewards-Farmer

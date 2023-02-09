@@ -1347,9 +1347,9 @@ except :
 finally :
     try :
         if REWARDS == 1 :
-            prGreen('[INFO] You have ' + str(REWARDS) + ' Gift Card Waiting to be Redeemed ! \n[INFO] Check Microsoft.Rewards.Gift.Card.Info.txt For More Information')
+            prGreen('[INFO] You have ' + str(REWARDS) + ' Gift Card Waiting to be Redeemed ! \n[INFO] Check '+str(rewardsFile)+' For More Information')
         elif REWARDS >= 1 :
-            prGreen('[INFO] You have ' + str(REWARDS) + ' Gift Cards Waiting to be Redeemed ! \n[INFO] Check Microsoft.Rewards.Gift.Card.Info.txt For More Information')
+            prGreen('[INFO] You have ' + str(REWARDS) + ' Gift Cards Waiting to be Redeemed ! \n[INFO] Check '+str(rewardsFile)+' Microsoft.Rewards.Gift.Card.Info.txt'' For More Information')
     except :
         prRed('\n[ERROR] An Error has Occured While Displaying Rewards Earned.\n')
     TOTAL_TIME = time.time() - st

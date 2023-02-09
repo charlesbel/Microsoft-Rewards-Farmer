@@ -5,15 +5,20 @@
 ██║╚██╔╝██║╚════██║    ██╔══╝  ██╔══██║██╔══██╗██║╚██╔╝██║██╔══╝  ██╔══██╗
 ██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
 ╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝
-         Created by  Charles Bel (@charlesbel)    Updated by Alex V (@Alexy_Galaxy)   version 3.0
+      Created by  Charles Bel (@charlesbel)    Updated by Alex V (@Alexy_Galaxy)   version 3.0
 </pre>
-- **Use at your own risk, Microsoft may ban your account (and I would not be responsible for it)** -
--How to avoid getting banned
+<h3 align="center">
+```diff
+- Use at your own risk, Microsoft may ban your account (and I would not be responsible for it) -
+```
+</h3>
+<h2 align="center">How to avoid getting banned</h2>
+
 ```
 **Do not use more than one phone number per 5 accounts. **
 **Do not Redeem more than one reward per day**
 ```
-**How to Install:**
+<h2 align="center">How to Install:</h2>
 
 -Install zip from GitHub: https://github.com/AlexyGalaxy/Microsoft-Rewards-Farmer
 
@@ -77,11 +82,11 @@ Comment out line 41 and 42 by placing a # in front of each line.
 #options.add_argument("--headless")
 ```
 
--How to run Script:
+<h2 align="center">How to run Script:</h2>
 
 	Double click on ms_rewards_farmer.py
 
--How to make Script automatically close:
+<h2 align="center">-How to make Script automatically close:<h2
 
 Comment out the second to last line of code
 (If you do this you will not know if there was any errors)

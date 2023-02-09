@@ -91,6 +91,7 @@ Comment out line 41 and 42 by placing a # in front of each line.
 <h2 align="center">How to make Script automatically close:</h2>
 
 -Comment out the second to last line of code by placing a # at the start of the line
+
 (If you do this you will not know if there was any errors)
 ```
 #input()

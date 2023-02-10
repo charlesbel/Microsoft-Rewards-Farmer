@@ -32,7 +32,7 @@ RETRYINGM = False
 #rewardsFile = 'C://Users//YourNameHere//Desktop//Microsoft.Rewards.Gift.Card.Info.txt' #change YourNameHere to your pc's Username and delete the # infront of rewardsFile 
 tempSleepTimer = random.randint(200, 300) #set to 200-300secs - time waiting if account has no pc or mobile searches from start
 longSleepTimer = random.randint(600, 800) #Set to 600-800secs - time waiting between multiple accounts that already earned today's points
-sleepTimer = random.randint(200, 300) #Set to 300-500secs - time waiting between multiple accounts AFTER earning points for the account
+sleepTimer = random.randint(200, 400) #Set to 200-400secs - time waiting between multiple accounts AFTER earning points for the account
 
 # Define browser setup function
 def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -> WebDriver:
@@ -43,7 +43,7 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
         options.add_argument("user-agent=" + user_agent)
         options.add_argument('lang=' + LANG.split("-")[0])
         if headless_mode : #comment out to disable headless mode (makes window visable) 
-           options.add_argument("--headless") #comment out to disable headless mode (makes window visable) 
+            options.add_argument("--headless") #comment out to disable headless mode (makes window visable) 
         options.add_argument('log-level=3')
         chrome_browser_obj = webdriver.Chrome(options=options)
         return chrome_browser_obj
@@ -160,7 +160,7 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
             pass
         if isMobile:
             try:
-                time.sleep(4)
+                time.sleep(6)
                 try:
                     browser.find_element(By.XPATH,'//*[@id="mHamburger"]').click()
                 except:
@@ -193,8 +193,8 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
                 if str(browser.current_url).split('?')[0] == "https://account.live.com/proofs/Add":
                     input('[LOGIN] Please complete the Security Check on ' + browser.current_url)
                     exit()
-        #Wait 2 seconds
-        time.sleep(2)
+        #Wait 3 seconds
+        time.sleep(3)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Check Bing Login.\n')
     if not isMobile:
@@ -1124,7 +1124,6 @@ try:
             browser.get('https://account.microsoft.com/')
             time.sleep(2)
             waitUntilVisible(browser, By.XPATH, '//*[@id="navs"]/div/div/div/div/div[4]/a', 20)
-
             if browser.find_element(By.XPATH, '//*[@id="navs"]/div/div/div/div/div[4]/a').get_attribute('target') == '_blank':
                 BASE_URL = 'https://rewards.microsoft.com'
                 browser.find_element(By.XPATH, '//*[@id="navs"]/div/div/div/div/div[4]/a').click()
@@ -1161,7 +1160,6 @@ try:
             if remainingSearches != 0:
                 prPurple('[BING] Starting Desktop and Edge Bing Searches...')
                 bingSearches(browser, remainingSearches)
-
                 FIRST_RUN = False
                 browser.quit()
                 try:
@@ -1186,7 +1184,6 @@ try:
                             time.sleep(1)
                             bingSearches(browser, SEARCHESREMAINING)
                             browser.quit()
-                
                     if RETRYINGM == True :
                         if SEARCHESREMAINING == 0:
                             RETRYING = False
@@ -1197,7 +1194,6 @@ try:
                             prRed('[ERROR] Re-Try Desktop Did Not Complete !')
                             prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
                             time.sleep(sleepTimer)
-                   
                 except :
                     prRed('\n[ERROR] An Error has Occured While Re-Trying Desktop and Edge Bing Searches !\n')
                 
@@ -1212,6 +1208,7 @@ try:
                     prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
                     time.sleep(sleepTimer)    
             else :
+                browser.quit()
                 prRed('\n[ERROR] '+ str(account['username']) + ' Has Already Earned All Desktop Points Available Today\n')
                 prYellow('\n[INFO] Waiting ' + str(longSleepTimer) +'seconds Until Continuing... \n')
                 time.sleep(longSleepTimer)
@@ -1260,9 +1257,8 @@ try:
                                 prRed('[ERROR] Re-Try Mobile Did Not Complete !')
                                 prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
                                 time.sleep(sleepTimer)
-                        
                     except :
-                        print('\n[ERROR] An Error has Occured While Re-Trying Desktop and Edge Bing searches. \n')
+                        prRed('\n[ERROR] An Error has Occured While Re-Trying Desktop and Edge Bing searches. \n')
                     if ACCOUNT_COUNTER == len(ACCOUNTS):
                         if SEARCHESREMAINING == 0 :
                             prGreen('[BING] Finished Mobile Bing searches !')
@@ -1328,7 +1324,6 @@ try:
     else:
         prRed('\n[WARNING] [FATAL ERROR] Check if Account is Locked, Suspended, or Banned.\n')
         pass
-
 except OSError as err:
     prRed("\n[ERROR] OS error:", err,'\n')
 except ValueError:
@@ -1343,7 +1338,6 @@ except :
     else:
         prRed('\n[ERROR] An Error has Occured.\n')
     raise
-
 finally :
     try :
         if REWARDS == 1 :

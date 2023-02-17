@@ -8,7 +8,7 @@ import ipapi
 import os
 
 from selenium import webdriver
-from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.edge.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
@@ -25,14 +25,14 @@ BASE_URL = ""
 # Define browser setup function
 def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -> WebDriver:
     # Create Chrome browser
-    from selenium.webdriver.chrome.options import Options
+    from selenium.webdriver.edge.options import Options
     options = Options()
     options.add_argument("user-agent=" + user_agent)
     options.add_argument('lang=' + LANG.split("-")[0])
     if headless_mode :
         options.add_argument("--headless")
     options.add_argument('log-level=3')
-    chrome_browser_obj = webdriver.Chrome(options=options)
+    chrome_browser_obj = webdriver.Edge(options=options)
     return chrome_browser_obj
 
 # Define login function

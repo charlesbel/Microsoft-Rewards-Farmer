@@ -32,7 +32,7 @@ RETRYINGM = False
 CBL_COUNTER = 1
 #rewardsFile = 'C://Users//YourNameHere//Desktop//Microsoft.Rewards.Gift.Card.Info.txt' #change YourNameHere to your pc's Username and delete the # infront of rewardsFile 
 tempSleepTimer = random.randint(200, 300) #set to 200-300secs - time waiting if account has no pc or mobile searches from start
-longSleepTimer = random.randint(600, 800) #Set to 600-800secs - time waiting between multiple accounts that already earned today's points
+longSleepTimer = random.randint(500, 600) #Set to 500-600secs - time waiting between multiple accounts that already earned today's points
 sleepTimer = random.randint(200, 400) #Set to 200-400secs - time waiting between multiple accounts AFTER earning points for the account
 
 # Define browser setup function
@@ -251,7 +251,7 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
                 POINTS_COUNTER = int(browser.find_element(By.ID, 'fly_id_rc').get_attribute('innerHTML'))
                 CBL_RETRY = False
         except:
-            checkBingLogin(browser, isMobile)
+            pass
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Check Bing Login Desktop.\n')
 

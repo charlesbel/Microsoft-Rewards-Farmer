@@ -29,6 +29,7 @@ ACCOUNTISSUE = False
 COMPLETESEARCH = 0
 RETRYING = False
 RETRYINGM = False
+CBL_COUNTER = 1
 #rewardsFile = 'C://Users//YourNameHere//Desktop//Microsoft.Rewards.Gift.Card.Info.txt' #change YourNameHere to your pc's Username and delete the # infront of rewardsFile 
 tempSleepTimer = random.randint(200, 300) #set to 200-300secs - time waiting if account has no pc or mobile searches from start
 longSleepTimer = random.randint(600, 800) #Set to 600-800secs - time waiting between multiple accounts that already earned today's points
@@ -81,6 +82,7 @@ def accountIssue(browser: WebDriver):
 
 # Define login function
 def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
+    global CBL_RETRY #test
     try :
         # Access to bing.com
         browser.get('https://login.live.com/')
@@ -138,7 +140,14 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         # Check Login
         print('[LOGIN]', 'Ensuring login on Bing...')
         time.sleep(random.randint(2, 3))
-        checkBingLogin(browser, isMobile)
+        try:
+            CBL_RETRY = True
+            while CBL_RETRY == True :
+                for x in range (CBL_COUNTER) : #retry if cbl mobile takes longer than 3mins CBL_COUNTER =1 times
+                    checkBingLogin(browser, isMobile)
+        except:
+            print('[ERROR] An Error has Occured While Ensuring login on Bing...')
+            pass
     except :
         if ACCOUNTISSUE == True:
             prRed('\n[WARNING] [FATAL ERROR] Check if Account is Locked, Suspended, or Banned.\n')
@@ -147,7 +156,10 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
             prRed('\n[ERROR] A Login Error has Occured.\n')
 
 def checkBingLogin(browser: WebDriver, isMobile: bool = False):
+    global CBL_RETRY
+    global CBL_COUNTER
     try :
+        cBL_st = time.time()
         global POINTS_COUNTER
         #Access Bing.com
         browser.get('https://bing.com/')
@@ -193,10 +205,23 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
                 if str(browser.current_url).split('?')[0] == "https://account.live.com/proofs/Add":
                     input('[LOGIN] Please complete the Security Check on ' + browser.current_url)
                     exit()
+            if CBL_COUNTER > 1 :
+                prRed('[LOGIN] Retrying to Ensure Log in on Bing... Retry #'+str(CBL_COUNTER))
+            cBL_end = time.time() - cBL_st 
+            if cBL_end >= 180 : #180=3mins
+                prPurple('[INFO] CBL Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(cBL_end)))
+                CBL_COUNTER =CBL_COUNTER+1
+                CBL_RETRY = True
+                time.clear()
+            else :
+                CBL_RETRY = False
+                pass 
         #Wait 3 seconds
         time.sleep(3)
     except:
-        prRed('\n[ERROR] An Error has Occured While Trying to Check Bing Login.\n')
+        print('cbl mobile retry #'+str(CBL_COUNTER))
+        prPurple('[INFO] CBL Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(cBL_end))) #test
+        #prRed('\n[ERROR] An Error has Occured While Trying to Check Bing Login Mobile.\n')
     if not isMobile:
         #Refresh page
         browser.get('https://bing.com/')
@@ -226,7 +251,7 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
         except:
             checkBingLogin(browser, isMobile)
     except:
-        prRed('\n[ERROR] An Error has Occured While Trying to Check Bing Login Mobile.\n')
+        prRed('\n[ERROR] An Error has Occured While Trying to Check Bing Login Desktop.\n')
 
 def waitUntilVisible(browser: WebDriver, by_: By, selector: str, time_to_wait: int = 10):
     try :
@@ -1123,7 +1148,7 @@ try:
             time.sleep(2)
             browser.get('https://account.microsoft.com/')
             time.sleep(2)
-            waitUntilVisible(browser, By.XPATH, '//*[@id="navs"]/div/div/div/div/div[4]/a', 20)
+            waitUntilVisible(browser, By.XPATH, '//*[@id="navs"]/div/div/div/div/div[4]/a', 30)
             
             if browser.find_element(By.XPATH, '//*[@id="navs"]/div/div/div/div/div[4]/a').get_attribute('target') == '_blank':
                 BASE_URL = 'https://rewards.microsoft.com'

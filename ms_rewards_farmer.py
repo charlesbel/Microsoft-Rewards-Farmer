@@ -144,6 +144,8 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
             CBL_RETRY = True
             while CBL_RETRY == True :
                 for x in range (CBL_COUNTER) : #retry if cbl mobile takes longer than 3mins CBL_COUNTER =1 times
+                    if CBL_COUNTER > 1 :
+                        prRed('[LOGIN] Retrying to Ensure Log in on Bing... Retry #'+str(CBL_COUNTER))
                     checkBingLogin(browser, isMobile)
         except:
             print('[ERROR] An Error has Occured While Ensuring login on Bing...')
@@ -205,8 +207,6 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
                 if str(browser.current_url).split('?')[0] == "https://account.live.com/proofs/Add":
                     input('[LOGIN] Please complete the Security Check on ' + browser.current_url)
                     exit()
-            if CBL_COUNTER > 1 :
-                prRed('[LOGIN] Retrying to Ensure Log in on Bing... Retry #'+str(CBL_COUNTER))
             cBL_end = time.time() - cBL_st 
             if cBL_end >= 180 : #180=3mins
                 prPurple('[INFO] CBL Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(cBL_end)))
@@ -232,6 +232,7 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
         try:
             if not isMobile:
                 POINTS_COUNTER = int(browser.find_element(By.ID, 'id_rc').get_attribute('innerHTML'))
+                CBL_RETRY = False
             else:
                 try:
                     browser.find_element(By.ID, 'mHamburger').click()
@@ -248,6 +249,7 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
                     browser.find_element(By.ID, 'mHamburger').click()
                 time.sleep(2)
                 POINTS_COUNTER = int(browser.find_element(By.ID, 'fly_id_rc').get_attribute('innerHTML'))
+                CBL_RETRY = False
         except:
             checkBingLogin(browser, isMobile)
     except:

@@ -70,11 +70,20 @@ brew cask install chromedriver
 ]
 ```
 
--How to enable Rewards logger to create a txt file when you have more than 6500 points for a $5 gift card.
+
+-How to enable ErrLogger to obtain details on any Error that occurs
 ```
-On line 30 remove the # infront of rewardsFile and change YourNameHere to your pc's Username
+On line 40 delete the # from infront of rewardsErr and change YourNameHere to your pc's Username
 To find your pc's user's name go to C:\Users
 ```
+
+
+-How to enable Rewards logger to create a txt file when you have more than 6500 points for a $5 gift card.
+```
+On line 39 delete the # from infront of rewardsLog and change YourNameHere to your pc's Username
+To find your pc's user's name go to C:\Users
+```
+
 
 -How to Disable Headless mode to watch the script work:
 

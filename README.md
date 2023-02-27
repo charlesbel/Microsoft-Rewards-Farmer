@@ -8,9 +8,9 @@
       Created by  Charles Bel (@charlesbel)  Updated by Alex V (@Alexy_Galaxy)   version 3.0
 </pre>
 <h3 align="center">
-```
-- Use at your own risk, Microsoft may ban your account (and I would not be responsible for it) -
-```
+
+~ Use at your own risk, Microsoft may ban your account (and I would not be responsible for it) ~
+
 </h3>
 <h2 align="center">How to avoid getting banned</h2>
 
@@ -73,14 +73,14 @@ brew cask install chromedriver
 
 -How to enable ErrLogger to obtain details on any Error that occurs
 ```
-On line 40 delete the # from infront of rewardsErr and change YourNameHere to your pc's Username
+On line 20 delete the # from infront of rewardsErr and change YourNameHere to your pc's Username
 To find your pc's user's name go to C:\Users
 ```
 
 
 -How to enable Rewards logger to create a txt file when you have more than 6500 points for a $5 gift card.
 ```
-On line 39 delete the # from infront of rewardsLog and change YourNameHere to your pc's Username
+On line 21 delete the # from infront of rewardsLog and change YourNameHere to your pc's Username
 To find your pc's user's name go to C:\Users
 ```
 

@@ -17,12 +17,15 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotInteractableException, UnexpectedAlertPresentException, NoAlertPresentException
 
 # Define user-agents
+#rewardsErr ='C://Users//YourNameHere//Desktop//Microsoft.Rewards.Err.txt' #change YourNameHere to your pc's Username and delete the # infront of rewardsErr
+#rewardsLog = 'C://Users//YourNameHere//Desktop//Microsoft.Rewards.Log.txt' #change YourNameHere to your pc's Username and delete the # infront of rewardsLog 
 PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36 Edg/86.0.622.63'
 MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 10; Pixel 3) zAppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0. 3945.79 Mobile Safari/537.36'
 BASE_URL = ""
 POINTS_COUNTER = 0
 ACCOUNT_COUNTER = 0
-REWARDS = 0
+LOWREWARDS = 0
+HIGHREWARDS = 0
 FIRST_RUN = True
 FIRST_RUN_M = True
 ACCOUNTISSUE = False
@@ -36,8 +39,6 @@ FIRSTWRITE = True
 FAOPEN = False
 ACCOUNTSWREWARD = []
 ERRCOUNT = 0
-#rewardsLog = 'C://Users//YourNameHere//Desktop//Microsoft.Rewards.Log.txt' #change YourNameHere to your pc's Username and delete the # infront of rewardsLog 
-#rewardsErr ='C://Users//YourNameHere//Desktop//Microsoft.Rewards.Err.txt' #change YourNameHere to your pc's Username and delete the # infront of rewardsErr
 tempSleepTimer = random.randint(200, 300) #set to 200-300secs - time waiting if account has no pc or mobile searches from start
 longSleepTimer = random.randint(500, 600) #Set to 500-600secs - time waiting between multiple accounts that already earned today's points
 sleepTimer = random.randint(200, 400) #Set to 200-400secs - time waiting between multiple accounts AFTER earning points for the account
@@ -1273,7 +1274,7 @@ def lowReward() :
         global FIRSTWRITE
         global POINTS_COUNTER
         global ACCOUNTSWREWARD
-        global REWARDS
+        global LOWREWARDS
         if not path.exists(rewardsLog):
             f = open(rewardsLog, 'w')
             f.write('Microsoft Rewards Gift Card Info\n')
@@ -1285,7 +1286,7 @@ def lowReward() :
             prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt Created !')
             prPurple('[INFO] You have ' + str(POINTS_COUNTER) + ' points! Go Redeem a $5 Gift Card !')
             ACCOUNTSWREWARD.append(str(account['username']))
-            REWARDS+=1
+            LOWREWARDS+=1
         else :
             f = open(rewardsLog, 'a')
             if FIRSTWRITE == True :
@@ -1296,7 +1297,7 @@ def lowReward() :
             prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt eddited !')
             prPurple('[INFO] You have '+ str(POINTS_COUNTER) +' points! Go Redeem a $5 Gift Card !')
             ACCOUNTSWREWARD.append(str(account['username']))
-            REWARDS+=1
+            LOWREWARDS+=1
     except :
         prRed('\n[ERROR] An Error has Occured While Trying to Log Low Reward.\n')
         writeErr()
@@ -1308,7 +1309,7 @@ def highReward() :
         global FIRSTWRITE
         global POINTS_COUNTER
         global ACCOUNTSWREWARD
-        global REWARDS
+        global HIGHREWARDS
         if not path.exists(rewardsLog):
             f = open(rewardsLog, 'w')
             f.write('Microsoft Rewards Gift Card Info\n')
@@ -1320,7 +1321,7 @@ def highReward() :
             prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt Created !')
             prPurple('[INFO] You have ' + str(POINTS_COUNTER) + ' points! Go Redeem a $10 Gift Card !')
             ACCOUNTSWREWARD.append(str(account['username']))
-            REWARDS+=1
+            HIGHREWARDS+=1
         else :
             f = open(rewardsLog, 'a')
             if FIRSTWRITE == True :
@@ -1331,7 +1332,7 @@ def highReward() :
             prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt eddited !')
             prPurple('[INFO] You have '+ str(POINTS_COUNTER) +' points! Go Redeem a $10 Gift Card !')
             ACCOUNTSWREWARD.append(str(account['username']))
-            REWARDS+=1
+            HIGHREWARDS+=1
     except :
         prRed('\n[ERROR] An Error has Occured While Trying to Log High Reward.\n')
         writeErr()
@@ -1387,13 +1388,18 @@ def displayAccountIssue() :
         FA.close()
 
 def displayAccountWRewards() :
-    global REWARDS
+    global LOWREWARDS
+    global HIGHREWARDS
     global ACCOUNTSWREWARD
     try :
-        if REWARDS == 1 :
-            prGreen('[INFO] You have ' + str(REWARDS) + ' Gift Card Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD) + '  \n[INFO] Check '+str(rewardsLog)+' For More Information')
-        elif REWARDS >= 1 :
-            prGreen('[INFO] You have ' + str(REWARDS) + ' Gift Cards Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD) + ' \n\n[INFO] Check '+str(rewardsLog)+' Microsoft.Rewards.Gift.Card.Info.txt'' For More Information')
+        if LOWREWARDS == 1 :
+            prGreen('[INFO] You have ' + str(LOWREWARDS) + ' $5 Gift Card Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD) + '  \n[INFO] Check '+str(rewardsLog)+' For More Information')
+        elif LOWREWARDS >= 1 :
+            prGreen('[INFO] You have ' + str(LOWREWARDS) + ' $5 Gift Cards Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD) + ' \n\n[INFO] Check '+str(rewardsLog)+' Microsoft.Rewards.Gift.Card.Info.txt'' For More Information')
+        if HIGHREWARDS == 1 :
+            prGreen('[INFO] You have ' + str(LOWREWARDS) + ' $10 Gift Card Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD) + '  \n[INFO] Check '+str(rewardsLog)+' For More Information')
+        elif HIGHREWARDS >= 1 :
+            prGreen('[INFO] You have ' + str(LOWREWARDS) + ' $10 Gift Cards Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD) + ' \n\n[INFO] Check '+str(rewardsLog)+' Microsoft.Rewards.Gift.Card.Info.txt'' For More Information')
     except :
         prRed('\n[ERROR] An Error has Occured While Trying to Display Account W Rewards.\n')
         writeErr()

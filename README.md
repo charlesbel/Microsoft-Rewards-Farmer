@@ -8,9 +8,9 @@
       Created by  Charles Bel (@charlesbel)  Updated by Alex V (@Alexy_Galaxy)   version 3.0
 </pre>
 <h3 align="center">
-```diff
-- Use at your own risk, Microsoft may ban your account (and I would not be responsible for it) -
-```
+
+~ Use at your own risk, Microsoft may ban your account (and I would not be responsible for it) ~
+
 </h3>
 <h2 align="center">How to avoid getting banned</h2>
 

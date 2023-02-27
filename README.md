@@ -9,7 +9,9 @@
 </pre>
 <h3 align="center">
 ```
+
 - Use at your own risk, Microsoft may ban your account (and I would not be responsible for it) -
+
 ```
 </h3>
 <h2 align="center">How to avoid getting banned</h2>

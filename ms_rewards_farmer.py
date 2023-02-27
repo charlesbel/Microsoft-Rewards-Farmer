@@ -26,11 +26,18 @@ REWARDS = 0
 FIRST_RUN = True
 FIRST_RUN_M = True
 ACCOUNTISSUE = False
+SUSPEND = False
+LOCK = False
 COMPLETESEARCH = 0
 RETRYING = False
 RETRYINGM = False
 CBL_COUNTER = 1
-#rewardsFile = 'C://Users//YourNameHere//Desktop//Microsoft.Rewards.Gift.Card.Info.txt' #change YourNameHere to your pc's Username and delete the # infront of rewardsFile 
+FIRSTWRITE = True
+FAOPEN = False
+ACCOUNTSWREWARD = []
+ERRCOUNT = 0
+#rewardsLog = 'C://Users//YourNameHere//Desktop//Microsoft.Rewards.Log.txt' #change YourNameHere to your pc's Username and delete the # infront of rewardsLog 
+#rewardsErr ='C://Users//YourNameHere//Desktop//Microsoft.Rewards.Err.txt' #change YourNameHere to your pc's Username and delete the # infront of rewardsErr
 tempSleepTimer = random.randint(200, 300) #set to 200-300secs - time waiting if account has no pc or mobile searches from start
 longSleepTimer = random.randint(500, 600) #Set to 500-600secs - time waiting between multiple accounts that already earned today's points
 sleepTimer = random.randint(200, 400) #Set to 200-400secs - time waiting between multiple accounts AFTER earning points for the account
@@ -50,19 +57,32 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
         return chrome_browser_obj
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Browser Setup.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Complete Browser Setup.\n')
+        FA.close()
 
 def accountIssue(browser: WebDriver):
     global ACCOUNTISSUE
+    global SUSPEND
+    global LOCK
     try:
         locked = str(browser.find_element(By.XPATH, '//*[@id="StartHeader"]').get_attribute('innerHTML'))
         prRed('\n[WARNING] [FATAL ERROR] '+ str(locked) +' !\n')
         if locked.startswith('Your account has been') :
-            prRed('\n[WARNING] [FATAL ERROR] Check if Account is Locked, Suspended, or Banned.\n')
+            prRed('\n[WARNING] [FATAL ERROR] Check if Account is Locked.\n')
+            writeErr()
+            FA.write('\n[WARNING] [FATAL ERROR] Check if Account is Locked.')
+            FA.close()
             ACCOUNTISSUE = True
+            LOCK = True
             SystemExit
         elif locked.startswith('Votre compte a été') :
-            prRed('\n[WARNING] [FATAL ERROR] Check if Account is Locked, Suspended, or Banned.\n')
+            prRed('\n[WARNING] [FATAL ERROR] Check if Account is Locked.\n')
+            writeErr()
+            FA.write('\n[WARNING] [FATAL ERROR] Check if Account is Locked.')
+            FA.close()
             ACCOUNTISSUE = True
+            LOCK = True
             SystemExit
     except:
         pass
@@ -70,19 +90,27 @@ def accountIssue(browser: WebDriver):
         Suspended = str(browser.find_element(By.XPATH, '//*[@id="error"]/h1').get_attribute('innerHTML'))
         prRed('\n[WARNING] [FATAL ERROR] '+ str(Suspended) +' !\n')
         if Suspended.startswith('Uh oh, it appears') :
-            prRed('\n[WARNING] [FATAL ERROR] Check if Account is Locked, Suspended, or Banned.\n')
+            prRed('\n[WARNING] [FATAL ERROR] Check if Account is Suspended or Banned.\n')
+            writeErr()
+            FA.write('\n[WARNING] [FATAL ERROR] Check if Account is Locked.')
+            FA.close()
             ACCOUNTISSUE = True
+            SUSPEND = True
             SystemExit
         elif Suspended.startswith('Oh oh, il semble') :
-            prRed('\n[WARNING] [FATAL ERROR] Check if Account is Locked, Suspended, or Banned.\n')
+            prRed('\n[WARNING] [FATAL ERROR] Check if Account is Suspended or Banned.\n')
+            writeErr()
+            FA.write('\n[WARNING] [FATAL ERROR] Check if Account is Locked.')
+            FA.close()
             ACCOUNTISSUE = True
+            SUSPEND = True
             SystemExit
     except:
         return
 
 # Define login function
 def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
-    global CBL_RETRY #test
+    global CBL_RETRY
     try :
         # Access to bing.com
         browser.get('https://login.live.com/')
@@ -149,6 +177,9 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
                     checkBingLogin(browser, isMobile)
         except:
             print('[ERROR] An Error has Occured While Ensuring login on Bing...')
+            writeErr()
+            FA.write('[ERROR] An Error has Occured While Ensuring login on Bing...')
+            FA.close()
             pass
     except :
         if ACCOUNTISSUE == True:
@@ -156,6 +187,9 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
             pass
         else:
             prRed('\n[ERROR] A Login Error has Occured.\n')
+            writeErr()
+            FA.write('\n[ERROR] A Login Error has Occured.')
+            FA.close()
 
 def checkBingLogin(browser: WebDriver, isMobile: bool = False):
     global CBL_RETRY
@@ -172,56 +206,63 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
             browser.find_element(By.ID, 'bnp_btn_accept').click()
         except:
             pass
-        if isMobile:
-            try:
-                time.sleep(6)
+        try :
+            if isMobile:
                 try:
-                    browser.find_element(By.XPATH,'//*[@id="mHamburger"]').click()
+                    time.sleep(6)
+                    try:
+                        browser.find_element(By.XPATH,'//*[@id="mHamburger"]').click()
+                    except:
+                        browser.find_element(By.ID, 'mHamburger').click()
+                        pass
                 except:
-                    browser.find_element(By.ID, 'mHamburger').click()
-                    pass
-            except:
+                    try:
+                        browser.find_element(By.ID, 'bnp_btn_accept').click()
+                    except:
+                        pass
+                    try:
+                        browser.find_element(By.ID, 'bnp_ttc_close').click()
+                    except:
+                        pass
+                    time.sleep(2)
+                    try:
+                        browser.find_element(By.ID, 'mHamburger').click()
+                    except:
+                        pass
                 try:
-                    browser.find_element(By.ID, 'bnp_btn_accept').click()
+                    time.sleep(2)
+                    browser.find_element(By.ID, 'HBSignIn').click()
                 except:
                     pass
                 try:
-                    browser.find_element(By.ID, 'bnp_ttc_close').click()
+                    time.sleep(2)
+                    browser.find_element(By.ID, 'iShowSkip').click()
+                    time.sleep(3)
                 except:
-                    pass
-                time.sleep(2)
-                try:
-                    browser.find_element(By.ID, 'mHamburger').click()
-                except:
-                    pass
-            try:
-                time.sleep(2)
-                browser.find_element(By.ID, 'HBSignIn').click()
-            except:
-                pass
-            try:
-                time.sleep(2)
-                browser.find_element(By.ID, 'iShowSkip').click()
-                time.sleep(3)
-            except:
-                if str(browser.current_url).split('?')[0] == "https://account.live.com/proofs/Add":
-                    input('[LOGIN] Please complete the Security Check on ' + browser.current_url)
-                    exit()
-            cBL_end = time.time() - cBL_st 
-            if cBL_end >= 180 : #180=3mins
-                prPurple('[INFO] CBL Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(cBL_end)))
-                CBL_COUNTER =CBL_COUNTER+1
-                CBL_RETRY = True
-                time.clear()
-            else :
-                CBL_RETRY = False
-                pass 
-        #Wait 3 seconds
-        time.sleep(3)
+                    if str(browser.current_url).split('?')[0] == "https://account.live.com/proofs/Add":
+                        input('[LOGIN] Please complete the Security Check on ' + browser.current_url)
+                        exit()
+                cBL_end = time.time() - cBL_st 
+                if cBL_end >= 180 : #180=3mins
+                    prPurple('[INFO] CBL Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(cBL_end)))
+                    CBL_COUNTER =CBL_COUNTER+1
+                    CBL_RETRY = True
+                    time.clear()
+                else :
+                    CBL_RETRY = False
+                    pass 
+            #Wait 3 seconds
+            time.sleep(3)
+        except:
+            prRed('\n[ERROR] An Error has Occured While Trying to Check Bing Login Mobile.\n')
+            writeErr()
+            FA.write('\n[ERROR] An Error has Occured While Trying to Check Bing Login Mobile.')
+            FA.close()
     except:
-        print('cbl mobile retry #'+str(CBL_COUNTER))
-        prPurple('[INFO] CBL Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(cBL_end))) #test
-        #prRed('\n[ERROR] An Error has Occured While Trying to Check Bing Login Mobile.\n')
+        prRed('\n[ERROR] An Error has Occured While Trying to Check Bing Login Desktop.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Check Bing Login Desktop.')
+        FA.close()
     if not isMobile:
         #Refresh page
         browser.get('https://bing.com/')
@@ -253,7 +294,10 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
         except:
             pass
     except:
-        prRed('\n[ERROR] An Error has Occured While Trying to Check Bing Login Desktop.\n')
+        prRed('\n[ERROR] An Error has Occured While Trying to Update Counter.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Update Counterp.')
+        FA.close()
 
 def waitUntilVisible(browser: WebDriver, by_: By, selector: str, time_to_wait: int = 10):
     try :
@@ -261,12 +305,18 @@ def waitUntilVisible(browser: WebDriver, by_: By, selector: str, time_to_wait: i
         WebDriverWait(browser, time_to_wait).until(ec.visibility_of_element_located((by_, selector)))
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Wait Until Visible.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Wait Until Visible.')
+        FA.close()
 
 def waitUntilClickable(browser: WebDriver, by_: By, selector: str, time_to_wait: int = 10):
     try :
         WebDriverWait(browser, time_to_wait).until(ec.element_to_be_clickable((by_, selector)))
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Wait Until Clickable.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Wait Until Clickable.')
+        FA.close()
 
 def waitUntilQuestionRefresh(browser: WebDriver):
     try :
@@ -290,6 +340,9 @@ def waitUntilQuestionRefresh(browser: WebDriver):
                         return False
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Wait Until Question Refresh.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Wait Until Question Refresh.')
+        FA.close()
 
 def waitUntilQuizLoads(browser: WebDriver):
     try :
@@ -313,6 +366,9 @@ def waitUntilQuizLoads(browser: WebDriver):
                         return False
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Wait Until Quiz Loads.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Wait Until Quiz Loads.')
+        FA.close() 
 
 def findBetween(s: str, first: str, last: str) -> str:
     try : 
@@ -324,6 +380,9 @@ def findBetween(s: str, first: str, last: str) -> str:
             return ""
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Find Between.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Complete Find Between.')
+        FA.close()
 
 def getCCodeLangAndOffset() -> tuple:
     try :
@@ -337,6 +396,9 @@ def getCCodeLangAndOffset() -> tuple:
             return('fr-FR', 'FR', '120')
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Get CCode Lang And Offset.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Get CCode Lang And Offset.')
+        FA.close()
 
 def getGoogleTrends(numberOfwords: int) -> list:
     global SEARCH_TERMS
@@ -357,6 +419,9 @@ def getGoogleTrends(numberOfwords: int) -> list:
     #search_terms
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Get Google Trends.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Get Google Trends.')
+        FA.close()
 
 def getRelatedTerms(word: str) -> list:
     try :
@@ -368,6 +433,9 @@ def getRelatedTerms(word: str) -> list:
             return []
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Get Related Terms.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Get Related Terms.')
+        FA.close()
 
 def resetTabs(browser: WebDriver):
     try :
@@ -386,6 +454,9 @@ def resetTabs(browser: WebDriver):
             browser.get(BASE_URL)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Reset Tabs.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Reset Tabs.')
+        FA.close()
 
 def getAnswerCode(key: str, string: str) -> str:
     try :
@@ -396,6 +467,9 @@ def getAnswerCode(key: str, string: str) -> str:
         return str(t)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Get Answer Code.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Get Answer Code.')
+        FA.close()
 
 def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = False):
     try :
@@ -427,7 +501,10 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
                     if numberOfSearches <= 1:
                         break
                     if isMobile and timerMobileLimit>=1800: #1800=30 mins
-                        prRed('\n[Error] Mobile Searches Ran Longer Than 25mins... Must Have Gotten Stuck !\n')
+                        prRed('\n[Error] Mobile Searches Ran Longer Than 25mins... Must Have Gotten Stuck.\n')
+                        writeErr()
+                        FA.write('\n[Error] Mobile Searches Ran Longer Than 25mins... Must Have Gotten Stuck.')
+                        FA.close()
                         print("There are " + str(SEARCHESREMAINING) + " Searches Remaining !")
                         print('[INFO] Mobile Seach Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(timerMobileLimit)))
                         break
@@ -440,21 +517,36 @@ def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = Fal
             SEARCHESREMAINING = SEARCHESREMAINING-1
         if isMobile: 
             TOTALMOBILETIMER = time.time() - timeMobileTotalSt
-            prYellow('[INFO] Mobile Seach Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TOTALMOBILETIMER)))
+            prYellow('[INFO] Mobile Search Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TOTALMOBILETIMER)))
         else:
             TIMETOTAL = time.time()-totalTimerSt
-            prYellow('[INFO] PC Seach Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TIMETOTAL)))   
+            prYellow('[INFO] PC Search Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TIMETOTAL)))   
     except OSError as err:
-        prRed("\n[ERROR] OS error:", err,'\n')
+        prRed('\n[ERROR] OS error:', err,'\n')
+        writeErr()
+        FA.write('\n[ERROR] OS error:', err,)
+        FA.close()
     except ValueError:
-        prRed("\n[ERROR] Could not convert data to an integer.\n")
+        prRed('\n[ERROR] Could not convert data to an integer.\n')
+        writeErr()
+        FA.write('\n[ERROR] Could not convert data to an integer.')
+        FA.close()
     except Exception as err:
-        prRed(f"\n[ERROR] Unexpected {err=}, {type(err)=}\n")
+        prRed(f'\n[ERROR] Unexpected {err=}, {type(err)=}\n')
+        writeErr()
+        FA.write(f'\n[ERROR] Unexpected {err=}, {type(err)=}\n')
+        FA.close()
     except:
         if not isMobile:
             prRed('\n[ERROR] An Error has Occured While Trying to Complete PC Bing Searches.\n')
+            writeErr()
+            FA.write('\n[ERROR] An Error has Occured While Trying to Complete PC Bing Searches.')
+            FA.close()
         else:
             prRed('\n[ERROR] An Error has Occured While Trying to Complete Mobile Bing Searches.\n')
+            writeErr()
+            FA.write('\n[ERROR] An Error has Occured While Trying to Complete Mobile Bing Searches.')
+            FA.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
@@ -490,6 +582,9 @@ def bingSearch(browser: WebDriver, word: str, isMobile: bool):
         return points
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Bing Search.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Complete Bing Search.')
+        FA.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
@@ -511,6 +606,9 @@ def completePromotionalItems(browser: WebDriver):
             pass
     except:
         prRed('\n[ERROR] An Error has Occured While Trying Complete Promotional Items.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying Complete Promotional Items.')
+        FA.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
@@ -528,6 +626,9 @@ def completeDailySetSearch(browser: WebDriver, cardNumber: int):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Daily Set Search.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Complete Daily Set Search.')
+        FA.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
@@ -547,6 +648,9 @@ def completeDailySetSurvey(browser: WebDriver, cardNumber: int):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Daily Set Survey.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Complete Daily Set Survey.')
+        FA.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
@@ -606,6 +710,9 @@ def completeDailySetQuiz(browser: WebDriver, cardNumber: int):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Daily Set Quiz.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Complete Daily Set Quiz.')
+        FA.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
@@ -632,7 +739,10 @@ def completeDailySetVariableActivity(browser: WebDriver, cardNumber: int):
                     browser.find_element(By.XPATH, '//*[@id="nextQuestionbtn' + str(i) + '"]').click()
                     time.sleep(4)
             except (NoSuchElementException, TimeoutException):
-                prRed('\n[Error] completeDailySetVariableActivity \n') 
+                prRed('\n[Error] An Error has Occured While Trying to Complete Daily Set Variable Activity.\n')
+                writeErr()
+                FA.write('\n[Error] An Error has Occured While Trying to Complete Daily Set Variable Activity.')
+                FA.close()
                 try:
                     counter = str(browser.find_element(By.XPATH, '//*[@id="QuestionPane0"]/div[2]').get_attribute('innerHTML'))[:-1][1:]
                     numberOfQuestions = max([int(s) for s in counter.split() if s.isdigit()])
@@ -675,6 +785,9 @@ def completeDailySetVariableActivity(browser: WebDriver, cardNumber: int):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Daily Set Variable Activity.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Complete Daily Set Variable Activity.')
+        FA.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
@@ -718,6 +831,9 @@ def completeDailySetThisOrThat(browser: WebDriver, cardNumber: int):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Daily Set This Or That.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Complete Daily Set This Or That.')
+        FA.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
@@ -730,6 +846,9 @@ def getDashboardData(browser: WebDriver) -> dict:
         return dashboard
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Get Dashboard Data.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Get Dashboard Data.')
+        FA.close()
 
 def completeDailySet(browser: WebDriver):
     try :
@@ -769,10 +888,16 @@ def completeDailySet(browser: WebDriver):
                                     completeDailySetVariableActivity(browser, cardNumber)
                             except :
                                 prRed('\n[ERROR] An Error has Occured While Completing the Daily Poll.\n')
+                                writeErr()
+                                FA.write('\n[ERROR] An Error has Occured While Completing the Daily Poll.')
+                                FA.close()
             except:
                 resetTabs(browser)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Daily Set.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Complete Daily Set.')
+        FA.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
@@ -782,6 +907,9 @@ def getAccountPoints(browser: WebDriver) -> int:
         return getDashboardData(browser)['userStatus']['availablePoints']
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Get Account Points.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Get Account Points.')
+        FA.close()
 
 def completePunchCard(browser: WebDriver, url: str, childPromotions: dict):
     try :
@@ -802,44 +930,27 @@ def completePunchCard(browser: WebDriver, url: str, childPromotions: dict):
                     time.sleep(2)
                     browser.switch_to.window(window_name = browser.window_handles[1])
                     time.sleep(8)
-                    try:#test
-                        maxQuestions1 = browser.execute_script("return _w.rewardsQuizRenderInfo.maxQuestions")#test
-                        print('maxQuestions='+str(maxQuestions1))#test
-                    except:#test
-                        print('[ERROR] completePunchCard maxQuestions1 did not work. Delete/change this code.')#test
-                        pass#test
-                    try:#test
-                        maxQuestions2 = browser.execute_script("return _w.rewardsQuizRenderInfo.maxQuestions")#test
-                        print('maxQuestions='+str(maxQuestions2))#test
-                    except:#test
-                        print('[ERROR] completePunchCard maxQuestions2 did not work. Delete/change this code.')#test
-                        pass#test
-                    try:
-                        try:
-                            browser.find_element(By.XPATH, '//*[@id="rqStartQuiz"]').click()
-                            time.sleep(2)
-                        except:
-                            pass
-                        try:
-                            for x in range (10):
-                                print('completePunchCard try # '+str(x))
-                                try :
-                                    time.sleep(4)
-                                    browser.find_element(By.XPATH,'//*[@id="rqAnswerOption0"]').click()
-                                    time.sleep(4)
-                                    browser.find_element(By.XPATH,'//*[@id="rqAnswerOption1"]').click()
-                                    time.sleep(4)
-                                    browser.find_element(By.XPATH,'//*[@id="rqAnswerOption2"]').click()
-                                    time.sleep(4)
-                                    browser.find_element(By.XPATH,'//*[@id="rqAnswerOption3"]').click()
-                                    time.sleep(6)
-                                except :
-                                    pass
-                        except :
-                            pass
-                    except:
+                    try :
+                        browser.find_element(By.XPATH, '//*[@id="rqStartQuiz"]').click()
+                    except :
                         pass
-                    try: 
+                    maxQuestions = browser.execute_script("return _w.rewardsQuizRenderInfo.maxQuestions")
+                    try :
+                        numberOfOptions = browser.execute_script("return _w.rewardsQuizRenderInfo.numberOfOptions")
+                        for question in range(maxQuestions):
+                            if numberOfOptions == 4:
+                                correctOption = browser.execute_script("return _w.rewardsQuizRenderInfo.correctAnswer")
+                                for i in range(4):
+                                    if browser.find_element(By.ID, "rqAnswerOption" + str(i)).get_attribute("data-option") == correctOption:
+                                        browser.find_element(By.ID, "rqAnswerOption" + str(i)).click()
+                                        time.sleep(5)
+                                        if not waitUntilQuestionRefresh(browser):
+                                            return
+                                        break
+                                time.sleep(5)
+                    except :
+                        pass
+                    try: #backup code
                         counter = str(browser.find_element(By.XPATH, '//*[@id="QuestionPane0"]/div[2]').get_attribute('innerHTML'))[:-1][1:]
                         numberOfQuestions = max([int(s) for s in counter.split() if s.isdigit()])                         
                         for question in range(numberOfQuestions):
@@ -856,6 +967,9 @@ def completePunchCard(browser: WebDriver, url: str, childPromotions: dict):
                     time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Punch Card.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Complete Punch Card.')
+        FA.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
@@ -883,6 +997,9 @@ def completePunchCards(browser: WebDriver):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Punch Cards.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Complete Punch Cards.')
+        FA.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
@@ -911,6 +1028,9 @@ def completeMorePromotionSearch(browser: WebDriver, cardNumber: int):
         resetTabs(browser)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete More Promotion Search.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Complete More Promotion Search.')
+        FA.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
@@ -958,6 +1078,9 @@ def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete More Promotion Quiz.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Complete More Promotion Quiz.')
+        FA.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
@@ -968,6 +1091,10 @@ def completeMorePromotionABC(browser: WebDriver, cardNumber: int):
         time.sleep(2)
         browser.switch_to.window(window_name=browser.window_handles[1])
         time.sleep(8)
+        try :
+            browser.find_element(By.XPATH, '//*[@id="rqStartQuiz"]').click()
+        except:
+            pass
         counter = str(browser.find_element(By.XPATH, '//*[@id="QuestionPane0"]/div[2]').get_attribute('innerHTML'))[:-1][1:]
         numberOfQuestions = (counter.split(" of ")[1])
         for question in range(int(numberOfQuestions)):
@@ -987,6 +1114,9 @@ def completeMorePromotionABC(browser: WebDriver, cardNumber: int):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete More Promotion ABC.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Complete More Promotion ABC.')
+        FA.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
@@ -1029,6 +1159,9 @@ def completeMorePromotionThisOrThat(browser: WebDriver, cardNumber: int):
         time.sleep(2)
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete More Promotion This Or That.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Complete More Promotion This Or That.')
+        FA.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
@@ -1058,6 +1191,9 @@ def completeMorePromotions(browser: WebDriver):
         resetTabs(browser) 
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete More Promotions.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Complete More Promotions.')
+        FA.close()
         time.sleep(2)
         browser.switch_to.window(window_name = browser.window_handles[0])
         time.sleep(2)
@@ -1092,6 +1228,177 @@ def getRemainingSearches(browser: WebDriver):
         return remainingDesktop, remainingMobile
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Get Remaining Searches.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Get Remaining Searches.')
+        FA.close()
+
+def printDateAndTime():
+    try :
+        prYellow('[Date/Time] '+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
+    except :
+        prRed('\n[ERROR] An Error has Occured While Trying to Print Date And Time.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Print Date And Time.')
+        FA.close()
+
+def noReward() :
+    global FIRSTWRITE
+    global POINTS_COUNTER
+    try :
+        if not path.exists(rewardsLog):
+            f = open(rewardsLog, 'w')
+            f.write('Microsoft Rewards Gift Card Info\n')
+            if FIRSTWRITE == True :
+                f.write('\n\n'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
+                FIRSTWRITE = False
+            f.write('\n' + str(account['username']) + ' - Has ' + str(POINTS_COUNTER) + ' points.')
+            f.close()
+            prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt Created !')
+        else :
+            f = open(rewardsLog, 'a')
+            if FIRSTWRITE == True :
+                f.write('\n'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
+                FIRSTWRITE = False
+            f.write('\n' + str(account['username']) + ' - Has ' + str(POINTS_COUNTER) + ' points.')
+            f.close()
+            prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt eddited !')
+    except :
+        prRed('\n[ERROR] An Error has Occured While Trying to Log No Reward.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Log No Reward.')
+        FA.close()
+
+def lowReward() :
+    try:
+        global FIRSTWRITE
+        global POINTS_COUNTER
+        global ACCOUNTSWREWARD
+        global REWARDS
+        if not path.exists(rewardsLog):
+            f = open(rewardsLog, 'w')
+            f.write('Microsoft Rewards Gift Card Info\n')
+            if FIRSTWRITE == True :
+                f.write('\n\n'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
+                FIRSTWRITE = False
+            f.write('\n' + str(account['username']) + ' - Has ' + str(POINTS_COUNTER) + ' points and can redeem a 5$ Gift Card.')
+            f.close()
+            prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt Created !')
+            prPurple('[INFO] You have ' + str(POINTS_COUNTER) + ' points! Go Redeem a $5 Gift Card !')
+            ACCOUNTSWREWARD.append(str(account['username']))
+            REWARDS+=1
+        else :
+            f = open(rewardsLog, 'a')
+            if FIRSTWRITE == True :
+                f.write('\n\n'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
+                FIRSTWRITE = False
+            f.write('\n' + str(account['username']) + ' - Has ' + str(POINTS_COUNTER) + ' points and can redeem a 5$ gift card.')
+            f.close()
+            prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt eddited !')
+            prPurple('[INFO] You have '+ str(POINTS_COUNTER) +' points! Go Redeem a $5 Gift Card !')
+            ACCOUNTSWREWARD.append(str(account['username']))
+            REWARDS+=1
+    except :
+        prRed('\n[ERROR] An Error has Occured While Trying to Log Low Reward.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Log Low Reward.')
+        FA.close()
+
+def highReward() :
+    try :
+        global FIRSTWRITE
+        global POINTS_COUNTER
+        global ACCOUNTSWREWARD
+        global REWARDS
+        if not path.exists(rewardsLog):
+            f = open(rewardsLog, 'w')
+            f.write('Microsoft Rewards Gift Card Info\n')
+            if FIRSTWRITE == True :
+                f.write('\n\n'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
+                FIRSTWRITE = False
+            f.write('\n' + str(account['username']) + ' - Has ' + str(POINTS_COUNTER) + ' points and can redeem a $10 Gift Card.')
+            f.close()
+            prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt Created !')
+            prPurple('[INFO] You have ' + str(POINTS_COUNTER) + ' points! Go Redeem a $10 Gift Card !')
+            ACCOUNTSWREWARD.append(str(account['username']))
+            REWARDS+=1
+        else :
+            f = open(rewardsLog, 'a')
+            if FIRSTWRITE == True :
+                f.write('\n'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
+                FIRSTWRITE = False
+            f.write('\n' + str(account['username']) + ' - Has ' + str(POINTS_COUNTER) + ' points and can redeem a $10 gift card.')
+            f.close()
+            prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt eddited !')
+            prPurple('[INFO] You have '+ str(POINTS_COUNTER) +' points! Go Redeem a $10 Gift Card !')
+            ACCOUNTSWREWARD.append(str(account['username']))
+            REWARDS+=1
+    except :
+        prRed('\n[ERROR] An Error has Occured While Trying to Log High Reward.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Log High Reward.')
+        FA.close()
+
+def writeErr() :
+    global FAOPEN
+    global FA
+    global ERRCOUNT
+    try :
+        if FAOPEN == False :
+            FA = open(rewardsErr, 'a')
+            FAOPEN = True
+        FA.write('\n\n'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
+        FA.write('\n' + str(account['username']))
+        printDateAndTime()
+        prYellow('[INFO] Microsoft.Rewards.Err.txt eddited !')
+        ERRCOUNT = ERRCOUNT + 1
+        FAOPEN = False
+    except :
+        prRed('\n[ERROR] An Error has Occured While Trying to Write Err.\n')
+
+def displayAccountIssue() :
+    global ACCOUNTISSUE
+    global SUSPEND
+    global LOCK
+    try :
+        if ACCOUNTISSUE == True :
+            if SUSPEND == True :
+                prRed('\n[WARNING] [FATAL ERROR] User Account ' + str(account['username']) + ' is Suspended or Banned.\n')
+                writeErr()
+                FA.write('\n[WARNING] [FATAL ERROR] User Account ' + str(account['username']) + ' is Suspended or Banned.')
+                FA.close()
+                prYellow('[INFO] Press Any Key to Exit !')
+                input() #comment out or delete this line to auto exit when complete. ([WARNING] You will not see account issue error without this line !)
+            elif LOCK == True :
+                prRed('\n[WARNING] [FATAL ERROR] User Account ' + str(account['username']) + ' is Locked.\n')
+                writeErr()
+                FA.write('\n[WARNING] [FATAL ERROR] User Account ' + str(account['username']) + ' is Locked.')
+                FA.close()
+                prYellow('[INFO] Press Any Key to Exit !')
+                input() #comment out or delete this line to auto exit when complete. ([WARNING] You will not see account issue error without this line !)
+        else:
+            prRed('\n[ERROR] An Error has Occured.')
+            writeErr()
+            FA.write('\n[ERROR] An Error has Occured.')
+            FA.close()
+    except :
+        prRed('\n[ERROR] An Error has Occured While Trying to Display Account Issue.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Display Account Issue.')
+        FA.close()
+
+def displayAccountWRewards() :
+    global REWARDS
+    global ACCOUNTSWREWARD
+    try :
+        if REWARDS == 1 :
+            prGreen('[INFO] You have ' + str(REWARDS) + ' Gift Card Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD) + '  \n[INFO] Check '+str(rewardsLog)+' For More Information')
+        elif REWARDS >= 1 :
+            prGreen('[INFO] You have ' + str(REWARDS) + ' Gift Cards Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD) + ' \n\n[INFO] Check '+str(rewardsLog)+' Microsoft.Rewards.Gift.Card.Info.txt'' For More Information')
+    except :
+        prRed('\n[ERROR] An Error has Occured While Trying to Display Account W Rewards.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Display Account W Rewards.')
+        FA.close()
 
 def prRed(prt):
     print("\033[91m{}\033[00m".format(prt))
@@ -1114,6 +1421,9 @@ prRed("""
 prPurple("Version 3.0")
 
 LANG, GEO, TZ = getCCodeLangAndOffset()
+FA = open(rewardsErr, 'a')
+FA.write('Microsoft Rewards Err Log Created On ' + datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
+FA.close()
 
 try:
     account_path = os.path.dirname(os.path.abspath(__file__)) + '/accounts.json'
@@ -1137,7 +1447,8 @@ try:
         for account in ACCOUNTS:
             ACCOUNT_COUNTER +=1
             pcMobileTimerTotal = time.time()
-            prPurple('\n[INFO] Starting Account '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' !')
+            printDateAndTime()
+            prPurple('[INFO] Starting Account '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' !' )
             prYellow('********************' + account['username'] + '********************')
             browser = browserSetup(True, PC_USER_AGENT)
             prGreen('[LOGIN] Logging-in as ' + account['username'] + ' !')
@@ -1149,13 +1460,12 @@ try:
             prGreen('[POINTS] You have ' + str(POINTS_COUNTER) + ' points on your account !')
             time.sleep(2)
             browser.get('https://account.microsoft.com/')
-            time.sleep(2)
-            waitUntilVisible(browser, By.XPATH, '//*[@id="navs"]/div/div/div/div/div[4]/a', 30)
-            
+            time.sleep(10)
+            waitUntilVisible(browser, By.XPATH, '//*[@id="navs"]/div/div/div/div/div[4]/a', 20)
+
             if browser.find_element(By.XPATH, '//*[@id="navs"]/div/div/div/div/div[4]/a').get_attribute('target') == '_blank':
                 BASE_URL = 'https://rewards.microsoft.com'
                 browser.find_element(By.XPATH, '//*[@id="navs"]/div/div/div/div/div[4]/a').click()
-                
                 time.sleep(2)
                 browser.switch_to.window(window_name=browser.window_handles[0])
                 browser.close()
@@ -1166,27 +1476,38 @@ try:
                 browser.get(BASE_URL)
             waitUntilVisible(browser, By.XPATH, '//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[1]/div/card-content/mee-rewards-daily-set-item-content/div', 10)
             try :
+                printDateAndTime()
                 print('[DAILY SET] Trying to complete the Daily Set...')
                 completeDailySet(browser)
                 prGreen('[DAILY SET] Completed the Daily Set successfully !')
             except :
                 prRed('\n[ERROR] An Error has Occured While Completing the Daily Set.\n')
+                writeErr()
+                FA.write('\n[ERROR] An Error has Occured While Completing the Daily Set.')
+                FA.close()
             try :
                 print('[PUNCH CARDS] Trying to complete the Punch Cards...')
                 completePunchCards(browser)
                 prGreen('[PUNCH CARDS] Completed the Punch Cards successfully !')
             except :
                 prRed('\n[ERROR] An Error has Occured While Completing the Punch Cards.\n')
+                writeErr()
+                FA.write('\n[ERROR] An Error has Occured While Completing the Punch Cards.')
+                FA.close()
             try :
                 print('[MORE PROMO] Trying to complete More Promotions...')
                 completeMorePromotions(browser)
                 prGreen('[MORE PROMO] Completed More Promotions successfully !')
             except :
                 prRed('\n[ERROR] An Error has Occured While Completing More Promotion.\n')
+                writeErr()
+                FA.write('\n[ERROR] An Error has Occured While Completing More Promotion.')
+                FA.close()
             remainingSearches, remainingSearchesM = getRemainingSearches(browser)
             retrySleep = random.randint(250, 300)
     
             if remainingSearches != 0:
+                printDateAndTime()
                 prPurple('[BING] Starting Desktop and Edge Bing Searches...')
                 bingSearches(browser, remainingSearches)
                 FIRST_RUN = False
@@ -1196,10 +1517,11 @@ try:
                         xy=2 #PC re-try will run 2 times
                         for x in range (xy): 
                             RETRYING = True
-                            prRed('\n[Error] Desktop Seaches did not Complete !\n')
+                            prRed('\n[Error] Desktop Seaches did not Complete.\n')
                             prYellow('[INFO] There are ' + str(SEARCHESREMAINING) +' Searches Remaining !')
                             prYellow('[INFO] Re-Trying in ' + str(retrySleep) + 'seconds !')
                             time.sleep(retrySleep)
+                            printDateAndTime()
                             prYellow('[INFO] Re-Trying ' + account['username'] + ' Desktop Account ' + str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' !')
                             prYellow('[INFO] Re-Try Desktop # ' + str(x+1) + '/' + str(xy) + ' !')
                             browser = browserSetup(True, PC_USER_AGENT)
@@ -1208,6 +1530,7 @@ try:
                             prGreen('[LOGIN] Logging-in as ' + account['username'] + " !")
                             login(browser, account['username'], account['password'])
                             prGreen('[LOGIN] Logged-in Successfully !')
+                            printDateAndTime()
                             prPurple('[BING] Re-Trying Desktop and Edge Bing searches...')
                             startingPoints = POINTS_COUNTER #is this needed test
                             time.sleep(1)
@@ -1216,34 +1539,50 @@ try:
                     if RETRYINGM == True :
                         if SEARCHESREMAINING == 0:
                             RETRYING = False
-                            prGreen('[BING] Finished Re-Trying Desktop and Edge Bing searches  !\n')
+                            printDateAndTime()
+                            prGreen('[BING] Finished Re-Trying Desktop and Edge Bing searches  !'+'\n')
                             break
                         else:
                             RETRYING = False
-                            prRed('[ERROR] Re-Try Desktop Did Not Complete !')
+                            prRed('\n[ERROR] Re-Try Desktop Did Not Complete.')
+                            writeErr()
+                            FA.write('\n[ERROR] Re-Try Desktop Did Not Complete.')
+                            FA.close()
                             prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
                             time.sleep(sleepTimer)
                 except :
-                    prRed('\n[ERROR] An Error has Occured While Re-Trying Desktop and Edge Bing Searches !\n')
+                    prRed('\n[ERROR] An Error has Occured While Re-Trying Desktop and Edge Bing Searches.\n')
+                    writeErr()
+                    FA.write('\n[ERROR] An Error has Occured While Re-Trying Desktop and Edge Bing Searches.')
+                    FA.close()
                 
                 if SEARCHESREMAINING == 0 :
-                    prGreen('[BING] Finished Desktop and Edge Bing searches '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' !')
+                    printDateAndTime()
+                    prGreen('[BING] Finished Desktop and Edge Bing searches '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' ! ')
                     prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Desktop Points today !')
                     prYellow('[INFO] Waiting ' + str(tempSleepTimer) + 'seconds Until Continuing... \n')
                     time.sleep(tempSleepTimer)
                 else :
-                    prRed('\n[ERROR] ' + str(account['username']) + ' Has NOT Earned All Desktop Points today !\n')
+                    printDateAndTime()
+                    prRed('\n[ERROR] ' + str(account['username']) + ' Has NOT Earned All Desktop Points today.\n')
+                    writeErr()
+                    FA.write('\n[ERROR] ' + str(account['username']) + ' Has NOT Earned All Desktop Points today.')
+                    FA.close()
                     prYellow('[INFO] There are ' + str(SEARCHESREMAINING) +' Searches Remaining !')
                     prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
                     time.sleep(sleepTimer)    
             else :
                 browser.quit()
-                prRed('\n[ERROR] '+ str(account['username']) + ' Has Already Earned All Desktop Points Available Today\n')
+                prRed('\n[ERROR] '+ str(account['username']) + ' Has Already Earned All Desktop Points Available Today.\n')
+                writeErr()
+                FA.write('\n[ERROR] '+ str(account['username']) + ' Has Already Earned All Desktop Points Available Today.')
+                FA.close()
                 prYellow('\n[INFO] Waiting ' + str(longSleepTimer) +'seconds Until Continuing... \n')
                 time.sleep(longSleepTimer)
             try: 
                 if remainingSearchesM != 0 :
-                    prPurple('[INFO] Starting '+ str(account['username']) +' Mobile Account ' + str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' !')
+                    printDateAndTime()
+                    prPurple('[INFO] Starting '+ str(account['username']) +' Mobile Account ' + str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' ! ')
                     browser = browserSetup(True, MOBILE_USER_AGENT)
                     prGreen('[LOGIN] Logging-in as ' + account['username'] + " !")
                     login(browser, account['username'], account['password'], True)
@@ -1251,7 +1590,8 @@ try:
                     if ACCOUNTISSUE == True :
                         break
                     prGreen('[LOGIN] Logged-in Successfully !')
-                    prPurple('[BING] Starting Mobile Bing searches...')
+                    printDateAndTime()
+                    prPurple('[BING] Starting Mobile Bing searches... ')
                     bingSearches(browser, remainingSearchesM, True)
                     FIRST_RUN_M = False
                     browser.quit()
@@ -1260,125 +1600,146 @@ try:
                             xy=3 #Mobile re-try will run 3 times
                             for x in range (xy): 
                                 RETRYINGM = True
-                                prRed('\n[Error] Mobile Seaches did not Complete !\n')
+                                prRed('\n[Error] Mobile Seaches did not Complete.\n')
                                 prYellow('[INFO] There are ' + str(SEARCHESREMAINING) + ' Mobile Searches Remaining !')
                                 prYellow('[INFO] Retrying in ' + str(retrySleep) + ' seconds !')
                                 time.sleep(retrySleep)
-                                prPurple('[INFO] Re-Trying ' + account['username'] + ' Mobile Account ' + str(ACCOUNT_COUNTER) + '/' + str(len(ACCOUNTS)) + ' !')
+                                printDateAndTime()
+                                prPurple('[INFO] Re-Trying ' + account['username'] + ' Mobile Account ' + str(ACCOUNT_COUNTER) + '/' + str(len(ACCOUNTS)) + ' ! ')
                                 prYellow('[INFO] Re-Try Mobile # ' + str(x+1) + '/' + str(xy) + ' !')
                                 browser = browserSetup(True, MOBILE_USER_AGENT)
                                 prGreen('[LOGIN] Logging-in as ' + account['username'] + " !")
                                 login(browser, account['username'], account['password'], True)
                                 prGreen('[LOGIN] Logged-in Successfully !')
-                                prPurple('[BING] Starting Mobile Bing searches...')
+                                printDateAndTime()
+                                prPurple('[BING] Starting Mobile Bing searches... ')
                                 bingSearches(browser, SEARCHESREMAINING, True)
-                                print('[TEST] SEARCHESREMAINING= '+str(SEARCHESREMAINING)) #delete
-                                print('[TEST] RETRYINGM= '+str(RETRYINGM))#delete
                                 browser.quit()
                         if RETRYINGM == True :
                             if SEARCHESREMAINING == 0:
                                 RETRYINGM = False
-                                prGreen('[BING] Finished Re-Trying Mobile Bing searches !')
+                                printDateAndTime()
+                                prGreen('[BING] Finished Re-Trying Mobile Bing searches ! ')
                                 break
                             else :
                                 RETRYINGM = False
-                                prRed('[ERROR] Re-Try Mobile Did Not Complete !')
+                                printDateAndTime()
+                                prRed('\n[ERROR] Re-Try Mobile Did Not Complete.\n')
+                                writeErr()
+                                FA.write('\n[ERROR] Re-Try Mobile Did Not Complete.')
+                                FA.close()
                                 prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
                                 time.sleep(sleepTimer)
                     except :
                         prRed('\n[ERROR] An Error has Occured While Re-Trying Desktop and Edge Bing searches. \n')
+                        writeErr()
+                        FA.write('\n[ERROR] An Error has Occured While Re-Trying Desktop and Edge Bing searches.')
+                        FA.close()
                     if ACCOUNT_COUNTER == len(ACCOUNTS):
                         if SEARCHESREMAINING == 0 :
-                            prGreen('[BING] Finished Mobile Bing searches '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' !')
+                            printDateAndTime()
+                            prGreen('[BING] Finished Mobile Bing searches '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' ! ')
                             prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Mobile Points Today !\n')
                     else:                
                         if SEARCHESREMAINING == 0 :
-                            prGreen('[BING] Finished Mobile Bing searches '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' !')
+                            printDateAndTime()
+                            prGreen('[BING] Finished Mobile Bing searches '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' ! ')
                             prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Mobile Points Today !')
-                            prYellow('[INFO] Waiting ' + str(tempSleepTimer) + 'seconds Until Continuing... \n')
-                            time.sleep(tempSleepTimer)
+
                         else :
-                            prRed('\n[ERROR] ' + str(account['username']) + ' Has NOT Earned All Mobile Points Today.\n')
-                            prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
-                            time.sleep(sleepTimer)
+                            prRed('\n')
+                            printDateAndTime()
+                            prRed('[ERROR] ' + str(account['username']) + ' Has NOT Earned All Mobile Points Today.\n')
+                            writeErr()
+                            FA.write('[ERROR] ' + str(account['username']) + ' Has NOT Earned All Mobile Points Today.')
+                            FA.close()
                 else :
                     if FIRST_RUN_M==True and FIRST_RUN==True:
-                        prRed('\n[INFO] '+ str(account['username']) + ' Has Already Earned All Mobile Points Available Today !\n')
+                        prRed('\n')
+                        printDateAndTime()
+                        prRed('[INFO] '+ str(account['username']) + ' Has Already Earned All Mobile Points Available Today ! ' + '\n')
                     else:
-                        prRed('\n[INFO] '+ str(account['username']) + ' Has Already Earned All Mobile Points Available Today !\n')
+                        prRed('\n')
+                        printDateAndTime()
+                        prRed('[INFO] '+ str(account['username']) + ' Has Already Earned All Mobile Points Available Today ! ' + '\n')
                         prYellow('\n[INFO] Waiting ' + str(longSleepTimer) +'seconds Until Continuing... !\n')
                         time.sleep(longSleepTimer)
             except:
-                prRed('\n[ERROR] An Error has Occured While Trying to Run Mobile Searches\n')
-            
+                prRed('\n[ERROR] An Error has Occured While Trying to Run Mobile Searches.\n')
+                writeErr()
+                FA.write('\n[ERROR] An Error has Occured While Trying to Run Mobile Searches.')
+                FA.close()
+            try : #Account logger
+                if 6500 <= POINTS_COUNTER < 13000: # $5 reward
+                    lowReward()
+                elif POINTS_COUNTER >= 13000: # $10 reward
+                    highReward()
+                else : # no reward
+                    noReward()
+            except :
+                prRed('\n[ERROR] An Error has Occured When Trying to Create or Write to .txt .\n')
+                pass
             prGreen('[POINTS] You have earned ' + str(POINTS_COUNTER - startingPoints) + ' points today !')
             prGreen('[POINTS] You are now at ' + str(POINTS_COUNTER) + ' points !\n') 
             prYellow('********************' + account['username'] + '********************')
-            prPurple('[INFO] ' + str(ACCOUNT_COUNTER)+'/' + str(len(ACCOUNTS)) + ' Accounts Completed !')
+            prPurple('[INFO] ' + str(ACCOUNT_COUNTER)+'/' + str(len(ACCOUNTS)) + ' Accounts Completed ! ')
             try :
                 TIMETOTAL = time.time()-pcMobileTimerTotal
                 prYellow('[INFO] '+ str(account['username']) +' Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TIMETOTAL)))
             except :
-                prRed('\n[Error] An Error has Occured while trying to display total time of one account !\n')
+                prRed('\n[Error] An Error has Occured while trying to display total time of one account.\n')
+                writeErr()
+                FA.write('\n[Error] An Error has Occured while trying to display total time of one account.')
+                FA.close()
                 pass
             try:
                 if ACCOUNT_COUNTER < len(ACCOUNTS) and FIRST_RUN == True and FIRST_RUN_M == True:
-                    prRed('\n[ERROR] '+ str(account['username']) + ' Has Already Earned All Points Available Today\n')
+                    prRed('\n')
+                    printDateAndTime()
+                    prRed('[ERROR] '+ str(account['username']) + ' Has Already Earned All Points Available Today. '  + '\n')
                     prYellow('\n[INFO] Waiting ' + str(longSleepTimer) +'seconds Until Continuing... !\n')
                     time.sleep(longSleepTimer)
                 elif ACCOUNT_COUNTER < len(ACCOUNTS):
                     prYellow('[INFO] Waiting ' + str(sleepTimer) +'seconds Until Continuing... !\n')
                     time.sleep(sleepTimer)
             except:
-                prRed('\n[ERROR] An Error has Occured with First_run and First_runM SleepTimers !\n')
-                pass
-            try :
-                if POINTS_COUNTER>=6500 and not path.exists(rewardsFile):
-                    f = open(rewardsFile, 'w')
-                    f.write('Microsoft Rewards Gift Card Info\n')
-                    f.write('\n' + str(account['username']) + ' - Has over 6500 points. Go Redeem a Gift Card.')
-                    f.close()
-                    prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt Created !\n')
-                    prPurple('[INFO] You have enough points to Redeem a $5 Gift Card !')
-                    REWARDS+=1
-                elif POINTS_COUNTER>=6500 and path.exists(rewardsFile) :
-                    f = open(rewardsFile, 'a')
-                    f.write('\n' + str(account['username']) + ' - Has over 6500 points. Redeem a gift card.')
-                    f.close()
-                    prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt eddited')
-                    prPurple('[INFO] You have enough points to Redeem a $5 Gift Card !')
-                    REWARDS+=1
-            except :
-                prRed('\n[ERROR] An Error has Occured When Trying to Create or Write to .txt !\n')
+                prRed('\n[ERROR] An Error has Occured with First_run and First_runM SleepTimers.\n')
+                writeErr()
+                FA.write('\n[ERROR] An Error has Occured with First_run and First_runM SleepTimers.')
+                FA.close()
                 pass
     else:
         prRed('\n[WARNING] [FATAL ERROR] Check if Account is Locked, Suspended, or Banned.\n')
+        writeErr()
+        FA.write('\n[WARNING] [FATAL ERROR] Check if Account is Locked, Suspended, or Banned.')
+        FA.close()
         pass
 except OSError as err:
-    prRed("\n[ERROR] OS error:", err,'\n')
+    prRed('\n[ERROR] OS error:', err,'\n')
+    writeErr()
+    FA.write('\n[ERROR] OS error:', err,'')
+    FA.close()
 except ValueError:
-    prRed("\n[ERROR] Could not convert data to an integer.\n")
+    prRed('\n[ERROR] Could not convert data to an integer.\n')
+    writeErr()
+    FA.write('\n[ERROR] Could not convert data to an integer.')
+    FA.close()
 except Exception as err:
-    prRed(f"\n[ERROR] Unexpected {err=}, {type(err)=}\n")
+    prRed(f'\n[ERROR] Unexpected {err=}, {type(err)=}\n')
+    writeErr()
+    FA.write(f'\n[ERROR] Unexpected {err=}, {type(err)=}')
+    FA.close()
 except :
-    if ACCOUNTISSUE == True :
-        prRed('\n[WARNING] [FATAL ERROR] Check if Account is Locked, Suspended, or Banned.\n')
-        print('[INFO] Press Any Key')
-        input() #comment out or delete this line to auto exit when complete. ([WARNING] You will not see account issue error without this line !)
-    else:
-        prRed('\n[ERROR] An Error has Occured.\n')
+    displayAccountIssue()
     raise
 finally :
-    try :
-        if REWARDS == 1 :
-            prGreen('[INFO] You have ' + str(REWARDS) + ' Gift Card Waiting to be Redeemed ! \n[INFO] Check '+str(rewardsFile)+' For More Information')
-        elif REWARDS >= 1 :
-            prGreen('[INFO] You have ' + str(REWARDS) + ' Gift Cards Waiting to be Redeemed ! \n[INFO] Check '+str(rewardsFile)+' Microsoft.Rewards.Gift.Card.Info.txt'' For More Information')
-    except :
-        prRed('\n[ERROR] An Error has Occured While Displaying Rewards Earned.\n')
+    displayAccountWRewards()
+    writeErr()
+    FA.write(' Total Errors: ' + str(ERRCOUNT))
+    FA.close()
     TOTAL_TIME = time.time() - st
-    prPurple('\n\n[INFO] MS Farmer Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TOTAL_TIME)))
-    prYellow('\n[INFO] Thank you for using Microsoft Rewards Farmer !')
+    prPurple('\n\n[INFO] MS Farmer Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TOTAL_TIME)) + '\n')
+    prYellow('[INFO] Thank you for using Microsoft Rewards Farmer ! ')
     prYellow('[INFO] Press Any Key to Exit !')
     input() #comment out or delete this line to auto exit when complete. ([WARNING] You will not see errors without this line !)
     prPurple('[INFO] Have a Good Day! GoodBye :)\n')

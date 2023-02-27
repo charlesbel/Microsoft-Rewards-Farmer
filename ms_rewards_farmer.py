@@ -1429,7 +1429,7 @@ prPurple("Version 3.0")
 LANG, GEO, TZ = getCCodeLangAndOffset()
 try :
     FA = open(rewardsErr, 'a')
-    FA.write('Microsoft Rewards Err Log Created On ' + datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
+    FA.write('\nMicrosoft Rewards Err Log Created On ' + datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
     FA.close()
 except:
     prRed('[ERROR] You do not have rewardsErr set up correctly.')
@@ -1744,9 +1744,13 @@ except :
     raise
 finally :
     displayAccountWRewards()
-    writeErr()
-    FA.write(' Total Errors: ' + str(ERRCOUNT))
-    FA.close()
+    try :
+        FA = open(rewardsErr, 'a')
+        FA.write('\n\n'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
+        FA.write(' Total Errors: ' + str(ERRCOUNT))
+        FA.close()
+    except :
+        pass
     TOTAL_TIME = time.time() - st
     prPurple('\n\n[INFO] MS Farmer Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TOTAL_TIME)) + '\n')
     prYellow('[INFO] Thank you for using Microsoft Rewards Farmer ! ')

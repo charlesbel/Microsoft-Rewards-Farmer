@@ -1421,9 +1421,13 @@ prRed("""
 prPurple("Version 3.0")
 
 LANG, GEO, TZ = getCCodeLangAndOffset()
-FA = open(rewardsErr, 'a')
-FA.write('Microsoft Rewards Err Log Created On ' + datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
-FA.close()
+try :
+    FA = open(rewardsErr, 'a')
+    FA.write('Microsoft Rewards Err Log Created On ' + datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
+    FA.close()
+except:
+    prRed('[ERROR] You do not have rewardsErr set up correctly.')
+    pass
 
 try:
     account_path = os.path.dirname(os.path.abspath(__file__)) + '/accounts.json'

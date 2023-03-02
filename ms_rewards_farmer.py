@@ -115,7 +115,8 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
     global CBL_RETRY
     try :
         # Access to bing.com
-        browser.get('https://login.live.com/')
+        browser.get('https://rewards.bing.com/')
+        time.sleep(random.randint(2))
         # Wait complete loading
         waitUntilVisible(browser, By.ID, 'loginHeader', 10)
         time.sleep(random.randint(4, 6))
@@ -167,28 +168,6 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         except (NoSuchElementException, ElementNotInteractableException) as e:
             pass
         time.sleep(random.randint(6, 8))
-        try:        
-            if browser.find_element(By.XPATH,'//*[@id="newSessionLink"]') :
-                print('press any key newSessionLink')#test
-                input()
-                browser.find_element(By.XPATH,'//*[@id="newSessionLink"]').click()
-                print('press any key ReEnterPassword')#test
-                input()
-                time.sleep(random.randint(6, 8))
-                #reEnterPass = str(browser.find_element(By.XPATH, '//*[@id="StartHeader"]').get_attribute('innerHTML'))
-                #if reEnterPass.startswith('Enter Password') :
-                try :
-                    browser.execute_script("document.getElementById('i0118').value = '" + pwd + "';")
-                    print('[LOGIN]', 'Writing password Again...')
-                    time.sleep(random.randint(4, 6))
-                    # Click next
-                    browser.find_element(By.ID, 'idSIButton9').click()
-                    # Wait 5 seconds
-                    time.sleep(random.randint(4, 6))
-                except :
-                    pass
-        except :
-            pass
         print('[LOGIN]', 'Logged-in !')
         # Check Login
         print('[LOGIN]', 'Ensuring login on Bing...')

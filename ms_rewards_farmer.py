@@ -38,10 +38,11 @@ CBL_COUNTER = 1
 FIRSTWRITE = True
 FAOPEN = False
 ACCOUNTSWREWARD = []
+HIGHACCOUNTSWREWARD = []
 ERRCOUNT = 0
-tempSleepTimer = random.randint(200, 300) #set to 200-300secs - time waiting if account has no pc or mobile searches from start
+tempSleepTimer = random.randint(300, 450) #set to 300-450secs - time waiting if account has no pc or mobile searches from start
 longSleepTimer = random.randint(500, 600) #Set to 500-600secs - time waiting between multiple accounts that already earned today's points
-sleepTimer = random.randint(200, 400) #Set to 200-400secs - time waiting between multiple accounts AFTER earning points for the account
+sleepTimer = random.randint(300, 500) #Set to 300-400secs - time waiting between multiple accounts AFTER earning points for the account
 
 # Define browser setup function
 def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -> WebDriver:
@@ -117,26 +118,26 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         browser.get('https://login.live.com/')
         # Wait complete loading
         waitUntilVisible(browser, By.ID, 'loginHeader', 10)
-        time.sleep(random.randint(2, 4))
+        time.sleep(random.randint(4, 6))
         # Enter email
         print('[LOGIN]', 'Writing email...')
         browser.find_element(By.NAME, "loginfmt").send_keys(email)
-        time.sleep(random.randint(2, 4))
+        time.sleep(random.randint(4, 6))
         # Click next
         browser.find_element(By.ID, 'idSIButton9').click()
         # Wait 2 seconds
-        time.sleep(random.randint(2, 4))
+        time.sleep(random.randint(4, 6))
         # Wait complete loading
         waitUntilVisible(browser, By.ID, 'loginHeader', 10)
         # Enter password
         #browser.find_element(By.ID, "i0118").send_keys(pwd)
         browser.execute_script("document.getElementById('i0118').value = '" + pwd + "';")
         print('[LOGIN]', 'Writing password...')
-        time.sleep(random.randint(2, 4))
+        time.sleep(random.randint(4, 6))
         # Click next
         browser.find_element(By.ID, 'idSIButton9').click()
         # Wait 5 seconds
-        time.sleep(5)
+        time.sleep(random.randint(4, 6))
         if not isMobile :
             accountIssue(browser)
         if ACCOUNTISSUE == True :
@@ -162,13 +163,36 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         try:
             browser.find_element(By.ID, 'idSIButton9').click()
             # Wait 5 seconds
-            time.sleep(5)
+            time.sleep(random.randint(4, 6))
         except (NoSuchElementException, ElementNotInteractableException) as e:
+            pass
+        time.sleep(random.randint(6, 8))
+        try:        
+            if browser.find_element(By.XPATH,'//*[@id="newSessionLink"]') :
+                print('press any key newSessionLink')#test
+                input()
+                browser.find_element(By.XPATH,'//*[@id="newSessionLink"]').click()
+                print('press any key ReEnterPassword')#test
+                input()
+                time.sleep(random.randint(6, 8))
+                #reEnterPass = str(browser.find_element(By.XPATH, '//*[@id="StartHeader"]').get_attribute('innerHTML'))
+                #if reEnterPass.startswith('Enter Password') :
+                try :
+                    browser.execute_script("document.getElementById('i0118').value = '" + pwd + "';")
+                    print('[LOGIN]', 'Writing password Again...')
+                    time.sleep(random.randint(4, 6))
+                    # Click next
+                    browser.find_element(By.ID, 'idSIButton9').click()
+                    # Wait 5 seconds
+                    time.sleep(random.randint(4, 6))
+                except :
+                    pass
+        except :
             pass
         print('[LOGIN]', 'Logged-in !')
         # Check Login
         print('[LOGIN]', 'Ensuring login on Bing...')
-        time.sleep(random.randint(2, 3))
+        time.sleep(random.randint(4, 6))
         try:
             CBL_RETRY = True
             while CBL_RETRY == True :
@@ -201,7 +225,7 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
         #Access Bing.com
         browser.get('https://bing.com/')
         # Wait 8 seconds
-        time.sleep(8)
+        time.sleep(random.randint(8, 10))
         #Accept Cookies
         try:
             browser.find_element(By.ID, 'bnp_btn_accept').click()
@@ -210,7 +234,7 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
         try :
             if isMobile:
                 try:
-                    time.sleep(6)
+                    time.sleep(random.randint(6, 8))
                     try:
                         browser.find_element(By.XPATH,'//*[@id="mHamburger"]').click()
                     except:
@@ -300,9 +324,9 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
         FA.write('\n[ERROR] An Error has Occured While Trying to Update Counterp.')
         FA.close()
 
-def waitUntilVisible(browser: WebDriver, by_: By, selector: str, time_to_wait: int = 10):
+def waitUntilVisible(browser: WebDriver, by_: By, selector: str, time_to_wait: int):
     try :
-        time.sleep(1)
+        time.sleep(2)
         WebDriverWait(browser, time_to_wait).until(ec.visibility_of_element_located((by_, selector)))
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Wait Until Visible.\n')
@@ -1308,7 +1332,7 @@ def highReward() :
     try :
         global FIRSTWRITE
         global POINTS_COUNTER
-        global ACCOUNTSWREWARD
+        global HIGHACCOUNTSWREWARD
         global HIGHREWARDS
         if not path.exists(rewardsLog):
             f = open(rewardsLog, 'w')
@@ -1320,7 +1344,7 @@ def highReward() :
             f.close()
             prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt Created !')
             prPurple('[INFO] You have ' + str(POINTS_COUNTER) + ' points! Go Redeem a $10 Gift Card !')
-            ACCOUNTSWREWARD.append(str(account['username']))
+            HIGHACCOUNTSWREWARD.append(str(account['username']))
             HIGHREWARDS+=1
         else :
             f = open(rewardsLog, 'a')
@@ -1331,7 +1355,7 @@ def highReward() :
             f.close()
             prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt eddited !')
             prPurple('[INFO] You have '+ str(POINTS_COUNTER) +' points! Go Redeem a $10 Gift Card !')
-            ACCOUNTSWREWARD.append(str(account['username']))
+            HIGHACCOUNTSWREWARD.append(str(account['username']))
             HIGHREWARDS+=1
     except :
         prRed('\n[ERROR] An Error has Occured While Trying to Log High Reward.\n')
@@ -1391,15 +1415,23 @@ def displayAccountWRewards() :
     global LOWREWARDS
     global HIGHREWARDS
     global ACCOUNTSWREWARD
+    global HIGHACCOUNTSWREWARD
+    anyRewards = False
     try :
         if LOWREWARDS == 1 :
-            prGreen('[INFO] You have ' + str(LOWREWARDS) + ' $5 Gift Card Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD) + '  \n[INFO] Check '+str(rewardsLog)+' For More Information')
+            prGreen('[INFO] You have ' + str(LOWREWARDS) + ' $5 Gift Card Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD))
+            anyRewards = True
         elif LOWREWARDS >= 1 :
-            prGreen('[INFO] You have ' + str(LOWREWARDS) + ' $5 Gift Cards Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD) + ' \n\n[INFO] Check '+str(rewardsLog)+' Microsoft.Rewards.Gift.Card.Info.txt'' For More Information')
+            prGreen('[INFO] You have ' + str(LOWREWARDS) + ' $5 Gift Cards Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD))
+            anyRewards = True
         if HIGHREWARDS == 1 :
-            prGreen('[INFO] You have ' + str(LOWREWARDS) + ' $10 Gift Card Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD) + '  \n[INFO] Check '+str(rewardsLog)+' For More Information')
+            prGreen('[INFO] You have ' + str(HIGHREWARDS) + ' $10 Gift Card Waiting to be Redeemed on ' + str(HIGHACCOUNTSWREWARD))
+            anyRewards = True
         elif HIGHREWARDS >= 1 :
-            prGreen('[INFO] You have ' + str(LOWREWARDS) + ' $10 Gift Cards Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD) + ' \n\n[INFO] Check '+str(rewardsLog)+' Microsoft.Rewards.Gift.Card.Info.txt'' For More Information')
+            prGreen('[INFO] You have ' + str(HIGHREWARDS) + ' $10 Gift Cards Waiting to be Redeemed on ' + str(HIGHACCOUNTSWREWARD))
+            anyRewards = True
+        if anyRewards == True :
+            prGreen('\n\n[INFO] Check '+str(rewardsLog)+' For More Information !')
     except :
         prRed('\n[ERROR] An Error has Occured While Trying to Display Account W Rewards.\n')
         writeErr()
@@ -1429,7 +1461,7 @@ prPurple("Version 3.0")
 LANG, GEO, TZ = getCCodeLangAndOffset()
 try :
     FA = open(rewardsErr, 'a')
-    FA.write('\nMicrosoft Rewards Err Log Created On ' + datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
+    FA.write('\n\nMicrosoft Rewards Err Log Created On ' + datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
     FA.close()
 except:
     prRed('[ERROR] You do not have rewardsErr set up correctly.')
@@ -1468,22 +1500,15 @@ try:
             prGreen('[LOGIN] Logged-in Successfully !')
             startingPoints = POINTS_COUNTER
             prGreen('[POINTS] You have ' + str(POINTS_COUNTER) + ' points on your account !')
-            time.sleep(2)
-            browser.get('https://account.microsoft.com/')
-            time.sleep(10)
-            waitUntilVisible(browser, By.XPATH, '//*[@id="navs"]/div/div/div/div/div[4]/a', 20)
-
-            if browser.find_element(By.XPATH, '//*[@id="navs"]/div/div/div/div/div[4]/a').get_attribute('target') == '_blank':
-                BASE_URL = 'https://rewards.microsoft.com'
-                browser.find_element(By.XPATH, '//*[@id="navs"]/div/div/div/div/div[4]/a').click()
-                time.sleep(2)
-                browser.switch_to.window(window_name=browser.window_handles[0])
-                browser.close()
-                browser.switch_to.window(window_name=browser.window_handles[0])
-                time.sleep(10)
-            else:
-                BASE_URL = 'https://account.microsoft.com/rewards'
+            time.sleep(random.randint(10, 15))
+            try :
+                BASE_URL = 'https://rewards.bing.com/'
                 browser.get(BASE_URL)
+            except:
+                prRed('[ERROR] Could not Loading https://rewards.bing.com/.')
+                FA.write('\n[ERROR] Could not Loading https://rewards.bing.com/.')
+                FA.close()
+                pass
             waitUntilVisible(browser, By.XPATH, '//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[1]/div/card-content/mee-rewards-daily-set-item-content/div', 10)
             try :
                 printDateAndTime()
@@ -1726,16 +1751,19 @@ try:
         pass
 except OSError as err:
     prRed('\n[ERROR] OS error:', err,'\n')
+    browser.quit()
     writeErr()
     FA.write('\n[ERROR] OS error:', err,'')
     FA.close()
 except ValueError:
     prRed('\n[ERROR] Could not convert data to an integer.\n')
+    browser.quit()
     writeErr()
     FA.write('\n[ERROR] Could not convert data to an integer.')
     FA.close()
 except Exception as err:
     prRed(f'\n[ERROR] Unexpected {err=}, {type(err)=}\n')
+    browser.quit()
     writeErr()
     FA.write(f'\n[ERROR] Unexpected {err=}, {type(err)=}')
     FA.close()
@@ -1747,7 +1775,7 @@ finally :
     try :
         FA = open(rewardsErr, 'a')
         FA.write('\n\n'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
-        FA.write(' Total Errors: ' + str(ERRCOUNT))
+        FA.write(' Total Errors: ' + str(ERRCOUNT) + '\n')
         FA.close()
     except :
         pass

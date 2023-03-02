@@ -116,7 +116,7 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
     try :
         # Access to bing.com
         browser.get('https://rewards.bing.com/')
-        time.sleep(random.randint(2))
+        time.sleep(random.randint(2, 4))
         # Wait complete loading
         waitUntilVisible(browser, By.ID, 'loginHeader', 10)
         time.sleep(random.randint(4, 6))
@@ -184,12 +184,15 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
             writeErr()
             FA.write('[ERROR] An Error has Occured While Ensuring login on Bing...')
             FA.close()
-            pass
-    except :
+            pass       
+    except : 
         if ACCOUNTISSUE == True:
             prRed('\n[WARNING] [FATAL ERROR] Check if Account is Locked, Suspended, or Banned.\n')
+            writeErr()
+            FA.write('\n[WARNING] [FATAL ERROR] Check if Account is Locked, Suspended, or Banned.')
+            FA.close()
             pass
-        else:
+        else :
             prRed('\n[ERROR] A Login Error has Occured.\n')
             writeErr()
             FA.write('\n[ERROR] A Login Error has Occured.')

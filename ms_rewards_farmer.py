@@ -29,8 +29,6 @@ HIGHREWARDS = 0
 FIRST_RUN = True
 FIRST_RUN_M = True
 ACCOUNTISSUE = False
-SUSPEND = False
-LOCK = False
 COMPLETESEARCH = 0
 RETRYING = False
 RETRYINGM = False
@@ -65,8 +63,6 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
 
 def accountIssue(browser: WebDriver):
     global ACCOUNTISSUE
-    global SUSPEND
-    global LOCK
     try:
         locked = str(browser.find_element(By.XPATH, '//*[@id="StartHeader"]').get_attribute('innerHTML'))
         prRed('\n[WARNING] [FATAL ERROR] '+ str(locked) +' !\n')
@@ -76,16 +72,14 @@ def accountIssue(browser: WebDriver):
             FA.write('\n[WARNING] [FATAL ERROR] Check if Account is Locked.')
             FA.close()
             ACCOUNTISSUE = True
-            LOCK = True
-            SystemExit
+            pass
         elif locked.startswith('Votre compte a été') :
             prRed('\n[WARNING] [FATAL ERROR] Check if Account is Locked.\n')
             writeErr()
             FA.write('\n[WARNING] [FATAL ERROR] Check if Account is Locked.')
             FA.close()
             ACCOUNTISSUE = True
-            LOCK = True
-            SystemExit
+            pass
     except:
         pass
     try:
@@ -94,19 +88,17 @@ def accountIssue(browser: WebDriver):
         if Suspended.startswith('Uh oh, it appears') :
             prRed('\n[WARNING] [FATAL ERROR] Check if Account is Suspended or Banned.\n')
             writeErr()
-            FA.write('\n[WARNING] [FATAL ERROR] Check if Account is Locked.')
+            FA.write('\n[WARNING] [FATAL ERROR] Check if Account is Suspended or Banned.')
             FA.close()
             ACCOUNTISSUE = True
-            SUSPEND = True
-            SystemExit
+            pass
         elif Suspended.startswith('Oh oh, il semble') :
             prRed('\n[WARNING] [FATAL ERROR] Check if Account is Suspended or Banned.\n')
             writeErr()
-            FA.write('\n[WARNING] [FATAL ERROR] Check if Account is Locked.')
+            FA.write('\n[WARNING] [FATAL ERROR] Check if Account is Suspended or Banned.')
             FA.close()
             ACCOUNTISSUE = True
-            SUSPEND = True
-            SystemExit
+            pass
     except:
         return
 
@@ -116,9 +108,9 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
     try :
         # Access to bing.com
         browser.get('https://rewards.bing.com/')
-        time.sleep(random.randint(2, 4))
+        time.sleep(random.randint(4, 6))
         # Wait complete loading
-        waitUntilVisible(browser, By.ID, 'loginHeader', 10)
+        waitUntilVisible(browser, By.ID, 'loginHeader', 20)
         time.sleep(random.randint(4, 6))
         # Enter email
         print('[LOGIN]', 'Writing email...')
@@ -129,7 +121,7 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         # Wait 2 seconds
         time.sleep(random.randint(4, 6))
         # Wait complete loading
-        waitUntilVisible(browser, By.ID, 'loginHeader', 10)
+        waitUntilVisible(browser, By.ID, 'loginHeader', 20)
         # Enter password
         #browser.find_element(By.ID, "i0118").send_keys(pwd)
         browser.execute_script("document.getElementById('i0118').value = '" + pwd + "';")
@@ -142,8 +134,7 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         if not isMobile :
             accountIssue(browser)
         if ACCOUNTISSUE == True :
-            SystemExit
-            quit()
+            return
         time.sleep(1)
         # Click Security Check
         print('[LOGIN]', 'Passing security checks...')
@@ -184,19 +175,15 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
             writeErr()
             FA.write('[ERROR] An Error has Occured While Ensuring login on Bing...')
             FA.close()
-            pass       
-    except : 
-        if ACCOUNTISSUE == True:
-            prRed('\n[WARNING] [FATAL ERROR] Check if Account is Locked, Suspended, or Banned.\n')
-            writeErr()
-            FA.write('\n[WARNING] [FATAL ERROR] Check if Account is Locked, Suspended, or Banned.')
-            FA.close()
-            pass
-        else :
-            prRed('\n[ERROR] A Login Error has Occured.\n')
-            writeErr()
-            FA.write('\n[ERROR] A Login Error has Occured.')
-            FA.close()
+            pass        
+    except OSError as err:
+        prRed('\n[ERROR] A Login Error has Occured.\n')
+        prRed('\n[ERROR] OS error:', err,'\n')
+        browser.quit()
+        writeErr()
+        FA.write('\n[ERROR] A Login Error has Occured.')
+        FA.write('\n[ERROR] OS error:', err,'')
+        FA.close()
 
 def checkBingLogin(browser: WebDriver, isMobile: bool = False):
     global CBL_RETRY
@@ -1362,37 +1349,6 @@ def writeErr() :
     except :
         prRed('\n[ERROR] An Error has Occured While Trying to Write Err.\n')
 
-def displayAccountIssue() :
-    global ACCOUNTISSUE
-    global SUSPEND
-    global LOCK
-    try :
-        if ACCOUNTISSUE == True :
-            if SUSPEND == True :
-                prRed('\n[WARNING] [FATAL ERROR] User Account ' + str(account['username']) + ' is Suspended or Banned.\n')
-                writeErr()
-                FA.write('\n[WARNING] [FATAL ERROR] User Account ' + str(account['username']) + ' is Suspended or Banned.')
-                FA.close()
-                prYellow('[INFO] Press Any Key to Exit !')
-                input() #comment out or delete this line to auto exit when complete. ([WARNING] You will not see account issue error without this line !)
-            elif LOCK == True :
-                prRed('\n[WARNING] [FATAL ERROR] User Account ' + str(account['username']) + ' is Locked.\n')
-                writeErr()
-                FA.write('\n[WARNING] [FATAL ERROR] User Account ' + str(account['username']) + ' is Locked.')
-                FA.close()
-                prYellow('[INFO] Press Any Key to Exit !')
-                input() #comment out or delete this line to auto exit when complete. ([WARNING] You will not see account issue error without this line !)
-        else:
-            prRed('\n[ERROR] An Error has Occured.')
-            writeErr()
-            FA.write('\n[ERROR] An Error has Occured.')
-            FA.close()
-    except :
-        prRed('\n[ERROR] An Error has Occured While Trying to Display Account Issue.\n')
-        writeErr()
-        FA.write('\n[ERROR] An Error has Occured While Trying to Display Account Issue.')
-        FA.close()
-
 def displayAccountWRewards() :
     global LOWREWARDS
     global HIGHREWARDS
@@ -1401,16 +1357,16 @@ def displayAccountWRewards() :
     anyRewards = False
     try :
         if LOWREWARDS == 1 :
-            prGreen('[INFO] You have ' + str(LOWREWARDS) + ' $5 Gift Card Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD))
+            prGreen('\n[INFO] You have ' + str(LOWREWARDS) + ' $5 Gift Card Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD))
             anyRewards = True
         elif LOWREWARDS >= 1 :
-            prGreen('[INFO] You have ' + str(LOWREWARDS) + ' $5 Gift Cards Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD))
+            prGreen('\n[INFO] You have ' + str(LOWREWARDS) + ' $5 Gift Cards Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD))
             anyRewards = True
         if HIGHREWARDS == 1 :
-            prGreen('[INFO] You have ' + str(HIGHREWARDS) + ' $10 Gift Card Waiting to be Redeemed on ' + str(HIGHACCOUNTSWREWARD))
+            prGreen('\n[INFO] You have ' + str(HIGHREWARDS) + ' $10 Gift Card Waiting to be Redeemed on ' + str(HIGHACCOUNTSWREWARD))
             anyRewards = True
         elif HIGHREWARDS >= 1 :
-            prGreen('[INFO] You have ' + str(HIGHREWARDS) + ' $10 Gift Cards Waiting to be Redeemed on ' + str(HIGHACCOUNTSWREWARD))
+            prGreen('\n[INFO] You have ' + str(HIGHREWARDS) + ' $10 Gift Cards Waiting to be Redeemed on ' + str(HIGHACCOUNTSWREWARD))
             anyRewards = True
         if anyRewards == True :
             prGreen('\n\n[INFO] Check '+str(rewardsLog)+' For More Information !')
@@ -1467,270 +1423,193 @@ except FileNotFoundError:
 
 random.shuffle(ACCOUNTS)
 try:
-    if ACCOUNTISSUE != True :
-        for account in ACCOUNTS:
-            ACCOUNT_COUNTER +=1
-            pcMobileTimerTotal = time.time()
-            printDateAndTime()
-            prPurple('[INFO] Starting Account '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' !' )
-            prYellow('********************' + account['username'] + '********************')
-            browser = browserSetup(True, PC_USER_AGENT)
-            prGreen('[LOGIN] Logging-in as ' + account['username'] + ' !')
-            login(browser, account['username'], account['password'])
-            if ACCOUNTISSUE == True :
-                break
-            prGreen('[LOGIN] Logged-in Successfully !')
-            startingPoints = POINTS_COUNTER
-            prGreen('[POINTS] You have ' + str(POINTS_COUNTER) + ' points on your account !')
-            time.sleep(random.randint(10, 15))
-            try :
-                BASE_URL = 'https://rewards.bing.com/'
-                browser.get(BASE_URL)
-            except:
-                prRed('[ERROR] Could not Loading https://rewards.bing.com/.')
-                FA.write('\n[ERROR] Could not Loading https://rewards.bing.com/.')
-                FA.close()
-                pass
-            waitUntilVisible(browser, By.XPATH, '//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[1]/div/card-content/mee-rewards-daily-set-item-content/div', 10)
-            try :
-                printDateAndTime()
-                print('[DAILY SET] Trying to complete the Daily Set...')
-                completeDailySet(browser)
-                prGreen('[DAILY SET] Completed the Daily Set successfully !')
-            except :
-                prRed('\n[ERROR] An Error has Occured While Completing the Daily Set.\n')
-                writeErr()
-                FA.write('\n[ERROR] An Error has Occured While Completing the Daily Set.')
-                FA.close()
-            try :
-                print('[PUNCH CARDS] Trying to complete the Punch Cards...')
-                completePunchCards(browser)
-                prGreen('[PUNCH CARDS] Completed the Punch Cards successfully !')
-            except :
-                prRed('\n[ERROR] An Error has Occured While Completing the Punch Cards.\n')
-                writeErr()
-                FA.write('\n[ERROR] An Error has Occured While Completing the Punch Cards.')
-                FA.close()
-            try :
-                print('[MORE PROMO] Trying to complete More Promotions...')
-                completeMorePromotions(browser)
-                prGreen('[MORE PROMO] Completed More Promotions successfully !')
-            except :
-                prRed('\n[ERROR] An Error has Occured While Completing More Promotion.\n')
-                writeErr()
-                FA.write('\n[ERROR] An Error has Occured While Completing More Promotion.')
-                FA.close()
-            remainingSearches, remainingSearchesM = getRemainingSearches(browser)
-            retrySleep = random.randint(250, 300)
-    
-            if remainingSearches != 0:
-                printDateAndTime()
-                prPurple('[BING] Starting Desktop and Edge Bing Searches...')
-                bingSearches(browser, remainingSearches)
-                FIRST_RUN = False
-                browser.quit()
-                try:
-                    if SEARCHESREMAINING > 0 :
-                        xy=2 #PC re-try will run 2 times
-                        for x in range (xy): 
-                            RETRYING = True
-                            prRed('\n[Error] Desktop Seaches did not Complete.\n')
-                            prYellow('[INFO] There are ' + str(SEARCHESREMAINING) +' Searches Remaining !')
-                            prYellow('[INFO] Re-Trying in ' + str(retrySleep) + 'seconds !')
-                            time.sleep(retrySleep)
-                            printDateAndTime()
-                            prYellow('[INFO] Re-Trying ' + account['username'] + ' Desktop Account ' + str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' !')
-                            prYellow('[INFO] Re-Try Desktop # ' + str(x+1) + '/' + str(xy) + ' !')
-                            browser = browserSetup(True, PC_USER_AGENT)
-                            if ACCOUNTISSUE == True :
-                                break
-                            prGreen('[LOGIN] Logging-in as ' + account['username'] + " !")
-                            login(browser, account['username'], account['password'])
-                            prGreen('[LOGIN] Logged-in Successfully !')
-                            printDateAndTime()
-                            prPurple('[BING] Re-Trying Desktop and Edge Bing searches...')
-                            startingPoints = POINTS_COUNTER #is this needed test
-                            time.sleep(1)
-                            bingSearches(browser, SEARCHESREMAINING)
-                            browser.quit()
-                    if RETRYINGM == True :
-                        if SEARCHESREMAINING == 0:
-                            RETRYING = False
-                            printDateAndTime()
-                            prGreen('[BING] Finished Re-Trying Desktop and Edge Bing searches  !'+'\n')
-                            break
-                        else:
-                            RETRYING = False
-                            prRed('\n[ERROR] Re-Try Desktop Did Not Complete.')
-                            writeErr()
-                            FA.write('\n[ERROR] Re-Try Desktop Did Not Complete.')
-                            FA.close()
-                            prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
-                            time.sleep(sleepTimer)
-                except :
-                    prRed('\n[ERROR] An Error has Occured While Re-Trying Desktop and Edge Bing Searches.\n')
-                    writeErr()
-                    FA.write('\n[ERROR] An Error has Occured While Re-Trying Desktop and Edge Bing Searches.')
-                    FA.close()
-                
-                if SEARCHESREMAINING == 0 :
-                    printDateAndTime()
-                    prGreen('[BING] Finished Desktop and Edge Bing searches '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' ! ')
-                    prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Desktop Points today !')
-                    prYellow('[INFO] Waiting ' + str(tempSleepTimer) + 'seconds Until Continuing... \n')
-                    time.sleep(tempSleepTimer)
-                else :
-                    printDateAndTime()
-                    prRed('\n[ERROR] ' + str(account['username']) + ' Has NOT Earned All Desktop Points today.\n')
-                    writeErr()
-                    FA.write('\n[ERROR] ' + str(account['username']) + ' Has NOT Earned All Desktop Points today.')
-                    FA.close()
-                    prYellow('[INFO] There are ' + str(SEARCHESREMAINING) +' Searches Remaining !')
-                    prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
-                    time.sleep(sleepTimer)    
-            else :
-                browser.quit()
-                prRed('\n[ERROR] '+ str(account['username']) + ' Has Already Earned All Desktop Points Available Today.\n')
-                writeErr()
-                FA.write('\n[ERROR] '+ str(account['username']) + ' Has Already Earned All Desktop Points Available Today.')
-                FA.close()
-                prYellow('\n[INFO] Waiting ' + str(longSleepTimer) +'seconds Until Continuing... \n')
-                time.sleep(longSleepTimer)
-            try: 
-                if remainingSearchesM != 0 :
-                    printDateAndTime()
-                    prPurple('[INFO] Starting '+ str(account['username']) +' Mobile Account ' + str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' ! ')
-                    browser = browserSetup(True, MOBILE_USER_AGENT)
-                    prGreen('[LOGIN] Logging-in as ' + account['username'] + " !")
-                    login(browser, account['username'], account['password'], True)
-                    time.sleep(2)
-                    if ACCOUNTISSUE == True :
-                        break
-                    prGreen('[LOGIN] Logged-in Successfully !')
-                    printDateAndTime()
-                    prPurple('[BING] Starting Mobile Bing searches... ')
-                    bingSearches(browser, remainingSearchesM, True)
-                    FIRST_RUN_M = False
-                    browser.quit()
-                    try:
-                        if SEARCHESREMAINING > 0 :
-                            xy=3 #Mobile re-try will run 3 times
-                            for x in range (xy): 
-                                RETRYINGM = True
-                                prRed('\n[Error] Mobile Seaches did not Complete.\n')
-                                prYellow('[INFO] There are ' + str(SEARCHESREMAINING) + ' Mobile Searches Remaining !')
-                                prYellow('[INFO] Retrying in ' + str(retrySleep) + ' seconds !')
-                                time.sleep(retrySleep)
-                                printDateAndTime()
-                                prPurple('[INFO] Re-Trying ' + account['username'] + ' Mobile Account ' + str(ACCOUNT_COUNTER) + '/' + str(len(ACCOUNTS)) + ' ! ')
-                                prYellow('[INFO] Re-Try Mobile # ' + str(x+1) + '/' + str(xy) + ' !')
-                                browser = browserSetup(True, MOBILE_USER_AGENT)
-                                prGreen('[LOGIN] Logging-in as ' + account['username'] + " !")
-                                login(browser, account['username'], account['password'], True)
-                                prGreen('[LOGIN] Logged-in Successfully !')
-                                printDateAndTime()
-                                prPurple('[BING] Starting Mobile Bing searches... ')
-                                bingSearches(browser, SEARCHESREMAINING, True)
-                                browser.quit()
-                        if RETRYINGM == True :
-                            if SEARCHESREMAINING == 0:
-                                RETRYINGM = False
-                                printDateAndTime()
-                                prGreen('[BING] Finished Re-Trying Mobile Bing searches ! ')
-                                break
-                            else :
-                                RETRYINGM = False
-                                printDateAndTime()
-                                prRed('\n[ERROR] Re-Try Mobile Did Not Complete.\n')
-                                writeErr()
-                                FA.write('\n[ERROR] Re-Try Mobile Did Not Complete.')
-                                FA.close()
-                                prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
-                                time.sleep(sleepTimer)
-                    except :
-                        prRed('\n[ERROR] An Error has Occured While Re-Trying Desktop and Edge Bing searches. \n')
-                        writeErr()
-                        FA.write('\n[ERROR] An Error has Occured While Re-Trying Desktop and Edge Bing searches.')
-                        FA.close()
-                    if ACCOUNT_COUNTER == len(ACCOUNTS):
-                        if SEARCHESREMAINING == 0 :
-                            printDateAndTime()
-                            prGreen('[BING] Finished Mobile Bing searches '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' ! ')
-                            prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Mobile Points Today !\n')
-                    else:                
-                        if SEARCHESREMAINING == 0 :
-                            printDateAndTime()
-                            prGreen('[BING] Finished Mobile Bing searches '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' ! ')
-                            prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Mobile Points Today !')
-
-                        else :
-                            prRed('\n')
-                            printDateAndTime()
-                            prRed('[ERROR] ' + str(account['username']) + ' Has NOT Earned All Mobile Points Today.\n')
-                            writeErr()
-                            FA.write('[ERROR] ' + str(account['username']) + ' Has NOT Earned All Mobile Points Today.')
-                            FA.close()
-                else :
-                    if FIRST_RUN_M==True and FIRST_RUN==True:
-                        prRed('\n')
-                        printDateAndTime()
-                        prRed('[INFO] '+ str(account['username']) + ' Has Already Earned All Mobile Points Available Today ! ' + '\n')
-                    else:
-                        prRed('\n')
-                        printDateAndTime()
-                        prRed('[INFO] '+ str(account['username']) + ' Has Already Earned All Mobile Points Available Today ! ' + '\n')
-                        prYellow('\n[INFO] Waiting ' + str(longSleepTimer) +'seconds Until Continuing... !\n')
-                        time.sleep(longSleepTimer)
-            except:
-                prRed('\n[ERROR] An Error has Occured While Trying to Run Mobile Searches.\n')
-                writeErr()
-                FA.write('\n[ERROR] An Error has Occured While Trying to Run Mobile Searches.')
-                FA.close()
-            try : #Account logger
-                if 6500 <= POINTS_COUNTER < 13000: # $5 reward
-                    lowReward()
-                elif POINTS_COUNTER >= 13000: # $10 reward
-                    highReward()
-                else : # no reward
-                    noReward()
-            except :
-                prRed('\n[ERROR] An Error has Occured When Trying to Create or Write to .txt .\n')
-                pass
-            prGreen('[POINTS] You have earned ' + str(POINTS_COUNTER - startingPoints) + ' points today !')
-            prGreen('[POINTS] You are now at ' + str(POINTS_COUNTER) + ' points !\n') 
+    for account in ACCOUNTS:
+        ACCOUNT_COUNTER +=1
+        pcMobileTimerTotal = time.time()
+        printDateAndTime()
+        prPurple('[INFO] Starting Account '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' !' )
+        prYellow('********************' + account['username'] + '********************')
+        browser = browserSetup(True, PC_USER_AGENT)
+        prGreen('[LOGIN] Logging-in as ' + account['username'] + ' !')
+        login(browser, account['username'], account['password'])
+        if ACCOUNTISSUE == True :
+            browser.quit()
+            prRed('\n[WARNING] [FATAL ERROR] Check if '+ str(account['username']) +' is Locked, Suspended, or Banned.\n')
+            writeErr()
+            FA.write('\n[WARNING] [FATAL ERROR] Check if '+ str(account['username']) +' is Locked, Suspended, or Banned.')
+            FA.close()
+            ACCOUNTISSUE = False
+            prRed('[INFO] No Points were earned!\n')
             prYellow('********************' + account['username'] + '********************')
             prPurple('[INFO] ' + str(ACCOUNT_COUNTER)+'/' + str(len(ACCOUNTS)) + ' Accounts Completed ! ')
-            try :
-                TIMETOTAL = time.time()-pcMobileTimerTotal
-                prYellow('[INFO] '+ str(account['username']) +' Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TIMETOTAL)))
-            except :
-                prRed('\n[Error] An Error has Occured while trying to display total time of one account.\n')
+            prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
+            time.sleep(sleepTimer)
+            continue 
+        prGreen('[LOGIN] Logged-in Successfully !')
+        startingPoints = POINTS_COUNTER
+        prGreen('[POINTS] You have ' + str(POINTS_COUNTER) + ' points on your account !')
+        time.sleep(random.randint(10, 15))
+        try :
+            BASE_URL = 'https://rewards.bing.com/'
+            browser.get(BASE_URL)
+        except:
+            prRed('[ERROR] Could not Loading https://rewards.bing.com/.')
+            FA.write('\n[ERROR] Could not Loading https://rewards.bing.com/.')
+            FA.close()
+            pass
+        waitUntilVisible(browser, By.XPATH, '//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[1]/div/card-content/mee-rewards-daily-set-item-content/div', 10)
+        try :
+            printDateAndTime()
+            print('[DAILY SET] Trying to complete the Daily Set...')
+            completeDailySet(browser)
+            prGreen('[DAILY SET] Completed the Daily Set successfully !')
+        except :
+            prRed('\n[ERROR] An Error has Occured While Completing the Daily Set.\n')
+            writeErr()
+            FA.write('\n[ERROR] An Error has Occured While Completing the Daily Set.')
+            FA.close()
+        try :
+            print('[PUNCH CARDS] Trying to complete the Punch Cards...')
+            completePunchCards(browser)
+            prGreen('[PUNCH CARDS] Completed the Punch Cards successfully !')
+        except :
+            prRed('\n[ERROR] An Error has Occured While Completing the Punch Cards.\n')
+            writeErr()
+            FA.write('\n[ERROR] An Error has Occured While Completing the Punch Cards.')
+            FA.close()
+        try :
+            print('[MORE PROMO] Trying to complete More Promotions...')
+            completeMorePromotions(browser)
+            prGreen('[MORE PROMO] Completed More Promotions successfully !')
+        except :
+            prRed('\n[ERROR] An Error has Occured While Completing More Promotion.\n')
+            writeErr()
+            FA.write('\n[ERROR] An Error has Occured While Completing More Promotion.')
+            FA.close()
+        remainingSearches, remainingSearchesM = getRemainingSearches(browser)
+        retrySleep = random.randint(250, 300)
+
+        if remainingSearches != 0:
+            printDateAndTime()
+            prPurple('[BING] Starting Desktop and Edge Bing Searches...')
+            bingSearches(browser, remainingSearches)
+            FIRST_RUN = False
+            browser.quit()            
+            if SEARCHESREMAINING == 0 :
+                printDateAndTime()
+                prGreen('[BING] Finished Desktop and Edge Bing searches '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' ! ')
+                prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Desktop Points today !')
+                prYellow('[INFO] Waiting ' + str(tempSleepTimer) + 'seconds Until Continuing... \n')
+                time.sleep(tempSleepTimer)
+            else :
+                printDateAndTime()
+                prRed('\n[ERROR] ' + str(account['username']) + ' Has NOT Earned All Desktop Points today.\n')
                 writeErr()
-                FA.write('\n[Error] An Error has Occured while trying to display total time of one account.')
+                FA.write('\n[ERROR] ' + str(account['username']) + ' Has NOT Earned All Desktop Points today.')
                 FA.close()
-                pass
-            try:
-                if ACCOUNT_COUNTER < len(ACCOUNTS) and FIRST_RUN == True and FIRST_RUN_M == True:
+                prYellow('[INFO] There are ' + str(SEARCHESREMAINING) +' Searches Remaining !')
+                prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
+                time.sleep(sleepTimer)    
+        else :
+            browser.quit()
+            prRed('\n[ERROR] '+ str(account['username']) + ' Has Already Earned All Desktop Points Available Today.\n')
+            writeErr()
+            FA.write('\n[ERROR] '+ str(account['username']) + ' Has Already Earned All Desktop Points Available Today.')
+            FA.close()
+            prYellow('\n[INFO] Waiting ' + str(longSleepTimer) +'seconds Until Continuing... \n')
+            time.sleep(longSleepTimer)
+        try: 
+            if remainingSearchesM != 0 :
+                printDateAndTime()
+                prPurple('[INFO] Starting '+ str(account['username']) +' Mobile Account ' + str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' ! ')
+                browser = browserSetup(True, MOBILE_USER_AGENT)
+                prGreen('[LOGIN] Logging-in as ' + account['username'] + " !")
+                login(browser, account['username'], account['password'], True)
+                time.sleep(2)
+                if ACCOUNTISSUE == True :
+                    browser.quit()
+                    prRed('\n[WARNING] [FATAL ERROR] Check if '+ str(account['username']) +' is Locked, Suspended, or Banned.\n')
+                    writeErr()
+                    FA.write('\n[WARNING] [FATAL ERROR] Check if '+ str(account['username']) +' is Locked, Suspended, or Banned.')
+                    FA.close()
+                    ACCOUNTISSUE = False
+                    prRed('[INFO] No Points were earned!\n')
+                    prYellow('********************' + account['username'] + '********************')
+                    prPurple('[INFO] ' + str(ACCOUNT_COUNTER)+'/' + str(len(ACCOUNTS)) + ' Accounts Completed ! ')
+                    prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
+                    time.sleep(sleepTimer)
+                    continue
+                prGreen('[LOGIN] Logged-in Successfully !')
+                printDateAndTime()
+                prPurple('[BING] Starting Mobile Bing searches... ')
+                bingSearches(browser, remainingSearchesM, True)
+                FIRST_RUN_M = False
+                browser.quit()
+                if ACCOUNT_COUNTER == len(ACCOUNTS):
+                    if SEARCHESREMAINING == 0 :
+                        printDateAndTime()
+                        prGreen('[BING] Finished Mobile Bing searches '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' ! ')
+                        prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Mobile Points Today !\n')
+                else:                
+                    if SEARCHESREMAINING == 0 :
+                        printDateAndTime()
+                        prGreen('[BING] Finished Mobile Bing searches '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' ! ')
+                        prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Mobile Points Today !')
+                    else :
+                        prRed('\n')
+                        printDateAndTime()
+                        prRed('[ERROR] ' + str(account['username']) + ' Has NOT Earned All Mobile Points Today.\n')
+                        writeErr()
+                        FA.write('[ERROR] ' + str(account['username']) + ' Has NOT Earned All Mobile Points Today.')
+                        FA.close()
+            else :
+                if FIRST_RUN_M==True and FIRST_RUN==True:
                     prRed('\n')
                     printDateAndTime()
-                    prRed('[ERROR] '+ str(account['username']) + ' Has Already Earned All Points Available Today. '  + '\n')
-                    prYellow('\n[INFO] Waiting ' + str(longSleepTimer) +'seconds Until Continuing... !\n')
+                    prRed('[INFO] '+ str(account['username']) + ' Has Already Earned All Mobile Points Available Today ! ' + '\n')
+                else:
+                    prRed('\n')
+                    printDateAndTime()
+                    prRed('[INFO] '+ str(account['username']) + ' Has Already Earned All Mobile Points Available Today ! ' + '\n')
+                    prYellow('\n[INFO] Waiting ' + str(longSleepTimer) +'seconds Until Continuing... \n')
                     time.sleep(longSleepTimer)
-                elif ACCOUNT_COUNTER < len(ACCOUNTS):
-                    prYellow('[INFO] Waiting ' + str(sleepTimer) +'seconds Until Continuing... !\n')
-                    time.sleep(sleepTimer)
-            except:
-                prRed('\n[ERROR] An Error has Occured with First_run and First_runM SleepTimers.\n')
-                writeErr()
-                FA.write('\n[ERROR] An Error has Occured with First_run and First_runM SleepTimers.')
-                FA.close()
-                pass
-    else:
-        prRed('\n[WARNING] [FATAL ERROR] Check if Account is Locked, Suspended, or Banned.\n')
-        writeErr()
-        FA.write('\n[WARNING] [FATAL ERROR] Check if Account is Locked, Suspended, or Banned.')
-        FA.close()
-        pass
+        except:
+            prRed('\n[ERROR] An Error has Occured While Trying to Run Mobile Searches.\n')
+            writeErr()
+            FA.write('\n[ERROR] An Error has Occured While Trying to Run Mobile Searches.')
+            FA.close()
+        try : #Account logger
+            if 6500 <= POINTS_COUNTER < 13000: # $5 reward
+                lowReward()
+            elif POINTS_COUNTER >= 13000: # $10 reward
+                highReward()
+            else : # no reward
+                noReward()
+        except :
+            prRed('\n[ERROR] An Error has Occured When Trying to Create or Write to .txt .\n')
+            pass
+        prGreen('[POINTS] You have earned ' + str(POINTS_COUNTER - startingPoints) + ' points today !')
+        prGreen('[POINTS] You are now at ' + str(POINTS_COUNTER) + ' points !\n') 
+        prYellow('********************' + account['username'] + '********************')
+        prPurple('[INFO] ' + str(ACCOUNT_COUNTER)+'/' + str(len(ACCOUNTS)) + ' Accounts Completed ! ')
+        TIMETOTAL = time.time()-pcMobileTimerTotal
+        prYellow('[INFO] '+ str(account['username']) +' Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TIMETOTAL)))
+        try:
+            if ACCOUNT_COUNTER < len(ACCOUNTS) and FIRST_RUN == True and FIRST_RUN_M == True:
+                prRed('\n')
+                printDateAndTime()
+                prRed('[ERROR] '+ str(account['username']) + ' Has Already Earned All Points Available Today. '  + '\n')
+                prYellow('\n[INFO] Waiting ' + str(longSleepTimer) +'seconds Until Continuing... \n')
+                time.sleep(longSleepTimer)
+            elif ACCOUNT_COUNTER < len(ACCOUNTS):
+                prYellow('[INFO] Waiting ' + str(sleepTimer) +'seconds Until Continuing... \n')
+                time.sleep(sleepTimer)
+        except:
+            prRed('\n[ERROR] An Error has Occured with First_run and First_runM SleepTimers.\n')
+            writeErr()
+            FA.write('\n[ERROR] An Error has Occured with First_run and First_runM SleepTimers.')
+            FA.close()
+            pass
 except OSError as err:
     prRed('\n[ERROR] OS error:', err,'\n')
     browser.quit()
@@ -1749,8 +1628,6 @@ except Exception as err:
     writeErr()
     FA.write(f'\n[ERROR] Unexpected {err=}, {type(err)=}')
     FA.close()
-except :
-    displayAccountIssue()
     raise
 finally :
     displayAccountWRewards()

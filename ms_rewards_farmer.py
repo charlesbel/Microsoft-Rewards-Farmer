@@ -29,6 +29,7 @@ HIGHREWARDS = 0
 FIRST_RUN = True
 FIRST_RUN_M = True
 ACCOUNTISSUE = False
+PROTECTISSUE = False
 COMPLETESEARCH = 0
 RETRYING = False
 RETRYINGM = False
@@ -50,8 +51,8 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
         options = Options()
         options.add_argument("user-agent=" + user_agent)
         options.add_argument('lang=' + LANG.split("-")[0])
-        if headless_mode : #comment out to disable headless mode (makes window visable) 
-          options.add_argument("--headless") #comment out to disable headless mode (makes window visable) 
+        if headless_mode : #comment out this line of code to disable headless mode (make window visable) 
+          options.add_argument("--headless") #comment out this line of code to disable headless mode (make window visable) 
         options.add_argument('log-level=3')
         chrome_browser_obj = webdriver.Chrome(options=options)
         return chrome_browser_obj
@@ -101,6 +102,28 @@ def accountIssue(browser: WebDriver):
             pass
     except:
         return
+    
+def protectAcc(browser: WebDriver):
+    global PROTECTISSUE
+    try:
+        protect = str(browser.find_element(By.XPATH, '//*[@id="iSelectProofTitle"]').get_attribute('innerHTML'))
+        prRed('\n[WARNING] [FATAL ERROR] '+ str(protect) +' !\n')
+        if protect.startswith('Help us protect') :
+            prRed('\n[WARNING] [FATAL ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account !\n')
+            writeErr()
+            FA.write('\n[WARNING] [FATAL ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account !\n')
+            FA.close()
+            PROTECTISSUE= True
+            pass
+        elif protect.startswith('Aidez-nous à protéger') :
+            prRed('\n[WARNING] [FATAL ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account !\n')
+            writeErr()
+            FA.write('\n[WARNING] [FATAL ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account !\n')
+            FA.close()
+            PROTECTISSUE= True
+            pass
+    except:
+        return
 
 # Define login function
 def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
@@ -134,6 +157,10 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         if not isMobile :
             accountIssue(browser)
         if ACCOUNTISSUE == True :
+            return
+        if not isMobile :
+            protectAcc(browser)
+        if PROTECTISSUE == True:
             return
         time.sleep(1)
         # Click Security Check
@@ -1439,7 +1466,20 @@ try:
             FA.write('\n[WARNING] [FATAL ERROR] Check if '+ str(account['username']) +' is Locked, Suspended, or Banned.')
             FA.close()
             ACCOUNTISSUE = False
-            prRed('[INFO] No Points were earned!\n')
+            prRed('[INFO] '+ account['username'] + ' Was Skipped! No Points were earned!\n')
+            prYellow('********************' + account['username'] + '********************')
+            prPurple('[INFO] ' + str(ACCOUNT_COUNTER)+'/' + str(len(ACCOUNTS)) + ' Accounts Completed ! ')
+            prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
+            time.sleep(sleepTimer)
+            continue 
+        if PROTECTISSUE == True :
+            browser.quit()
+            prRed('\n[WARNING] [FATAL ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account !\n')
+            writeErr()
+            FA.write('\n[WARNING] [FATAL ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account !\n')
+            FA.close()
+            PROTECTISSUE = True
+            prRed('[INFO] '+ account['username'] + ' Was Skipped! No Points were earned!\n')
             prYellow('********************' + account['username'] + '********************')
             prPurple('[INFO] ' + str(ACCOUNT_COUNTER)+'/' + str(len(ACCOUNTS)) + ' Accounts Completed ! ')
             prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')

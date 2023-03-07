@@ -21,6 +21,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException,
 #rewardsLog = 'C://Users//YourNameHere//Desktop//Microsoft.Rewards.Log.txt' #change YourNameHere to your pc's Username and delete the # infront of rewardsLog 
 PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36 Edg/86.0.622.63'
 MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 10; Pixel 3) zAppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0. 3945.79 Mobile Safari/537.36'
+PROTECTACCPAUSE = False #Set this variable to True to pause the script when you need to verify Account infomation.("Help us protect Your Account") Tip- disable headless mode when you set this to true
 BASE_URL = ""
 POINTS_COUNTER = 0
 ACCOUNT_COUNTER = 0
@@ -105,6 +106,7 @@ def accountIssue(browser: WebDriver):
     
 def protectAcc(browser: WebDriver):
     global PROTECTISSUE
+    global PROTECTACCPAUSE
     try:
         protect = str(browser.find_element(By.XPATH, '//*[@id="iSelectProofTitle"]').get_attribute('innerHTML'))
         prRed('\n[WARNING] [FATAL ERROR] '+ str(protect) +' !\n')
@@ -113,14 +115,22 @@ def protectAcc(browser: WebDriver):
             writeErr()
             FA.write('\n[WARNING] [FATAL ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account !\n')
             FA.close()
-            PROTECTISSUE= True
+            if PROTECTACCPAUSE == True :
+                prYellow('[INFO] Please Varify Account... Then Press Any Key To Continue!')
+                input()
+            else:
+                PROTECTISSUE= True
             pass
         elif protect.startswith('Aidez-nous à protéger') :
             prRed('\n[WARNING] [FATAL ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account !\n')
             writeErr()
             FA.write('\n[WARNING] [FATAL ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account !\n')
             FA.close()
-            PROTECTISSUE= True
+            if PROTECTACCPAUSE == True :
+                prYellow('[INFO] Please Varify Account... Then Press Any Key To Continue!')
+                input()
+            else:
+                PROTECTISSUE= True
             pass
     except:
         return
@@ -1462,28 +1472,34 @@ try:
         if ACCOUNTISSUE == True :
             browser.quit()
             prRed('\n[WARNING] [FATAL ERROR] Check if '+ str(account['username']) +' is Locked, Suspended, or Banned.\n')
-            writeErr()
-            FA.write('\n[WARNING] [FATAL ERROR] Check if '+ str(account['username']) +' is Locked, Suspended, or Banned.')
-            FA.close()
             ACCOUNTISSUE = False
             prRed('[INFO] '+ account['username'] + ' Was Skipped! No Points were earned!\n')
+            
             prYellow('********************' + account['username'] + '********************')
             prPurple('[INFO] ' + str(ACCOUNT_COUNTER)+'/' + str(len(ACCOUNTS)) + ' Accounts Completed ! ')
-            prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
-            time.sleep(sleepTimer)
+
+            if ACCOUNT_COUNTER == len(ACCOUNTS):
+                printDateAndTime()
+                prGreen('[BING] Finished Mobile Bing searches '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' ! ')
+                prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Mobile Points Today !\n')
+            else :
+                prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
+                time.sleep(sleepTimer)
             continue 
         if PROTECTISSUE == True :
             browser.quit()
             prRed('\n[WARNING] [FATAL ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account !\n')
-            writeErr()
-            FA.write('\n[WARNING] [FATAL ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account !\n')
-            FA.close()
             PROTECTISSUE = True
             prRed('[INFO] '+ account['username'] + ' Was Skipped! No Points were earned!\n')
             prYellow('********************' + account['username'] + '********************')
             prPurple('[INFO] ' + str(ACCOUNT_COUNTER)+'/' + str(len(ACCOUNTS)) + ' Accounts Completed ! ')
-            prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
-            time.sleep(sleepTimer)
+            if ACCOUNT_COUNTER == len(ACCOUNTS):
+                printDateAndTime()
+                prGreen('[BING] Finished Mobile Bing searches '+str(ACCOUNT_COUNTER) + '/'+str(len(ACCOUNTS)) + ' ! ')
+                prPurple('[INFO] ' + str(account['username']) + ' Has Earned All Mobile Points Today !\n')
+            else :
+                prYellow('[INFO] Waiting ' + str(sleepTimer) + 'seconds Until Continuing... \n')
+                time.sleep(sleepTimer)
             continue 
         prGreen('[LOGIN] Logged-in Successfully !')
         startingPoints = POINTS_COUNTER

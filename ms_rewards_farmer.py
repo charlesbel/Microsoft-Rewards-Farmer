@@ -116,7 +116,7 @@ def protectAcc(browser: WebDriver):
             FA.write('\n[WARNING] [FATAL ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account !\n')
             FA.close()
             if PROTECTACCPAUSE == True :
-                prYellow('[INFO] Please Varify Account... Then Press Any Key To Continue!')
+                prYellow('[INFO] Please Verify Account... Then Press Any Key To Continue!')
                 input()
             else:
                 PROTECTISSUE= True
@@ -127,7 +127,7 @@ def protectAcc(browser: WebDriver):
             FA.write('\n[WARNING] [FATAL ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account !\n')
             FA.close()
             if PROTECTACCPAUSE == True :
-                prYellow('[INFO] Please Varify Account... Then Press Any Key To Continue!')
+                prYellow('[INFO] Please Verify Account... Then Press Any Key To Continue!')
                 input()
             else:
                 PROTECTISSUE= True

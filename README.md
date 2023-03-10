@@ -87,7 +87,7 @@ To find your pc's user's name go to C:\Users
 
 -How to Disable Headless mode to watch the script work:
 
-Comment out line 41 and 42 by placing a # in front of each line.
+Comment out line 56 and 57 by placing a # in front of each line.
 ```
 #if headless_mode : #comment out to disable headless mode (makes window visable)
 #options.add_argument("--headless")

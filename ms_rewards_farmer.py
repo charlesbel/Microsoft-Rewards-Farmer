@@ -19,9 +19,10 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException,
 # Define user-agents
 #rewardsErr ='C://Users//YourNameHere//Desktop//Microsoft.Rewards.Err.txt' #change YourNameHere to your pc's Username and delete the # infront of rewardsErr
 #rewardsLog = 'C://Users//YourNameHere//Desktop//Microsoft.Rewards.Log.txt' #change YourNameHere to your pc's Username and delete the # infront of rewardsLog 
+
 PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36 Edg/86.0.622.63'
 MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 10; Pixel 3) zAppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0. 3945.79 Mobile Safari/537.36'
-PROTECTACCPAUSE = False #Set this variable to True to pause the script when you need to verify Account infomation.("Help us protect Your Account") Tip- disable headless mode when you set this to true
+PROTECTACCPAUSE = False #Set this variable to True to pause the script when you need to verify Account infomation.("Help us protect Your Account") Tip- disable headless mode when you set this to True
 BASE_URL = ""
 POINTS_COUNTER = 0
 ACCOUNT_COUNTER = 0
@@ -36,6 +37,7 @@ RETRYING = False
 RETRYINGM = False
 CBL_COUNTER = 1
 FIRSTWRITE = True
+FIRSTWRITEERR = True
 FAOPEN = False
 ACCOUNTSWREWARD = []
 HIGHACCOUNTSWREWARD = []
@@ -335,10 +337,15 @@ def waitUntilVisible(browser: WebDriver, by_: By, selector: str, time_to_wait: i
         time.sleep(2)
         WebDriverWait(browser, time_to_wait).until(ec.visibility_of_element_located((by_, selector)))
     except:
-        prRed('\n[ERROR] An Error has Occured While Trying to Wait Until Visible.\n')
-        writeErr()
-        FA.write('\n[ERROR] An Error has Occured While Trying to Wait Until Visible.')
-        FA.close()
+        try :
+            prYellow('[Info] Waiting 20 secs to ReTry waitUntilVisible')
+            time.sleep(20)
+            WebDriverWait(browser, time_to_wait).until(ec.visibility_of_element_located((by_, selector)))
+        except:
+            prRed('\n[ERROR] An Error has Occured While Trying to Wait Until Visible.\n')
+            writeErr()
+            FA.write('\n[ERROR] An Error has Occured While Trying to Wait Until Visible.')
+            FA.close()
 
 def waitUntilClickable(browser: WebDriver, by_: By, selector: str, time_to_wait: int = 10):
     try :
@@ -876,10 +883,18 @@ def getDashboardData(browser: WebDriver) -> dict:
         time.sleep(2)
         return dashboard
     except:
-        prRed('\n[ERROR] An Error has Occured While Trying to Get Dashboard Data.\n')
-        writeErr()
-        FA.write('\n[ERROR] An Error has Occured While Trying to Get Dashboard Data.')
-        FA.close()
+        try :
+            prYellow('[Info] Waiting 20 secs to ReTry getDashboardData')
+            time.sleep(20)
+            dashboard = findBetween(browser.find_element(By.XPATH, '/html/body').get_attribute('innerHTML'), "var dashboard = ", ";\n        appDataModule.constant(\"prefetchedDashboard\", dashboard);")
+            dashboard = json.loads(dashboard)
+            time.sleep(2)
+            return dashboard
+        except :
+            prRed('\n[ERROR] An Error has Occured While Trying to Get Dashboard Data.\n')
+            writeErr()
+            FA.write('\n[ERROR] An Error has Occured While Trying to Get Dashboard Data.')
+            FA.close()
 
 def completeDailySet(browser: WebDriver):
     try :
@@ -1373,10 +1388,14 @@ def writeErr() :
     global FAOPEN
     global FA
     global ERRCOUNT
+    global FIRSTWRITEERR
     try :
         if FAOPEN == False :
             FA = open(rewardsErr, 'a')
             FAOPEN = True
+        if FIRSTWRITEERR == True :
+            FA.write('\n\n Microsoft Rewards Error Logger Created On ' + datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
+            FIRSTWRITEERR = False
         FA.write('\n\n'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
         FA.write('\n' + str(account['username']))
         printDateAndTime()
@@ -1395,15 +1414,27 @@ def displayAccountWRewards() :
     try :
         if LOWREWARDS == 1 :
             prGreen('\n[INFO] You have ' + str(LOWREWARDS) + ' $5 Gift Card Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD))
+            f = open(rewardsLog, 'a')
+            f.write('\n\n[INFO] You have ' + str(LOWREWARDS) + ' $5 Gift Card Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD))
+            f.close()
             anyRewards = True
         elif LOWREWARDS >= 1 :
             prGreen('\n[INFO] You have ' + str(LOWREWARDS) + ' $5 Gift Cards Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD))
+            f = open(rewardsLog, 'a')
+            f.write(('\n\n[INFO] You have ' + str(LOWREWARDS) + ' $5 Gift Cards Waiting to be Redeemed on ' + str(ACCOUNTSWREWARD)))
+            f.close()
             anyRewards = True
         if HIGHREWARDS == 1 :
             prGreen('\n[INFO] You have ' + str(HIGHREWARDS) + ' $10 Gift Card Waiting to be Redeemed on ' + str(HIGHACCOUNTSWREWARD))
+            f = open(rewardsLog, 'a')
+            f.write(('\n\n[INFO] You have ' + str(HIGHREWARDS) + ' $10 Gift Card Waiting to be Redeemed on ' + str(HIGHACCOUNTSWREWARD)))
+            f.close()
             anyRewards = True
         elif HIGHREWARDS >= 1 :
             prGreen('\n[INFO] You have ' + str(HIGHREWARDS) + ' $10 Gift Cards Waiting to be Redeemed on ' + str(HIGHACCOUNTSWREWARD))
+            f = open(rewardsLog, 'a')
+            f.write(('\n\n[INFO] You have ' + str(HIGHREWARDS) + ' $10 Gift Cards Waiting to be Redeemed on ' + str(HIGHACCOUNTSWREWARD)))
+            f.close()
             anyRewards = True
         if anyRewards == True :
             prGreen('\n\n[INFO] Check '+str(rewardsLog)+' For More Information !')
@@ -1435,9 +1466,13 @@ prPurple("Version 3.0")
 
 LANG, GEO, TZ = getCCodeLangAndOffset()
 try :
-    FA = open(rewardsErr, 'a')
-    FA.write('\n\nMicrosoft Rewards Err Log Created On ' + datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
-    FA.close()
+    if not path.exists(rewardsErr):
+        FA = open(rewardsErr, 'w')
+        FA.write('Microsoft Rewards Error Log\n')
+        if FIRSTWRITEERR == True :
+            FA.write('\n\n Created On'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
+            FIRSTWRITEERR = False
+        FA.close()
 except:
     prRed('[ERROR] You do not have rewardsErr set up correctly.')
     pass
@@ -1666,6 +1701,23 @@ try:
             FA.write('\n[ERROR] An Error has Occured with First_run and First_runM SleepTimers.')
             FA.close()
             pass
+    try: #test
+        if remainingSearches > 0 :
+            prRed('[INFO] '+ str(len(ACCOUNTS)) +' Desktop  Searches Did Not Complete !')
+            writeErr()
+            FA.write('\n[INFO] '+ str(len(ACCOUNTS)) +' Desktop  Searches Did Not Complete !')
+            FA.close()
+        elif remainingSearchesM > 0 :
+            prRed('[INFO] '+ str(len(ACCOUNTS)) +' Mobile Searches Did Not Complete !')
+            writeErr()
+            FA.write('\n[INFO] '+ str(len(ACCOUNTS)) +' Mobile  Searches Did Not Complete !')
+            FA.close()
+    except:
+        prRed('[Error] An Error has Occured With Displaying Incomplete Desktop or Mobile Searches.')
+        writeErr()
+        FA.write('\n[Error] An Error has Occured With Displaying Incomplete Desktop or Mobile Searches.')
+        FA.close()
+        pass
 except OSError as err:
     prRed('\n[ERROR] OS error:', err,'\n')
     browser.quit()

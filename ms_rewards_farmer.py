@@ -21,7 +21,8 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException,
 #rewardsLog = 'C://Users//YourNameHere//Desktop//Microsoft.Rewards.Log.txt' #change YourNameHere to your pc's Username and delete the # infront of rewardsLog 
 PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.183 Safari/537.36 Edg/86.0.622.63'
 MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 10; Pixel 3) zAppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0. 3945.79 Mobile Safari/537.36'
-PROTECTACCPAUSE = False #Set this variable to True to pause the script when you need to verify Account infomation.("Help us protect Your Account") Tip- disable headless mode when you set this to True
+PROTECTACCPAUSE = False #Set this variable to True to pause the script when you need to verify Account infomation. ("Help us protect Your Account")
+HEADLESSOFF = False #Set this variable to True to Disable Headless mode, which will allow you to watch the script by opening a browser and running
 BASE_URL = ""
 POINTS_COUNTER = 0
 ACCOUNT_COUNTER = 0
@@ -41,21 +42,28 @@ FIRSTWRITEERR = True
 FAOPEN = False
 ACCOUNTSWREWARD = []
 HIGHACCOUNTSWREWARD = []
+SEARCHCOMPLETE = False
+SEARCHCOMPLETEM = False
 ERRCOUNT = 0
+REFRESH = 0 #delete test
+COUNT = 0 #delete test
 tempSleepTimer = random.randint(300, 450) #set to 300-450secs - time waiting if account has no pc or mobile searches from start
 longSleepTimer = random.randint(500, 600) #Set to 500-600secs - time waiting between multiple accounts that already earned today's points
 sleepTimer = random.randint(300, 500) #Set to 300-400secs - time waiting between multiple accounts AFTER earning points for the account
 
 # Define browser setup function
 def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -> WebDriver:
+    global PROTECTACCPAUSE
+    global HEADLESSOFF
     try :
         # Create Chrome browser
         from selenium.webdriver.chrome.options import Options
         options = Options()
         options.add_argument("user-agent=" + user_agent)
         options.add_argument('lang=' + LANG.split("-")[0])
-        if headless_mode : #comment out this line of code to disable headless mode (make window visable) 
-          options.add_argument("--headless") #comment out this line of code to disable headless mode (make window visable) 
+        if PROTECTACCPAUSE != True and HEADLESSOFF != True :
+            if headless_mode : #comment out this line of code to disable headless mode (make window visable) 
+                options.add_argument("--headless") #comment out this line of code to disable headless mode (make window visable) 
         options.add_argument('log-level=3')
         chrome_browser_obj = webdriver.Chrome(options=options)
         return chrome_browser_obj
@@ -65,19 +73,28 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
         FA.write('\n[ERROR] An Error has Occured While Trying to Complete Browser Setup.\n')
         FA.close()
 
-def pageNotWorking(browser: webdriver) :
+def pageNotWorking(browser: WebDriver) :
+    global REFRESH #delete test
+    localRefresh = 0
     try :
         noLoad = str(browser.find_element(By.XPATH, '//*[@id="main-message"]/h1/span').get_attribute('innerHTML'))
-        if noLoad.startswith("This page isn't"):
-            while noLoad.startswith("This page isn't"):
-                    prYellow('[INFO] Could Not Load Page. Refreshing Now...')
-                    browser.refresh()
-                    time.sleep(5)
+        time.sleep(2)
+        if noLoad.startswith('This page isn'):
+            prRed('[INFO] Could Not Load Page.')
+            while noLoad.startswith('This page isn'):
+                REFRESH = REFRESH + 1 #delete test
+                localRefresh = localRefresh+1
+                prYellow('[INFO] Refreshing Now... REFRESH # ' + str(localRefresh))
+                browser.refresh()
+                time.sleep(15)
+                try:
+                    browser.find_element(By.XPATH, '//*[@id="main-message"]/h1/span')
+                    noLoad = str(browser.find_element(By.XPATH, '//*[@id="main-message"]/h1/span')
+                                .get_attribute('innerHTML'))
+                except:
+                    prGreen('[Info] Page Successfully Loaded')
+                    break
     except :
-        prRed('\n[ERROR] An Error has Occured While Trying to Reload Current Page.\n')
-        writeErr()
-        FA.write('\n[ERROR] An Error has Occured While Trying to Reload Current Page.\n')
-        FA.close()
         pass
 
 def accountIssue(browser: WebDriver):
@@ -158,19 +175,39 @@ def securityInfoCheck (browser: WebDriver):
         securityCheck = str(browser.find_element(By.XPATH, '//*[@id="iPageTitle"]').get_attribute('innerHTML'))
         prRed('\n[WARNING] [ERROR] '+ str(securityCheck) +' !\n')
         if securityCheck.startswith('Is your security') :
-            #find xpath to click "looks good! to automate this feature"  #delete this line when automating feature
+            try :
+                browser.find_element(By.CLASS_NAME, 'accept-button-class').click()
+                prGreen('Clicked accept button for security check')
+            except :
+                pass
+            try :
+                browser.find_element(By.CLASS_NAME, 'continue-button-class').click()
+                prGreen('Clicked continue button for security check')
+            except:
+                prRed('\n[WARNING] [ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account Security Info !\n') #delete this line when automating feature
+                writeErr()#delete this line when automating feature
+                FA.write('\n[WARNING] [ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account Security Info !\n') #delete this line when automating feature
+                FA.close()#delete this line when automating feature
+                pass
+            #find xpath to click "looks good!" to automate this feature  #delete this line when automating feature
             #browser.find_element(By.XPATH, '').click() #Needs "Looks Good" button xpath 
-            prRed('\n[WARNING] [ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account Security Info !\n') #delete this line when automating feature
-            writeErr()#delete this line when automating feature
-            FA.write('\n[WARNING] [ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account Security Info !\n') #delete this line when automating feature
-            FA.close()#delete this line when automating feature
             SECURITYCHECK = True #delete this line when automating feature
         elif securityCheck.startswith('Vos informations'):
+            try :
+                browser.find_element(By.CLASS_NAME, 'accept-button-class').click()
+                prGreen('Clicked accept button for security check')
+            except :
+                pass
+            try :
+                browser.find_element(By.CLASS_NAME, 'continue-button-class').click()
+                prGreen('Clicked continue button for security check')
+            except:
+                prRed('\n[WARNING] [ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account Security Info !\n') #delete this line when automating feature
+                writeErr()#delete this line when automating feature
+                FA.write('\n[WARNING] [ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account Security Info !\n') #delete this line when automating feature
+                FA.close()#delete this line when automating feature
+                pass
             #browser.find_element(By.XPATH, '').click() #Needs "Looks Good" xpath 
-            prRed('\n[WARNING] [ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account Security Info !\n') #delete this line when automating feature
-            writeErr()#delete this line when automating feature
-            FA.write('\n[WARNING] [ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account Security Info !\n') #delete this line when automating feature
-            FA.close()#delete this line when automating feature
             SECURITYCHECK = True #delete this line when automating feature
     except :
         return
@@ -184,6 +221,7 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         time.sleep(random.randint(4, 6))
         # Wait complete loading
         waitUntilVisible(browser, By.ID, 'loginHeader', 20)
+        pageNotWorking(browser)#test
         time.sleep(random.randint(4, 6))
         # Enter email
         print('[LOGIN]', 'Writing email...')
@@ -204,16 +242,13 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         browser.find_element(By.ID, 'idSIButton9').click()
         # Wait 5 seconds
         time.sleep(random.randint(4, 6))
-        if not isMobile :
-            accountIssue(browser)
+        accountIssue(browser)
         if ACCOUNTISSUE == True :
             return
-        if not isMobile :
-            protectAcc(browser)
+        protectAcc(browser)
         if PROTECTISSUE == True:
             return
-        if not isMobile :
-            securityInfoCheck(browser)
+        securityInfoCheck(browser)
         if SECURITYCHECK == True : #delete this line when automating feature
             return #delete this line when automating feature
         time.sleep(1)
@@ -375,22 +410,32 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
         FA.close()
 
 def waitUntilVisible(browser: WebDriver, by_: By, selector: str, time_to_wait: int):
-    try :
-        pageNotWorking()
-    except: 
-        pass
+    fail = False
+    global COUNT#delete test
     try :
         time.sleep(2)
         WebDriverWait(browser, time_to_wait).until(ec.visibility_of_element_located((by_, selector)))
     except:
-        try :
-            pageNotWorking()
-        except: 
-            pass
         try:
-            prYellow('[Info] Waiting 20 secs to ReTry waitUntilVisible')
-            time.sleep(20)
-            WebDriverWait(browser, time_to_wait).until(ec.visibility_of_element_located((by_, selector)))
+            fail = True
+            time.sleep(5)
+            try :
+                pageNotWorking(browser)
+            except: 
+                prRed('\n[ERROR] An Error has Occured While Trying to Reload Current Page while wait until visible.\n')
+                writeErr()
+                FA.write('\n[ERROR] An Error has Occured While Trying to Reload Current Page while wait until visible.\n')
+                FA.close()
+                pass
+            while fail == True :
+                COUNT = COUNT + 1
+                prYellow('[Info] Waiting 20 secs to ReTry waitUntilVisible # '+str(COUNT))
+                time.sleep(20)
+                try :
+                    WebDriverWait(browser, time_to_wait).until(ec.visibility_of_element_located((by_, selector)))
+                    fail = False
+                except:
+                    pass
         except:
             prRed('\n[ERROR] An Error has Occured While Trying to Wait Until Visible.\n')
             writeErr()
@@ -927,11 +972,28 @@ def completeDailySetThisOrThat(browser: WebDriver, cardNumber: int):
 
 def getDashboardData(browser: WebDriver) -> dict:
     try :
+        pageNotWorking(browser)
+    except :
+        prRed('\n[ERROR] An Error has Occured While Trying to Reload Current Page While Getting Dashboard Data1.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Reload Current Page While Getting Dashboard Data1.\n')
+        FA.close()
+        pass
+    try :
+        time.sleep(2)
         dashboard = findBetween(browser.find_element(By.XPATH, '/html/body').get_attribute('innerHTML'), "var dashboard = ", ";\n        appDataModule.constant(\"prefetchedDashboard\", dashboard);")
         dashboard = json.loads(dashboard)
         time.sleep(2)
         return dashboard
     except:
+        try :
+            pageNotWorking(browser)
+        except :
+            prRed('\n[ERROR] An Error has Occured While Trying to Reload Current Page While Getting Dashboard Data2.\n')
+            writeErr()
+            FA.write('\n[ERROR] An Error has Occured While Trying to Reload Current Page While Getting Dashboard Data2.\n')
+            FA.close()
+            pass
         try :
             prYellow('[Info] Waiting 20 secs to ReTry getDashboardData')
             time.sleep(20)
@@ -1030,12 +1092,23 @@ def completePunchCard(browser: WebDriver, url: str, childPromotions: dict):
                         time.sleep(1)
                     except :
                         pass
-                    maxQuestions = browser.execute_script("return _w.rewardsQuizRenderInfo.maxQuestions")
+                    try:
+                        maxQuestions = browser.execute_script("return _w.rewardsQuizRenderInfo.maxQuestions")
+                    except :
+                        maxQuestions = 20
+                        pass
                     time.sleep(3)                  
                     try :
                         numberOfOptions = browser.execute_script("return _w.rewardsQuizRenderInfo.numberOfOptions")
+                    except :
+                        numberOfOptions = 4
+                        pass
+                    try:
                         for question in range(maxQuestions):
                             if numberOfOptions == 4:
+                                if browser.find_element(By.XPATH, '//*[@id="rqCloseBtn"]/div/img' ) :
+                                    browser.find_element(By.XPATH, '//*[@id="rqCloseBtn"]/div/img' ).click()#quit quiz
+                                    break
                                 correctOption = browser.execute_script("return _w.rewardsQuizRenderInfo.correctAnswer")
                                 for i in range(4):
                                     if browser.find_element(By.ID, "rqAnswerOption" + str(i)).get_attribute("data-option") == correctOption:
@@ -1058,7 +1131,10 @@ def completePunchCard(browser: WebDriver, url: str, childPromotions: dict):
                     except :
                        pass
                     time.sleep(2)
-                    browser.find_element(By.XPATH, '//*[@id="rqCloseBtn"]/div/img' ).click()#quit quiz
+                    try :
+                        browser.find_element(By.XPATH, '//*[@id="rqCloseBtn"]/div/img' ).click()#quit quiz
+                    except :
+                        pass
                     time.sleep(5)
                     browser.close()
                     time.sleep(2)
@@ -1266,6 +1342,14 @@ def completeMorePromotionThisOrThat(browser: WebDriver, cardNumber: int):
         time.sleep(2)
 
 def completeMorePromotions(browser: WebDriver):
+    try:
+        pageNotWorking(browser)
+    except:
+        prRed('\n[ERROR] An Error has Occured While Trying to Reload The Page While Completing More Promotions.\n')
+        writeErr()
+        FA.write('\n[ERROR] An Error has Occured While Trying to Reload The Page While Completing More Promotions.\n')
+        FA.close()
+        pass
     try :
         morePromotions = getDashboardData(browser)['morePromotions']
         i = 0
@@ -1350,7 +1434,7 @@ def noReward() :
             if FIRSTWRITE == True :
                 f.write('\n\n'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
                 FIRSTWRITE = False
-            f.write('\n' + str(account['username']) + ' - Has ' + str(POINTS_COUNTER) + ' points.')
+            f.write('\n- '  + str(POINTS_COUNTER) + ' points on ' + str(account['username']))
             f.close()
             prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt Created !')
         else :
@@ -1358,7 +1442,7 @@ def noReward() :
             if FIRSTWRITE == True :
                 f.write('\n'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
                 FIRSTWRITE = False
-            f.write('\n' + str(account['username']) + ' - Has ' + str(POINTS_COUNTER) + ' points.')
+            f.write('\n- '  + str(POINTS_COUNTER) + ' points on ' + str(account['username']))
             f.close()
             prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt eddited !')
     except :
@@ -1379,7 +1463,7 @@ def lowReward() :
             if FIRSTWRITE == True :
                 f.write('\n\n'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
                 FIRSTWRITE = False
-            f.write('\n' + str(account['username']) + ' - Has ' + str(POINTS_COUNTER) + ' points and can redeem a 5$ Gift Card.')
+            f.write('\n- '  + str(POINTS_COUNTER) + ' points on ' + str(account['username']) + ' - Can redeem a $5 Gift Card.')
             f.close()
             prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt Created !')
             prPurple('[INFO] You have ' + str(POINTS_COUNTER) + ' points! Go Redeem a $5 Gift Card !')
@@ -1390,7 +1474,7 @@ def lowReward() :
             if FIRSTWRITE == True :
                 f.write('\n\n'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
                 FIRSTWRITE = False
-            f.write('\n' + str(account['username']) + ' - Has ' + str(POINTS_COUNTER) + ' points and can redeem a 5$ gift card.')
+            f.write('\n- '  + str(POINTS_COUNTER) + ' points on ' + str(account['username']) + ' - Can redeem a $5 Gift Card.')
             f.close()
             prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt eddited !')
             prPurple('[INFO] You have '+ str(POINTS_COUNTER) +' points! Go Redeem a $5 Gift Card !')
@@ -1414,7 +1498,7 @@ def highReward() :
             if FIRSTWRITE == True :
                 f.write('\n\n'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
                 FIRSTWRITE = False
-            f.write('\n' + str(account['username']) + ' - Has ' + str(POINTS_COUNTER) + ' points and can redeem a $10 Gift Card.')
+            f.write('\n- '  + str(POINTS_COUNTER) + ' points on ' + str(account['username']) + ' - Can redeem a $10 Gift Card.')
             f.close()
             prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt Created !')
             prPurple('[INFO] You have ' + str(POINTS_COUNTER) + ' points! Go Redeem a $10 Gift Card !')
@@ -1425,7 +1509,7 @@ def highReward() :
             if FIRSTWRITE == True :
                 f.write('\n'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
                 FIRSTWRITE = False
-            f.write('\n' + str(account['username']) + ' - Has ' + str(POINTS_COUNTER) + ' points and can redeem a $10 gift card.')
+            f.write('\n- '  + str(POINTS_COUNTER) + ' points on ' + str(account['username']) + ' - Can redeem a $10 Gift Card.')
             f.close()
             prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt eddited !')
             prPurple('[INFO] You have '+ str(POINTS_COUNTER) +' points! Go Redeem a $10 Gift Card !')
@@ -1447,10 +1531,10 @@ def writeErr() :
             FA = open(rewardsErr, 'a')
             FAOPEN = True
         if FIRSTWRITEERR == True :
-            FA.write('\n\n Microsoft Rewards Error Logger Created On ' + datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
+            FA.write('\n\n**Microsoft Rewards Error Logger Created On ' + datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
             FIRSTWRITEERR = False
-        FA.write('\n\n'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
-        FA.write('\n' + str(account['username']))
+        FA.write('\n\n*'+datetime.today().strftime('%m-%d-%Y %H:%M:%S'))
+        FA.write('\n-' + str(account['username']))
         printDateAndTime()
         prYellow('[INFO] Microsoft.Rewards.Err.txt eddited !')
         ERRCOUNT = ERRCOUNT + 1
@@ -1549,6 +1633,8 @@ except FileNotFoundError:
 random.shuffle(ACCOUNTS)
 try:
     for account in ACCOUNTS:
+        SEARCHCOMPLETE = False
+        SEARCHCOMPLETEM = False
         ACCOUNT_COUNTER +=1
         pcMobileTimerTotal = time.time()
         printDateAndTime()
@@ -1613,6 +1699,7 @@ try:
             FA.close()
         try :
             print('[PUNCH CARDS] Trying to complete the Punch Cards...')
+            pageNotWorking(browser)
             completePunchCards(browser)
             prGreen('[PUNCH CARDS] Completed the Punch Cards successfully !')
         except :
@@ -1622,6 +1709,7 @@ try:
             FA.close()
         try :
             print('[MORE PROMO] Trying to complete More Promotions...')
+            pageNotWorking(browser)
             completeMorePromotions(browser)
             prGreen('[MORE PROMO] Completed More Promotions successfully !')
         except :
@@ -1637,7 +1725,7 @@ try:
             prPurple('[BING] Starting Desktop and Edge Bing Searches...')
             bingSearches(browser, remainingSearches)
             FIRST_RUN = False
-            remainingSearches = 0
+            SEARCHCOMPLETE = True
             browser.quit()            
             if SEARCHESREMAINING == 0 :
                 printDateAndTime()
@@ -1688,7 +1776,7 @@ try:
                 prPurple('[BING] Starting Mobile Bing searches... ')
                 bingSearches(browser, remainingSearchesM, True)
                 FIRST_RUN_M = False
-                remainingSearchesM = 0
+                SEARCHCOMPLETEM = True
                 browser.quit()
                 if ACCOUNT_COUNTER == len(ACCOUNTS):
                     if SEARCHESREMAINING == 0 :
@@ -1784,12 +1872,12 @@ finally :
     except :
         pass
     try: #test
-        if remainingSearches > 0 :
+        if SEARCHCOMPLETE == False :
             prRed('[INFO] '+ account['username'] +' Desktop Searches Did Not Complete !')
             writeErr()
             FA.write('\n[INFO] '+ account['username'] +' Desktop Searches Did Not Complete !')
             FA.close()
-        elif remainingSearchesM > 0 :
+        elif SEARCHCOMPLETEM == False :
             prRed('[INFO] '+ account['username'] +' Mobile Searches Did Not Complete !')
             writeErr()
             FA.write('\n[INFO] '+ account['username'] +' Mobile Searches Did Not Complete !')
@@ -1804,6 +1892,8 @@ finally :
     TOTAL_TIME = time.time() - st
     prPurple('\n\n[INFO] MS Farmer Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TOTAL_TIME)) + '\n')
     prYellow('[INFO] Thank you for using Microsoft Rewards Farmer ! ')
+    #prYellow('[TEST] total times REFRESH occured = '+str(REFRESH))#delete test
+    #prYellow('[TEST] total times waitUntilVisable Retry occured = '+str(COUNT))#delete test
     prYellow('[INFO] Press Any Key to Exit !')
     input() #comment out or delete this line to auto exit when complete. ([WARNING] You will not see errors without this line !)
     prPurple('[INFO] Have a Good Day! GoodBye :)\n')

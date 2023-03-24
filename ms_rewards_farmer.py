@@ -219,19 +219,22 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         # Access to bing.com
         browser.get('https://rewards.bing.com/')
         time.sleep(random.randint(4, 6))
+        pageNotWorking(browser)
         # Wait complete loading
         waitUntilVisible(browser, By.ID, 'loginHeader', 20)
-        pageNotWorking(browser)#test
         time.sleep(random.randint(4, 6))
         # Enter email
         print('[LOGIN]', 'Writing email...')
+        pageNotWorking(browser)
         browser.find_element(By.NAME, "loginfmt").send_keys(email)
         time.sleep(random.randint(4, 6))
         # Click next
+        pageNotWorking(browser)
         browser.find_element(By.ID, 'idSIButton9').click()
         # Wait 2 seconds
         time.sleep(random.randint(4, 6))
         # Wait complete loading
+        pageNotWorking(browser)
         waitUntilVisible(browser, By.ID, 'loginHeader', 20)
         # Enter password
         #browser.find_element(By.ID, "i0118").send_keys(pwd)
@@ -242,6 +245,7 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         browser.find_element(By.ID, 'idSIButton9').click()
         # Wait 5 seconds
         time.sleep(random.randint(4, 6))
+        pageNotWorking(browser)
         accountIssue(browser)
         if ACCOUNTISSUE == True :
             return
@@ -264,7 +268,8 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
             pass
         # Wait complete loading
         try:
-            waitUntilVisible(browser, By.ID, 'KmsiCheckboxField', 10)
+            pageNotWorking(browser)
+            waitUntilVisible(browser, By.XPATH, '//*[@id="KmsiCheckboxField"]', 10)
         except (TimeoutException) as e:
             pass
         # Click next
@@ -311,6 +316,7 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
         browser.get('https://bing.com/')
         # Wait 8 seconds
         time.sleep(random.randint(8, 10))
+        pageNotWorking(browser)
         #Accept Cookies
         try:
             browser.find_element(By.ID, 'bnp_btn_accept').click()
@@ -413,6 +419,7 @@ def waitUntilVisible(browser: WebDriver, by_: By, selector: str, time_to_wait: i
     fail = False
     global COUNT#delete test
     try :
+        pageNotWorking(browser)
         time.sleep(2)
         WebDriverWait(browser, time_to_wait).until(ec.visibility_of_element_located((by_, selector)))
     except:
@@ -444,6 +451,7 @@ def waitUntilVisible(browser: WebDriver, by_: By, selector: str, time_to_wait: i
 
 def waitUntilClickable(browser: WebDriver, by_: By, selector: str, time_to_wait: int = 10):
     try :
+        pageNotWorking(browser)
         WebDriverWait(browser, time_to_wait).until(ec.element_to_be_clickable((by_, selector)))
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Wait Until Clickable.\n')
@@ -453,6 +461,7 @@ def waitUntilClickable(browser: WebDriver, by_: By, selector: str, time_to_wait:
 
 def waitUntilQuestionRefresh(browser: WebDriver):
     try :
+        pageNotWorking(browser)
         tries = 0
         refreshCount = 0
         while True:
@@ -559,6 +568,7 @@ def getGoogleTrends(numberOfwords: int) -> list:
 def getRelatedTerms(word: str) -> list:
     try :
         try :
+            pageNotWorking(browser)
             r = requests.get('https://api.bing.com/osjson.aspx?query=' + word, headers = {'User-agent': PC_USER_AGENT})
             time.sleep(1)
             return r.json()[1]
@@ -606,6 +616,7 @@ def getAnswerCode(key: str, string: str) -> str:
 
 def bingSearches(browser: WebDriver, numberOfSearches: int, isMobile: bool = False):
     try :
+        pageNotWorking(browser)
         global POINTS_COUNTER
         global SEARCHESREMAINING
         global COMPLETESEARCH
@@ -689,6 +700,7 @@ def bingSearch(browser: WebDriver, word: str, isMobile: bool):
     try :
         browser.get('https://bing.com')
         time.sleep(2)
+        pageNotWorking(browser)
         searchbar = browser.find_element(By.ID, 'sb_form_q')
         searchbar.send_keys(word)
         time.sleep(2)
@@ -725,6 +737,7 @@ def bingSearch(browser: WebDriver, word: str, isMobile: bool):
 def completePromotionalItems(browser: WebDriver):
     try :
         try :
+            pageNotWorking(browser)
             item = getDashboardData(browser)["promotionalItem"]
             if (item["pointProgressMax"] == 100 or item["pointProgressMax"] == 200) and item["complete"] == False and (item["destinationUrl"] == BASE_URL or item["destinationUrl"].startswith("https://www.bing.com/")):
                 browser.find_element(By.XPATH, '//*[@id="promo-item"]/section/div/div/div/span').click()
@@ -748,6 +761,7 @@ def completePromotionalItems(browser: WebDriver):
 
 def completeDailySetSearch(browser: WebDriver, cardNumber: int):
     try :
+        pageNotWorking(browser)
         time.sleep(5)
         browser.find_element(By.XPATH, '//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/a').click()
         time.sleep(2)
@@ -768,6 +782,7 @@ def completeDailySetSearch(browser: WebDriver, cardNumber: int):
 
 def completeDailySetSurvey(browser: WebDriver, cardNumber: int):
     try :
+        pageNotWorking(browser)
         time.sleep(5)
         browser.find_element(By.XPATH, '//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/a/div['+ str(cardNumber)+']/span').click()
         time.sleep(5)
@@ -790,6 +805,7 @@ def completeDailySetSurvey(browser: WebDriver, cardNumber: int):
 
 def completeDailySetQuiz(browser: WebDriver, cardNumber: int):
     try :
+        pageNotWorking(browser)
         time.sleep(2)
         browser.find_element(By.XPATH, '//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/a').click()
         time.sleep(2)
@@ -852,6 +868,7 @@ def completeDailySetQuiz(browser: WebDriver, cardNumber: int):
 
 def completeDailySetVariableActivity(browser: WebDriver, cardNumber: int):
     try :
+        pageNotWorking(browser)
         time.sleep(2)
         browser.find_element(By.XPATH, '//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/a').click()
         time.sleep(2)
@@ -927,6 +944,7 @@ def completeDailySetVariableActivity(browser: WebDriver, cardNumber: int):
 
 def completeDailySetThisOrThat(browser: WebDriver, cardNumber: int):
     try :
+        pageNotWorking(browser)
         time.sleep(2)
         browser.find_element(By.XPATH, '//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-daily-set-item-content/div/a').click()
         time.sleep(2)
@@ -1009,6 +1027,7 @@ def getDashboardData(browser: WebDriver) -> dict:
 
 def completeDailySet(browser: WebDriver):
     try :
+        pageNotWorking(browser)
         d = getDashboardData(browser)['dailySetPromotions']
         todayDate = datetime.today().strftime('%m/%d/%Y')
         todayPack = []
@@ -1061,6 +1080,7 @@ def completeDailySet(browser: WebDriver):
            
 def getAccountPoints(browser: WebDriver) -> int:
     try :
+        pageNotWorking(browser)
         return getDashboardData(browser)['userStatus']['availablePoints']
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Get Account Points.\n')
@@ -1071,6 +1091,7 @@ def getAccountPoints(browser: WebDriver) -> int:
 def completePunchCard(browser: WebDriver, url: str, childPromotions: dict):
     try :
         browser.get(url)
+        pageNotWorking(browser)
         for child in childPromotions:
             if child['complete'] == False:
                 if child['promotionType'] == "urlreward":
@@ -1151,6 +1172,7 @@ def completePunchCard(browser: WebDriver, url: str, childPromotions: dict):
 
 def completePunchCards(browser: WebDriver):
     try :
+        pageNotWorking(browser)
         punchCards = getDashboardData(browser)['punchCards']
         for punchCard in punchCards:
             try:
@@ -1181,6 +1203,7 @@ def completePunchCards(browser: WebDriver):
 
 def completeMorePromotionSearch(browser: WebDriver, cardNumber: int):
     try :
+        pageNotWorking(browser)
         browser.find_element(By.XPATH, '//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/a').click()
         time.sleep(3)
         try:
@@ -1212,6 +1235,7 @@ def completeMorePromotionSearch(browser: WebDriver, cardNumber: int):
 
 def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
     try :
+        pageNotWorking(browser)
         browser.find_element(By.XPATH, '//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/a').click()
         time.sleep(2)
         browser.switch_to.window(window_name=browser.window_handles[1])
@@ -1262,6 +1286,7 @@ def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
 
 def completeMorePromotionABC(browser: WebDriver, cardNumber: int):
     try :
+        pageNotWorking(browser)
         browser.find_element(By.XPATH, '//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/a').click()
         time.sleep(2)
         browser.switch_to.window(window_name=browser.window_handles[1])
@@ -1298,6 +1323,7 @@ def completeMorePromotionABC(browser: WebDriver, cardNumber: int):
 
 def completeMorePromotionThisOrThat(browser: WebDriver, cardNumber: int):
     try :
+        pageNotWorking(browser)
         browser.find_element(By.XPATH, '//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/a').click()
         time.sleep(2)
         browser.switch_to.window(window_name=browser.window_handles[1])

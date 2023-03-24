@@ -269,7 +269,10 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         # Wait complete loading
         try:
             pageNotWorking(browser)
-            waitUntilVisible(browser, By.XPATH, '//*[@id="KmsiCheckboxField"]', 10)
+            if browser.find_element(By.XPATH, '//*[@id="KmsiCheckboxField"]'):
+                waitUntilVisible(browser, By.XPATH, '//*[@id="KmsiCheckboxField"]', 10)
+            if browser.find_element(By.XPATH, '//*[@id="checkboxField"]') :
+                waitUntilVisible(browser, By.XPATH, '//*[@id="checkboxField"]', 10)
         except (TimeoutException) as e:
             pass
         # Click next
@@ -425,6 +428,7 @@ def waitUntilVisible(browser: WebDriver, by_: By, selector: str, time_to_wait: i
     except:
         try:
             fail = True
+            tempCount = 0
             time.sleep(5)
             try :
                 pageNotWorking(browser)
@@ -436,12 +440,16 @@ def waitUntilVisible(browser: WebDriver, by_: By, selector: str, time_to_wait: i
                 pass
             while fail == True :
                 COUNT = COUNT + 1
-                prYellow('[Info] Waiting 20 secs to ReTry waitUntilVisible # '+str(COUNT))
+                tempCount = tempCount + 1
+                prYellow('[Info] Waiting 20 secs to ReTry waitUntilVisible # '+str(tempCount))
                 time.sleep(20)
+                if tempCount == 4:
+                    fail = False
                 try :
                     WebDriverWait(browser, time_to_wait).until(ec.visibility_of_element_located((by_, selector)))
                     fail = False
                 except:
+                    pageNotWorking(browser)
                     pass
         except:
             prRed('\n[ERROR] An Error has Occured While Trying to Wait Until Visible.\n')

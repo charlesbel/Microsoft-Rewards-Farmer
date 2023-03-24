@@ -268,7 +268,6 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
             pass
         # Wait complete loading
         pageNotWorking(browser)
-        input()
         try :
             if browser.find_element(By.XPATH, '//*[@id="KmsiCheckboxField"]'):
                 waitUntilVisible(browser, By.XPATH, '//*[@id="KmsiCheckboxField"]', 10)

@@ -258,25 +258,29 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         time.sleep(1)
         # Click Security Check
         print('[LOGIN]', 'Passing security checks...')
-        try:
+        try :
             browser.find_element(By.ID, 'iLandingViewAction').click()
         except (NoSuchElementException, ElementNotInteractableException) as e:
             pass
-        try:
+        try :
             browser.find_element(By.ID, 'iNext').click()
-        except:
+        except :
             pass
         # Wait complete loading
-        try:
-            pageNotWorking(browser)
+        pageNotWorking(browser)
+        input()
+        try :
             if browser.find_element(By.XPATH, '//*[@id="KmsiCheckboxField"]'):
                 waitUntilVisible(browser, By.XPATH, '//*[@id="KmsiCheckboxField"]', 10)
+        except :
+            pass
+        try :
             if browser.find_element(By.XPATH, '//*[@id="checkboxField"]') :
                 waitUntilVisible(browser, By.XPATH, '//*[@id="checkboxField"]', 10)
-        except (TimeoutException) as e:
+        except :
             pass
         # Click next
-        try:
+        try :
             browser.find_element(By.ID, 'idSIButton9').click()
             # Wait 5 seconds
             time.sleep(random.randint(4, 6))

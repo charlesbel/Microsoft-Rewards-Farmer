@@ -215,19 +215,38 @@ def securityInfoCheck (browser: WebDriver):
 # Define login function
 def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
     global CBL_RETRY
+    global CBL_COUNTER
     try :
         # Access to bing.com
         browser.get('https://rewards.bing.com/')
         time.sleep(random.randint(4, 6))
         pageNotWorking(browser)
         # Wait complete loading
-        waitUntilVisible(browser, By.ID, 'loginHeader', 20)
+        try :
+            waitUntilVisible(browser, By.ID, 'loginHeader', 20)
+        except:
+            prYellow('[ERROR] Could not find login element')
+            FA.write('\n[ERROR] Could not find login element.\n')
+            FA.close()
+            pass
         time.sleep(random.randint(4, 6))
         # Enter email
         print('[LOGIN]', 'Writing email...')
-        pageNotWorking(browser)
-        browser.find_element(By.NAME, "loginfmt").send_keys(email)
+        try :
+            pageNotWorking(browser)
+            time.sleep(random.randint(4, 6))
+        except:
+            pass
         time.sleep(random.randint(4, 6))
+        try :
+            browser.find_element(By.NAME, "loginfmt").send_keys(email)
+            time.sleep(random.randint(4, 6))
+        except:
+            prRed('\n[ERROR] An Error has Occured While Trying to Enter the User Email.\n')
+            writeErr()
+            FA.write('\n[ERROR] An Error has Occured While Trying to Enter the User Email.\n')
+            FA.close()
+            return
         # Click next
         pageNotWorking(browser)
         browser.find_element(By.ID, 'idSIButton9').click()
@@ -235,7 +254,13 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         time.sleep(random.randint(4, 6))
         # Wait complete loading
         pageNotWorking(browser)
-        waitUntilVisible(browser, By.ID, 'loginHeader', 20)
+        try:
+            waitUntilVisible(browser, By.ID, 'loginHeader', 20)
+        except:
+            prYellow('[ERROR] Could not find password element')
+            FA.write('\n[ERROR] Could not find password element.\n')
+            FA.close()
+            pass
         # Enter password
         #browser.find_element(By.ID, "i0118").send_keys(pwd)
         browser.execute_script("document.getElementById('i0118').value = '" + pwd + "';")
@@ -290,15 +315,10 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         # Check Login
         print('[LOGIN]', 'Ensuring login on Bing...')
         time.sleep(random.randint(4, 6))
-        try:
-            CBL_RETRY = True
-            while CBL_RETRY == True :
-                for x in range (CBL_COUNTER) : #retry if cbl mobile takes longer than 3mins CBL_COUNTER =1 times
-                    if CBL_COUNTER > 1 :
-                        prRed('[LOGIN] Retrying to Ensure Log in on Bing... Retry #'+str(CBL_COUNTER))
-                    checkBingLogin(browser, isMobile)
+        try: 
+            checkBingLogin(browser, isMobile)
         except:
-            print('[ERROR] An Error has Occured While Ensuring login on Bing...')
+            prRed('[ERROR] An Error has Occured While Ensuring login on Bing...')
             writeErr()
             FA.write('[ERROR] An Error has Occured While Ensuring login on Bing...')
             FA.close()
@@ -313,10 +333,7 @@ def login(browser: WebDriver, email: str, pwd: str, isMobile: bool = False):
         FA.close()
 
 def checkBingLogin(browser: WebDriver, isMobile: bool = False):
-    global CBL_RETRY
-    global CBL_COUNTER
     try :
-        cBL_st = time.time()
         global POINTS_COUNTER
         #Access Bing.com
         browser.get('https://bing.com/')
@@ -364,15 +381,6 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
                     if str(browser.current_url).split('?')[0] == "https://account.live.com/proofs/Add":
                         input('[LOGIN] Please complete the Security Check on ' + browser.current_url)
                         exit()
-                cBL_end = time.time() - cBL_st 
-                if cBL_end >= 180 : #180=3mins
-                    prPurple('[INFO] CBL Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(cBL_end)))
-                    CBL_COUNTER =CBL_COUNTER+1
-                    CBL_RETRY = True
-                    time.clear()
-                else :
-                    CBL_RETRY = False
-                    pass 
             #Wait 3 seconds
             time.sleep(3)
         except:
@@ -395,7 +403,6 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
         try:
             if not isMobile:
                 POINTS_COUNTER = int(browser.find_element(By.ID, 'id_rc').get_attribute('innerHTML'))
-                CBL_RETRY = False
             else:
                 try:
                     browser.find_element(By.ID, 'mHamburger').click()
@@ -412,7 +419,6 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
                     browser.find_element(By.ID, 'mHamburger').click()
                 time.sleep(2)
                 POINTS_COUNTER = int(browser.find_element(By.ID, 'fly_id_rc').get_attribute('innerHTML'))
-                CBL_RETRY = False
         except:
             pass
     except:
@@ -1473,7 +1479,7 @@ def noReward() :
                 FIRSTWRITE = False
             f.write('\n- '  + str(POINTS_COUNTER) + ' points on ' + str(account['username']))
             f.close()
-            prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt Created !')
+            prYellow('[INFO] Microsoft.Rewards.Log.txt Created !')
         else :
             f = open(rewardsLog, 'a')
             if FIRSTWRITE == True :
@@ -1481,7 +1487,7 @@ def noReward() :
                 FIRSTWRITE = False
             f.write('\n- '  + str(POINTS_COUNTER) + ' points on ' + str(account['username']))
             f.close()
-            prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt eddited !')
+            prYellow('[INFO] Microsoft.Rewards.Log.txt eddited !')
     except :
         prRed('\n[ERROR] An Error has Occured While Trying to Log No Reward.\n')
         writeErr()
@@ -1502,7 +1508,7 @@ def lowReward() :
                 FIRSTWRITE = False
             f.write('\n- '  + str(POINTS_COUNTER) + ' points on ' + str(account['username']) + ' - Can redeem a $5 Gift Card.')
             f.close()
-            prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt Created !')
+            prYellow('[INFO] Microsoft.Rewards.Log.txt Created !')
             prPurple('[INFO] You have ' + str(POINTS_COUNTER) + ' points! Go Redeem a $5 Gift Card !')
             ACCOUNTSWREWARD.append(str(account['username']))
             LOWREWARDS+=1
@@ -1513,7 +1519,7 @@ def lowReward() :
                 FIRSTWRITE = False
             f.write('\n- '  + str(POINTS_COUNTER) + ' points on ' + str(account['username']) + ' - Can redeem a $5 Gift Card.')
             f.close()
-            prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt eddited !')
+            prYellow('[INFO] Microsoft.Rewards.Log.txt eddited !')
             prPurple('[INFO] You have '+ str(POINTS_COUNTER) +' points! Go Redeem a $5 Gift Card !')
             ACCOUNTSWREWARD.append(str(account['username']))
             LOWREWARDS+=1
@@ -1537,7 +1543,7 @@ def highReward() :
                 FIRSTWRITE = False
             f.write('\n- '  + str(POINTS_COUNTER) + ' points on ' + str(account['username']) + ' - Can redeem a $10 Gift Card.')
             f.close()
-            prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt Created !')
+            prYellow('[INFO] Microsoft.Rewards.Log.txt Created !')
             prPurple('[INFO] You have ' + str(POINTS_COUNTER) + ' points! Go Redeem a $10 Gift Card !')
             HIGHACCOUNTSWREWARD.append(str(account['username']))
             HIGHREWARDS+=1
@@ -1548,7 +1554,7 @@ def highReward() :
                 FIRSTWRITE = False
             f.write('\n- '  + str(POINTS_COUNTER) + ' points on ' + str(account['username']) + ' - Can redeem a $10 Gift Card.')
             f.close()
-            prYellow('[INFO] Microsoft.Rewards.Gift.Card.Info.txt eddited !')
+            prYellow('[INFO] Microsoft.Rewards.Log.txt eddited !')
             prPurple('[INFO] You have '+ str(POINTS_COUNTER) +' points! Go Redeem a $10 Gift Card !')
             HIGHACCOUNTSWREWARD.append(str(account['username']))
             HIGHREWARDS+=1
@@ -1782,6 +1788,7 @@ try:
         else :
             browser.quit()
             prRed('\n[ERROR] '+ str(account['username']) + ' Has Already Earned All Desktop Points Available Today.\n')
+            SEARCHCOMPLETE = True
             writeErr()
             FA.write('\n[ERROR] '+ str(account['username']) + ' Has Already Earned All Desktop Points Available Today.')
             FA.close()
@@ -1837,12 +1844,14 @@ try:
                     prRed('\n')
                     printDateAndTime()
                     prRed('[INFO] '+ str(account['username']) + ' Has Already Earned All Mobile Points Available Today ! ' + '\n')
+                    SEARCHCOMPLETEM = True
                 else:
                     prRed('\n')
                     printDateAndTime()
                     prRed('[INFO] '+ str(account['username']) + ' Has Already Earned All Mobile Points Available Today ! ' + '\n')
                     prYellow('\n[INFO] Waiting ' + str(longSleepTimer) +'seconds Until Continuing... \n')
                     time.sleep(longSleepTimer)
+                    SEARCHCOMPLETEM = True
         except:
             prRed('\n[ERROR] An Error has Occured While Trying to Run Mobile Searches.\n')
             writeErr()

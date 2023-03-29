@@ -369,7 +369,6 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
         global POINTS_COUNTER
         #Access Bing.com
         browser.get('https://bing.com/')
-        print('page load1') #test delete
         # Wait 8 seconds
         time.sleep(random.randint(8, 10))
         pageNotWorking(browser)

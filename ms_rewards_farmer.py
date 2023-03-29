@@ -440,7 +440,6 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
             pass
     try :
     #Update Counter
-            else:
         if not isMobile:
             POINTS_COUNTER = int(browser.find_element(By.ID, 'id_rc').get_attribute('innerHTML'))
         else:

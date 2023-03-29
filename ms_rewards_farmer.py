@@ -23,6 +23,7 @@ PC_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (K
 MOBILE_USER_AGENT = 'Mozilla/5.0 (Linux; Android 10; Pixel 3) zAppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0. 3945.79 Mobile Safari/537.36'
 PROTECTACCPAUSE = False #Set this variable to True to pause the script when you need to verify Account infomation. ("Help us protect Your Account")
 HEADLESSOFF = False #Set this variable to True to Disable Headless mode, which will allow you to watch the script by opening a browser and running
+SECONDMONITER = False #Set this variable to True to place the window on your second monitor
 BASE_URL = ""
 POINTS_COUNTER = 0
 ACCOUNT_COUNTER = 0
@@ -45,8 +46,6 @@ HIGHACCOUNTSWREWARD = []
 SEARCHCOMPLETE = False
 SEARCHCOMPLETEM = False
 ERRCOUNT = 0
-REFRESH = 0 #delete test
-COUNT = 0 #delete test
 tempSleepTimer = random.randint(300, 450) #set to 300-450secs - time waiting if account has no pc or mobile searches from start
 longSleepTimer = random.randint(500, 600) #Set to 500-600secs - time waiting between multiple accounts that already earned today's points
 sleepTimer = random.randint(300, 500) #Set to 300-400secs - time waiting between multiple accounts AFTER earning points for the account
@@ -55,6 +54,7 @@ sleepTimer = random.randint(300, 500) #Set to 300-400secs - time waiting between
 def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -> WebDriver:
     global PROTECTACCPAUSE
     global HEADLESSOFF
+    global SECONDMONITER
     try :
         # Create Chrome browser
         from selenium.webdriver.chrome.options import Options
@@ -66,6 +66,8 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
                 options.add_argument("--headless") #comment out this line of code to disable headless mode (make window visable) 
         options.add_argument('log-level=3')
         chrome_browser_obj = webdriver.Chrome(options=options)
+        if SECONDMONITER == True :
+            chrome_browser_obj.set_window_position(4000, 0) #if you cannot see the browser on your screen lower the value 4000
         return chrome_browser_obj
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Complete Browser Setup.\n')
@@ -74,26 +76,56 @@ def browserSetup(headless_mode: bool = False, user_agent: str = PC_USER_AGENT) -
         FA.close()
 
 def pageNotWorking(browser: WebDriver) :
-    global REFRESH #delete test
-    localRefresh = 0
+    localRefresh = 0 
     try :
         noLoad = str(browser.find_element(By.XPATH, '//*[@id="main-message"]/h1/span').get_attribute('innerHTML'))
         time.sleep(2)
         if noLoad.startswith('This page isn'):
             prRed('[INFO] Could Not Load Page.')
-            while noLoad.startswith('This page isn'):
-                REFRESH = REFRESH + 1 #delete test
-                localRefresh = localRefresh+1
-                prYellow('[INFO] Refreshing Now... REFRESH # ' + str(localRefresh))
-                browser.refresh()
-                time.sleep(15)
-                try:
-                    browser.find_element(By.XPATH, '//*[@id="main-message"]/h1/span')
-                    noLoad = str(browser.find_element(By.XPATH, '//*[@id="main-message"]/h1/span')
-                                .get_attribute('innerHTML'))
-                except:
-                    prGreen('[Info] Page Successfully Loaded')
-                    break
+            try:
+                while noLoad.startswith('This page'):    
+                    localRefresh = localRefresh+1
+                    prYellow('[INFO] Refreshing Now... REFRESH # ' + str(localRefresh))
+                    try:
+                        browser.find_element(By.ID, 'reload-button').click()
+                    except:
+                        browser.refresh()
+                    time.sleep(15)
+                    try:
+                        browser.find_element(By.XPATH, '//*[@id="main-message"]/h1/span')
+                        noLoad = str(browser.find_element(By.XPATH, '//*[@id="main-message"]/h1/span')
+                                    .get_attribute('innerHTML'))
+                    except:
+                        prGreen('[Info] Page Successfully Loaded')
+                        break
+            except:
+                prRed('\n[ERROR] An Error Has Occured While Trying to Reload the Current Page !\n') #delete this line when automating feature
+                writeErr()
+                FA.write('\n[ERROR] An Error Has Occured While Trying to Reload the Current Page !\n') #delete this line when automating feature
+                FA.close()
+        elif noLoad.startswith('Cette page ne fonctionne pas'): 
+            prRed('[INFO] Could Not Load Page.')
+            try :
+                while noLoad.startswith('Cette page ne fonctionne pas'):
+                    localRefresh = localRefresh+1
+                    prYellow('[INFO] Refreshing Now... REFRESH # ' + str(localRefresh))
+                    try:
+                        browser.find_element(By.ID, 'reload-button').click()
+                    except:
+                        browser.refresh()
+                    time.sleep(15)
+                    try:
+                        browser.find_element(By.XPATH, '//*[@id="main-message"]/h1/span')
+                        noLoad = str(browser.find_element(By.XPATH, '//*[@id="main-message"]/h1/span')
+                                    .get_attribute('innerHTML'))
+                    except:
+                        prGreen('[Info] Page Successfully Loaded')
+                        break
+            except:
+                    prRed('\n[ERROR] An Error Has Occured While Trying to Reload the Current Page !\n') #delete this line when automating feature
+                    writeErr()
+                    FA.write('\n[ERROR] An Error Has Occured While Trying to Reload the Current Page !\n') #delete this line when automating feature
+                    FA.close()
     except :
         pass
 
@@ -182,7 +214,7 @@ def securityInfoCheck (browser: WebDriver):
                 pass
             try :
                 browser.find_element(By.CLASS_NAME, 'continue-button-class').click()
-                prGreen('Clicked continue button for security check')
+                prGreen('Clicked Continue Button for the Security Check')
             except:
                 prRed('\n[WARNING] [ERROR] You need to manually sign in to ' + account['username'] + ' to verify the account Security Info !\n') #delete this line when automating feature
                 writeErr()#delete this line when automating feature
@@ -337,6 +369,7 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
         global POINTS_COUNTER
         #Access Bing.com
         browser.get('https://bing.com/')
+        print('page load1') #test delete
         # Wait 8 seconds
         time.sleep(random.randint(8, 10))
         pageNotWorking(browser)
@@ -397,30 +430,35 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
         #Refresh page
         browser.get('https://bing.com/')
         #Wait 5 seconds
-        time.sleep(10)
-    try :
-    #Update Counter
+        time.sleep(5)
+        pageNotWorking(browser)
         try:
-            if not isMobile:
-                POINTS_COUNTER = int(browser.find_element(By.ID, 'id_rc').get_attribute('innerHTML'))
-            else:
-                try:
-                    browser.find_element(By.ID, 'mHamburger').click()
-                except:
-                    try:
-                        browser.find_element(By.ID, 'bnp_btn_accept').click()
-                    except:
-                        pass
-                    try:
-                        browser.find_element(By.ID, 'bnp_ttc_close').click()
-                    except:
-                        pass
-                    time.sleep(2)
-                    browser.find_element(By.ID, 'mHamburger').click()
-                time.sleep(2)
-                POINTS_COUNTER = int(browser.find_element(By.ID, 'fly_id_rc').get_attribute('innerHTML'))
+            browser.find_element(By.ID, 'id_p').click() 
+            time.sleep(2)
+            browser.find_element(By.ID, 'id_p').click() 
         except:
             pass
+    try :
+    #Update Counter
+            else:
+        if not isMobile:
+            POINTS_COUNTER = int(browser.find_element(By.ID, 'id_rc').get_attribute('innerHTML'))
+        else:
+            try:
+                browser.find_element(By.ID, 'mHamburger').click()
+            except:
+                try:
+                    browser.find_element(By.ID, 'bnp_btn_accept').click()
+                except:
+                    pass
+                try:
+                    browser.find_element(By.ID, 'bnp_ttc_close').click()
+                except:
+                    pass
+                time.sleep(2)
+                browser.find_element(By.ID, 'mHamburger').click()
+            time.sleep(2)
+            POINTS_COUNTER = int(browser.find_element(By.ID, 'fly_id_rc').get_attribute('innerHTML'))
     except:
         prRed('\n[ERROR] An Error has Occured While Trying to Update Counter.\n')
         writeErr()
@@ -429,7 +467,6 @@ def checkBingLogin(browser: WebDriver, isMobile: bool = False):
 
 def waitUntilVisible(browser: WebDriver, by_: By, selector: str, time_to_wait: int):
     fail = False
-    global COUNT#delete test
     try :
         pageNotWorking(browser)
         time.sleep(2)
@@ -448,9 +485,8 @@ def waitUntilVisible(browser: WebDriver, by_: By, selector: str, time_to_wait: i
                 FA.close()
                 pass
             while fail == True :
-                COUNT = COUNT + 1
                 tempCount = tempCount + 1
-                prYellow('[Info] Waiting 20 secs to ReTry waitUntilVisible # '+str(tempCount))
+               #prYellow('[Info] Waiting 20 secs to ReTry waitUntilVisible # '+str(tempCount))
                 time.sleep(20)
                 if tempCount == 4:
                     fail = False
@@ -1224,14 +1260,15 @@ def completeMorePromotionSearch(browser: WebDriver, cardNumber: int):
         browser.find_element(By.XPATH, '//*[@id="more-activities"]/div/mee-card[' + str(cardNumber) + ']/div/card-content/mee-rewards-more-activities-card-item/div/a').click()
         time.sleep(3)
         try:
+            pageNotWorking(browser)
             if browser.find_element(By.ID, 'legalTextBox'):
                 try:
+                    pageNotWorking(browser)
                     browser.find_element(By.XPATH,'//*[@id="legalTextBox"]/div/div/div[3]/a/span/ng-transclude').click()
                     time.sleep(2)
                     browser.switch_to.window(window_name = browser.window_handles[0])
                     time.sleep(2)
                 except :
-
                     browser.switch_to.window(window_name = browser.window_handles[0])
                     time.sleep(2)
                     pass
@@ -1260,6 +1297,7 @@ def completeMorePromotionQuiz(browser: WebDriver, cardNumber: int):
         if not waitUntilQuizLoads(browser):
             resetTabs(browser)
             return
+        pageNotWorking(browser)
         browser.find_element(By.XPATH, '//*[@id="rqStartQuiz"]').click()
         waitUntilVisible(browser, By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
         time.sleep(3)
@@ -1686,6 +1724,7 @@ try:
         browser = browserSetup(True, PC_USER_AGENT)
         prGreen('[LOGIN] Logging-in as ' + account['username'] + ' !')
         login(browser, account['username'], account['password'])
+        
         if ACCOUNTISSUE == True :
             browser.quit()
             prRed('\n[WARNING] [FATAL ERROR] Check if '+ str(account['username']) +' is Locked, Suspended, or Banned.\n')
@@ -1938,8 +1977,6 @@ finally :
     TOTAL_TIME = time.time() - st
     prPurple('\n\n[INFO] MS Farmer Total Time Elapsed: ' + time.strftime("%H:%M:%S", time.gmtime(TOTAL_TIME)) + '\n')
     prYellow('[INFO] Thank you for using Microsoft Rewards Farmer ! ')
-    #prYellow('[TEST] total times REFRESH occured = '+str(REFRESH))#delete test
-    #prYellow('[TEST] total times waitUntilVisable Retry occured = '+str(COUNT))#delete test
     prYellow('[INFO] Press Any Key to Exit !')
     input() #comment out or delete this line to auto exit when complete. ([WARNING] You will not see errors without this line !)
     prPurple('[INFO] Have a Good Day! GoodBye :)\n')

@@ -46,7 +46,7 @@
       </ul>
       <li>MacOS or Linux :<ul>
         <li><pre>apt install chromium-chromedriver</pre></li>
-        <li>or if you have brew : <pre>brew cask install chromedriver</pre></li>
+        <li>or if you have brew : <pre>brew install chromedriver</pre></li>
       </ul>
     </ul></li>
     <li>Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end<br/>

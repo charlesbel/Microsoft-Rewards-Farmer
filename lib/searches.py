@@ -13,17 +13,19 @@ from .constants import DESKTOP_USER_AGENT
 from lib.utils import Utils
 
 class Searches:
-    def __init__(self, browser: WebDriver):
+    def __init__(self, browser: WebDriver, lang: str, geo: str):
         self.browser = browser
         self.utils = Utils(browser)
+        self.lang = lang
+        self.geo = geo
 
-    def getGoogleTrends(self, wordsCount: int, lang: str, geo: str) -> list:
+    def getGoogleTrends(self, wordsCount: int) -> list:
         searchTerms = []
         i = 0
         while len(searchTerms) < wordsCount:
             i += 1
             r = requests.get(
-                f'https://trends.google.com/trends/api/dailytrends?hl={lang}&ed={str((date.today() - timedelta(days=i)).strftime("%Y%m%d"))}&geo={geo}&ns=15')
+                f'https://trends.google.com/trends/api/dailytrends?hl={self.lang}&ed={str((date.today() - timedelta(days=i)).strftime("%Y%m%d"))}&geo={self.geo}&ns=15')
             trends = json.loads(r.text[6:])
             for topic in trends['default']['trendingSearchesDays'][0]['trendingSearches']:
                 searchTerms.append(topic['title']['query'].lower())

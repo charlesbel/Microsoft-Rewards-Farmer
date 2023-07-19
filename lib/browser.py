@@ -16,6 +16,7 @@ def browserSetup(sessionName: str, headlessMode: bool = False, isMobile: bool = 
         options.add_argument('--headless')
     options.add_argument('log-level=3')
     currentPath = os.path.dirname(os.path.realpath(__file__))
+    parent = os.path.dirname(currentPath)
     options.add_argument(
-        f'--user-data-dir={currentPath}/sessions/{"mobile" if isMobile else "desktop"}/{sessionName}')
+        f'--user-data-dir={parent}/sessions/{"mobile" if isMobile else "desktop"}/{sessionName}')
     return webdriver.Chrome(options=options)

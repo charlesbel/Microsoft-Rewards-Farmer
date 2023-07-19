@@ -3,14 +3,7 @@ import random
 import ipapi
 import os
 
-from lib.browser import browserSetup
-
-from lib.utils import Utils
-from lib.login import Login
-from lib.searches import Searches
-from lib.dailySet import DailySet
-from lib.morePromotions import MorePromotions
-from lib.punchCards import PunchCards
+from lib import *
 
 
 POINTS_COUNTER = 0
@@ -77,16 +70,10 @@ for account in ACCOUNTS:
     prYellow('********************' +
              account['username'] + '********************')
     browser = browserSetup(account['username'], False, False, LANG)
-
     utils = Utils(browser)
-    login = Login(browser)
-    searches = Searches(browser)
-    dailySet = DailySet(browser)
-    morePromotions = MorePromotions(browser)
-    punchCards = PunchCards(browser)
 
     print('[LOGIN]', 'Logging-in...')
-    POINTS_COUNTER = login.login(account['username'], account['password'])
+    POINTS_COUNTER = Login(browser).login(account['username'], account['password'])
     prGreen('[LOGIN] Logged-in successfully !')
     startingPoints = POINTS_COUNTER
     prGreen('[POINTS] You have ' + str(POINTS_COUNTER) +
@@ -95,36 +82,31 @@ for account in ACCOUNTS:
     utils.goHome()
 
     print('[DAILY SET]', 'Trying to complete the Daily Set...')
-    dailySet.completeDailySet()
+    DailySet(browser).completeDailySet()
     prGreen('[DAILY SET] Completed the Daily Set successfully !')
     print('[PUNCH CARDS]', 'Trying to complete the Punch Cards...')
-    punchCards.completePunchCards()
+    PunchCards(browser).completePunchCards()
     prGreen('[PUNCH CARDS] Completed the Punch Cards successfully !')
     print('[MORE PROMO]', 'Trying to complete More Promotions...')
-    morePromotions.completeMorePromotions()
+    MorePromotions(browser).completeMorePromotions()
     prGreen('[MORE PROMO] Completed More Promotions successfully !')
     remainingSearches, remainingSearchesM = utils.getRemainingSearches()
     if remainingSearches != 0:
         print('[BING]', 'Starting Desktop and Edge Bing searches...')
-        POINTS_COUNTER = searches.bingSearches(remainingSearches)
+        POINTS_COUNTER = Searches(browser, LANG, GEO).bingSearches(remainingSearches)
         prGreen('[BING] Finished Desktop and Edge Bing searches !')
     browser.quit()
 
     if remainingSearchesM != 0:
         browser = browserSetup(account['username'], False, True, LANG)
-
         utils = Utils(browser)
-        login = Login(browser)
-        searches = Searches(browser)
-        dailySet = DailySet(browser)
-        morePromotions = MorePromotions(browser)
-        punchCards = PunchCards(browser)
 
         print('[LOGIN]', 'Logging-in...')
-        POINTS_COUNTER = login.login(account['username'], account['password'], True)
+        POINTS_COUNTER = Login(browser).login(
+            account['username'], account['password'], True)
         print('[LOGIN]', 'Logged-in successfully !')
         print('[BING]', 'Starting Mobile Bing searches...')
-        POINTS_COUNTER = searches.bingSearches(remainingSearchesM, True)
+        POINTS_COUNTER = Searches(browser, LANG, GEO).bingSearches(remainingSearchesM, True)
         prGreen('[BING] Finished Mobile Bing searches !')
         browser.quit()
 

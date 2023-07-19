@@ -47,6 +47,9 @@
       <li>MacOS or Linux :<ul>
         <li><pre>apt install chromium-chromedriver</pre></li>
         <li>or if you have brew : <pre>brew install chromedriver</pre></li>
+        <li>If you get the following error, “chromedriver” cannot be opened because the developer cannot be verified, run this command :
+          <pre>xattr -d com.apple.quarantine /usr/local/bin/chromedriver</pre>
+        </li>
       </ul>
     </ul></li>
     <li>Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end<br/>

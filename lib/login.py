@@ -37,15 +37,25 @@ class Login:
             self.browser.find_element(By.NAME, "loginfmt").send_keys(email)
             self.browser.find_element(By.ID, 'idSIButton9').click()
 
-            self.utils.waitUntilClickable(By.NAME, "passwd")
-            self.utils.waitUntilClickable(By.ID, 'idSIButton9', 10)
-            # browser.find_element(By.NAME, "passwd").send_keys(password)
-            # If password contains special characters like " ' or \, send_keys() will not work
-            password = password.replace('\\', '\\\\').replace('"', '\\"')
-            self.browser.execute_script(
-                f'document.getElementsByName("passwd")[0].value = "{password}";')
-            print('[LOGIN]', 'Writing password...')
-            self.browser.find_element(By.ID, 'idSIButton9').click()
+            try:
+                self.utils.waitUntilClickable(By.NAME, "passwd", 10)
+                self.utils.waitUntilClickable(By.ID, 'idSIButton9', 10)
+                # browser.find_element(By.NAME, "passwd").send_keys(password)
+                # If password contains special characters like " ' or \, send_keys() will not work
+                password = password.replace('\\', '\\\\').replace('"', '\\"')
+                self.browser.execute_script(
+                    f'document.getElementsByName("passwd")[0].value = "{password}";')
+                print('[LOGIN]', 'Writing password...')
+                self.browser.find_element(By.ID, 'idSIButton9').click()
+                time.sleep(3)
+            except:
+                print('[LOGIN]', '2FA required !')
+                try:
+                    code = self.browser.find_element(By.ID, 'idRemoteNGC_DisplaySign').get_attribute('innerHTML')
+                    print('[LOGIN]', '2FA code:', code)
+                except:
+                    pass
+                input('[LOGIN] Press enter when confirmed...')
 
             while not (urllib.parse.urlparse(self.browser.current_url).path == "/" and urllib.parse.urlparse(self.browser.current_url).hostname == "account.microsoft.com"):
                 self.utils.tryDismissAllMessages()
@@ -85,10 +95,8 @@ class Login:
         while True:
             currentUrl = urllib.parse.urlparse(self.browser.current_url)
             if currentUrl.hostname == 'www.bing.com' and currentUrl.path == '/':
-                try:
-                    self.browser.find_element(By.ID, 'bnp_btn_accept').click()
-                except:
-                    pass
+                time.sleep(3)
+                self.utils.tryDismissBingCookieBanner()
                 try:
                     if isMobile:
                         if not isHamburgerOpened:

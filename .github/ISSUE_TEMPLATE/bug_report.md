@@ -1,7 +1,7 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: "[BUG]"
+title: "[BUG] Title"
 labels: bug
 assignees: ''
 
@@ -15,5 +15,6 @@ Paste the error log here.
 **Screenshot of the page**
 Add a screenshot of the page where the error apeared.
 
-**Source code of dashboard**
-Copy the source code of the [Microsoft Rewards Dashboard Page](https://account.microsoft.com/rewards) and paste it on [Gist](https://gist.github.com). Then share me the link of the gist here.
+**Value of dashboard variable**
+Open the source code of the [Microsoft Rewards Dashboard Page](https://rewards.bing.com), search for <pre>var dashboard = </pre>
+Copy the whole json of this line and paste it on [Gist](https://gist.github.com). Then share me the link of the gist here.

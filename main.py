@@ -51,7 +51,7 @@ if __name__ == "__main__":
     ██║╚██╔╝██║╚════██║    ██╔══╝  ██╔══██║██╔══██╗██║╚██╔╝██║██╔══╝  ██╔══██╗
     ██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
     ╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝""")
-    prPurple("        by Charles Bel (@charlesbel)               version 2.0\n")
+    prPurple("        by Charles Bel (@charlesbel)               version 3.0\n")
 
     headless = not args.visible
 

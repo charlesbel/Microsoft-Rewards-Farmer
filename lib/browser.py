@@ -11,7 +11,7 @@ def browserSetup(sessionName: str, headlessMode: bool = False, isMobile: bool = 
     options = Options()
     options.add_argument(
         f'user-agent={MOBILE_USER_AGENT if isMobile else DESKTOP_USER_AGENT}')
-    options.add_argument(f'lang={lang.split("-")[0]}')
+    options.add_argument(f'lang={lang}')
     if headlessMode:
         options.add_argument('--headless')
     options.add_argument('log-level=3')

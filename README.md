@@ -79,6 +79,7 @@
   <li>Headless Mode</li>
   <li>Multi-Account Management</li>
   <li>Session storing</li>
+  <li>2FA Support</li>
   <li>GUI (soon)</li>
 </ul>
 </p>

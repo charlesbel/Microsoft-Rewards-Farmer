@@ -1,3 +1,7 @@
+<div align="center">
+<h2>NEW VERSION : V3.0</h2>
+</div>
+
 <p align="center">
   <img src="https://forthebadge.com/images/badges/made-with-python.svg"/>
   <img src="http://ForTheBadge.com/images/badges/built-by-developers.svg"/>
@@ -12,7 +16,7 @@
 ██║╚██╔╝██║╚════██║    ██╔══╝  ██╔══██║██╔══██╗██║╚██╔╝██║██╔══╝  ██╔══██╗
 ██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
 ╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝
-       by Charles Bel (@charlesbel)          version 2.0
+       by Charles Bel (@charlesbel)          version 3.0
 </pre>
 
 <p align="center">
@@ -56,7 +60,9 @@
         "password": "Your Password"
     }
 ]</pre></li>
-    <li>Run the script</li>
+    <li>Run the script:
+      <pre>python main.py</pre>
+    </li>
    </ul>
 </p>
 
@@ -69,5 +75,7 @@
   <li>Complete automatically the others promotions</li>
   <li>Headless Mode</li>
   <li>Multi-Account Management</li>
+  <li>Session storing</li>
+  <li>GUI (soon)</li>
 </ul>
 </p>

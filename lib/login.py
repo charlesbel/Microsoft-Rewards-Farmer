@@ -8,6 +8,7 @@ from .constants import BASE_URL
 
 from .utils import Utils
 
+
 class Login:
     def __init__(self, browser: WebDriver):
         self.browser = browser
@@ -20,7 +21,7 @@ class Login:
         while True:
             try:
                 self.utils.waitUntilVisible(By.CSS_SELECTOR,
-                                    'html[data-role-name="MeePortal"]', 0.1)
+                                            'html[data-role-name="MeePortal"]', 0.1)
                 alreadyLoggedIn = True
                 break
             except:
@@ -51,7 +52,8 @@ class Login:
             except:
                 print('[LOGIN]', '2FA required !')
                 try:
-                    code = self.browser.find_element(By.ID, 'idRemoteNGC_DisplaySign').get_attribute('innerHTML')
+                    code = self.browser.find_element(
+                        By.ID, 'idRemoteNGC_DisplaySign').get_attribute('innerHTML')
                     print('[LOGIN]', '2FA code:', code)
                 except:
                     pass
@@ -62,7 +64,7 @@ class Login:
                 time.sleep(1)
 
             self.utils.waitUntilVisible(By.CSS_SELECTOR,
-                                'html[data-role-name="MeePortal"]', 10)
+                                        'html[data-role-name="MeePortal"]', 10)
 
         self.utils.tryDismissCookieBanner()
 
@@ -88,9 +90,9 @@ class Login:
 
         return points
 
-
     def checkBingLogin(self, isMobile: bool = False):
-        self.browser.get('https://www.bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=https%3A%2F%2Fwww.bing.com%2F')
+        self.browser.get(
+            'https://www.bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=https%3A%2F%2Fwww.bing.com%2F')
         isHamburgerOpened = False
         while True:
             currentUrl = urllib.parse.urlparse(self.browser.current_url)
@@ -100,7 +102,8 @@ class Login:
                 try:
                     if isMobile:
                         if not isHamburgerOpened:
-                            self.browser.find_element(By.ID, 'mHamburger').click()
+                            self.browser.find_element(
+                                By.ID, 'mHamburger').click()
                             isHamburgerOpened = True
                         int(self.browser.find_element(
                             By.ID, 'fly_id_rc').get_attribute('innerHTML'))

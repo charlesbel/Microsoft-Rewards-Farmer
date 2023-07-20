@@ -39,9 +39,12 @@ def prYellow(prt):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Microsoft Rewards Farmer')
-    parser.add_argument('-v', '--visible', action='store_true', help='Optional: Visible browser')
-    parser.add_argument('-l', '--lang', type=str, default=None, help='Optional: Language (ex: en)')
-    parser.add_argument('-g', '--geo', type=str, default=None, help='Optional: Geolocation (ex: US)')
+    parser.add_argument('-v', '--visible', action='store_true',
+                        help='Optional: Visible browser')
+    parser.add_argument('-l', '--lang', type=str, default=None,
+                        help='Optional: Language (ex: en)')
+    parser.add_argument('-g', '--geo', type=str, default=None,
+                        help='Optional: Geolocation (ex: US)')
     args = parser.parse_args()
 
     prRed("""
@@ -81,17 +84,18 @@ if __name__ == "__main__":
         input()
         ACCOUNTS = json.load(open(account_path, "r"))
 
-    random.shuffle(ACCOUNTS)
+    # random.shuffle(ACCOUNTS)
 
     for account in ACCOUNTS:
 
         prYellow('********************' +
-                account['username'] + '********************')
+                 account['username'] + '********************')
         browser = browserSetup(account['username'], headless, False, LANG)
         utils = Utils(browser)
 
         print('[LOGIN]', 'Logging-in...')
-        POINTS_COUNTER = Login(browser).login(account['username'], account['password'])
+        POINTS_COUNTER = Login(browser).login(
+            account['username'], account['password'])
         prGreen('[LOGIN] Logged-in successfully !')
         startingPoints = POINTS_COUNTER
         prGreen('[POINTS] You have ' + str(POINTS_COUNTER) +
@@ -111,7 +115,8 @@ if __name__ == "__main__":
         remainingSearches, remainingSearchesM = utils.getRemainingSearches()
         if remainingSearches != 0:
             print('[BING]', 'Starting Desktop and Edge Bing searches...')
-            POINTS_COUNTER = Searches(browser, LANG, GEO).bingSearches(remainingSearches)
+            POINTS_COUNTER = Searches(
+                browser, LANG, GEO).bingSearches(remainingSearches)
             prGreen('[BING] Finished Desktop and Edge Bing searches !')
         browser.quit()
 
@@ -124,10 +129,12 @@ if __name__ == "__main__":
                 account['username'], account['password'], True)
             print('[LOGIN]', 'Logged-in successfully !')
             print('[BING]', 'Starting Mobile Bing searches...')
-            POINTS_COUNTER = Searches(browser, LANG, GEO).bingSearches(remainingSearchesM, True)
+            POINTS_COUNTER = Searches(browser, LANG, GEO).bingSearches(
+                remainingSearchesM, True)
             prGreen('[BING] Finished Mobile Bing searches !')
             browser.quit()
 
         prGreen('[POINTS] You have earned ' +
                 str(POINTS_COUNTER - startingPoints) + ' points today !')
-        prGreen('[POINTS] You are now at ' + str(POINTS_COUNTER) + ' points !\n')
+        prGreen('[POINTS] You are now at ' +
+                str(POINTS_COUNTER) + ' points !\n')

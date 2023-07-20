@@ -8,6 +8,7 @@ from selenium.webdriver.common.by import By
 
 from .constants import BASE_URL
 
+
 class Utils:
     def __init__(self, browser: WebDriver):
         self.browser = browser
@@ -16,11 +17,9 @@ class Utils:
         WebDriverWait(self.browser, time_to_wait).until(
             ec.visibility_of_element_located((by_, selector)))
 
-
     def waitUntilClickable(self, by_: By, selector: str, time_to_wait: int = 10):
         WebDriverWait(self.browser, time_to_wait).until(
             ec.element_to_be_clickable((by_, selector)))
-
 
     def waitForMSRewardElement(self, by_: By, selector: str):
         loadingTimeAllowed = 5
@@ -48,10 +47,8 @@ class Utils:
                     else:
                         return False
 
-
     def waitUntilQuestionRefresh(self):
         return self.waitForMSRewardElement(By.CLASS_NAME, 'rqECredits')
-
 
     def waitUntilQuizLoads(self):
         return self.waitForMSRewardElement(By.XPATH, '//*[@id="rqStartQuiz"]')
@@ -94,10 +91,9 @@ class Utils:
     def getAccountPoints(self) -> int:
         return self.getDashboardData()['userStatus']['availablePoints']
 
-
     def tryDismissAllMessages(self):
         buttons = [(By.ID, 'iLandingViewAction'), (By.ID, 'iShowSkip'), (By.ID, 'iNext'), (By.ID,
-                                                                                        'iLooksGood'), (By.ID, 'idSIButton9'), (By.CSS_SELECTOR, '.ms-Button.ms-Button--primary')]
+                                                                                           'iLooksGood'), (By.ID, 'idSIButton9'), (By.CSS_SELECTOR, '.ms-Button.ms-Button--primary')]
         result = False
         for button in buttons:
             try:
@@ -106,7 +102,6 @@ class Utils:
             except:
                 continue
         return result
-
 
     def tryDismissCookieBanner(self):
         try:
@@ -125,17 +120,17 @@ class Utils:
 
     def switchToNewTab(self, timeToWait: int = 0):
         time.sleep(0.5)
-        self.browser.switch_to.window(window_name=self.browser.window_handles[1])
+        self.browser.switch_to.window(
+            window_name=self.browser.window_handles[1])
         if timeToWait > 0:
             time.sleep(timeToWait)
-
 
     def closeCurrentTab(self):
         self.browser.close()
         time.sleep(0.5)
-        self.browser.switch_to.window(window_name=self.browser.window_handles[0])
+        self.browser.switch_to.window(
+            window_name=self.browser.window_handles[0])
         time.sleep(0.5)
-
 
     def visitNewTab(self, timeToWait: int = 0):
         self.switchToNewTab(timeToWait)
@@ -163,10 +158,12 @@ class Utils:
         elif targetDesktop >= 170:
             # Level 2 US
             searchPoints = 5
-        remainingDesktop = int((targetDesktop - progressDesktop) / searchPoints)
+        remainingDesktop = int(
+            (targetDesktop - progressDesktop) / searchPoints)
         remainingMobile = 0
         if dashboard['userStatus']['levelInfo']['activeLevel'] != "Level1":
             progressMobile = counters['mobileSearch'][0]['pointProgress']
             targetMobile = counters['mobileSearch'][0]['pointProgressMax']
-            remainingMobile = int((targetMobile - progressMobile) / searchPoints)
+            remainingMobile = int(
+                (targetMobile - progressMobile) / searchPoints)
         return remainingDesktop, remainingMobile

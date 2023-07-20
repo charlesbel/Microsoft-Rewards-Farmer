@@ -45,18 +45,8 @@ class PunchCards:
         for punchCard in punchCards:
             try:
                 if punchCard['parentPromotion'] != None and punchCard['childPromotions'] != None and punchCard['parentPromotion']['complete'] == False and punchCard['parentPromotion']['pointProgressMax'] != 0:
-                    if BASE_URL == "https://rewards.microsoft.com":
-                        self.completePunchCard(
-                            punchCard['parentPromotion']['attributes']['destination'], punchCard['childPromotions'])
-                    else:
-                        url = punchCard['parentPromotion']['attributes']['destination']
-                        path = url.replace(
-                            'https://account.microsoft.com/rewards/dashboard/', '')
-                        userCode = path[:4]
-                        dest = 'https://account.microsoft.com/rewards/dashboard/' + \
-                            userCode + path.split(userCode)[1]
-                        self.completePunchCard(
-                            url, punchCard['childPromotions'])
+                    self.completePunchCard(
+                        punchCard['parentPromotion']['attributes']['destination'], punchCard['childPromotions'])
             except:
                 self.utils.resetTabs()
         time.sleep(2)

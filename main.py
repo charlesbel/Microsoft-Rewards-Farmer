@@ -84,7 +84,7 @@ if __name__ == "__main__":
         input()
         ACCOUNTS = json.load(open(account_path, "r"))
 
-    # random.shuffle(ACCOUNTS)
+    random.shuffle(ACCOUNTS)
 
     for account in ACCOUNTS:
 

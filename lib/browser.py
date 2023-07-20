@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 
 from .constants import DESKTOP_USER_AGENT, MOBILE_USER_AGENT
 
+
 def browserSetup(sessionName: str, headlessMode: bool = False, isMobile: bool = False, lang: str = 'en') -> WebDriver:
     options = Options()
     options.add_argument(

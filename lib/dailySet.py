@@ -1,5 +1,5 @@
 import time
-from datetime import  datetime
+from datetime import datetime
 import random
 import urllib.parse
 
@@ -8,6 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 from .utils import Utils
+
 
 class DailySet:
     def __init__(self, browser: WebDriver):
@@ -19,15 +20,14 @@ class DailySet:
             By.XPATH, f'//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[{cardNumber}]/div/card-content/mee-rewards-daily-set-item-content/div/a').click()
         self.utils.visitNewTab(random.randint(13, 17))
 
-
     def completeDailySetSurvey(self, cardNumber: int):
         self.browser.find_element(
             By.XPATH, f'//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[{cardNumber}]/div/card-content/mee-rewards-daily-set-item-content/div/a').click()
         self.utils.switchToNewTab(8)
-        self.browser.find_element(By.ID, f'btoption{random.randint(0, 1)}').click()
+        self.browser.find_element(
+            By.ID, f'btoption{random.randint(0, 1)}').click()
         time.sleep(random.randint(10, 15))
         self.utils.closeCurrentTab()
-
 
     def completeDailySetQuiz(self, cardNumber: int):
         self.browser.find_element(
@@ -38,7 +38,7 @@ class DailySet:
             return
         self.browser.find_element(By.XPATH, '//*[@id="rqStartQuiz"]').click()
         self.utils.waitUntilVisible(By.XPATH,
-                        '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
+                                    '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
         time.sleep(3)
         numberOfQuestions = self.browser.execute_script(
             "return _w.rewardsQuizRenderInfo.maxQuestions")
@@ -71,15 +71,15 @@ class DailySet:
         time.sleep(5)
         self.utils.closeCurrentTab()
 
-
     def completeDailySetVariableActivity(self, cardNumber: int):
         self.browser.find_element(
             By.XPATH, f'//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[{cardNumber}]/div/card-content/mee-rewards-daily-set-item-content/div/a').click()
         self.utils.switchToNewTab(8)
         try:
-            self.browser.find_element(By.XPATH, '//*[@id="rqStartQuiz"]').click()
+            self.browser.find_element(
+                By.XPATH, '//*[@id="rqStartQuiz"]').click()
             self.utils.waitUntilVisible(By.XPATH,
-                            '//*[@id="currentQuestionContainer"]/div/div[1]', 3)
+                                        '//*[@id="currentQuestionContainer"]/div/div[1]', 3)
         except (NoSuchElementException, TimeoutException):
             try:
                 counter = str(self.browser.find_element(
@@ -110,7 +110,6 @@ class DailySet:
         time.sleep(10)
         self.utils.closeCurrentTab()
 
-
     def completeDailySetThisOrThat(self, cardNumber: int):
         self.browser.find_element(
             By.XPATH, f'//*[@id="daily-sets"]/mee-card-group[1]/div/mee-card[{cardNumber}]/div/card-content/mee-rewards-daily-set-item-content/div/a').click()
@@ -120,18 +119,20 @@ class DailySet:
             return
         self.browser.find_element(By.XPATH, '//*[@id="rqStartQuiz"]').click()
         self.utils.waitUntilVisible(By.XPATH,
-                        '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
+                                    '//*[@id="currentQuestionContainer"]/div/div[1]', 10)
         time.sleep(3)
         for _ in range(10):
             answerEncodeKey = self.browser.execute_script("return _G.IG")
 
             answer1 = self.browser.find_element(By.ID, "rqAnswerOption0")
             answer1Title = answer1.get_attribute('data-option')
-            answer1Code = self.utils.getAnswerCode(answerEncodeKey, answer1Title)
+            answer1Code = self.utils.getAnswerCode(
+                answerEncodeKey, answer1Title)
 
             answer2 = self.browser.find_element(By.ID, "rqAnswerOption1")
             answer2Title = answer2.get_attribute('data-option')
-            answer2Code = self.utils.getAnswerCode(answerEncodeKey, answer2Title)
+            answer2Code = self.utils.getAnswerCode(
+                answerEncodeKey, answer2Title)
 
             correctAnswerCode = self.browser.execute_script(
                 "return _w.rewardsQuizRenderInfo.correctAnswer")
@@ -146,7 +147,6 @@ class DailySet:
         time.sleep(5)
         self.utils.closeCurrentTab()
 
-
     def completeDailySet(self):
         d = self.utils.getDashboardData()['dailySetPromotions']
         todayDate = datetime.today().strftime('%m/%d/%Y')
@@ -160,7 +160,7 @@ class DailySet:
                     cardNumber = int(activity['offerId'][-1:])
                     if activity['promotionType'] == "urlreward":
                         print('[DAILY SET]',
-                            'Completing search of card ' + str(cardNumber))
+                              'Completing search of card ' + str(cardNumber))
                         self.completeDailySetSearch(cardNumber)
                     if activity['promotionType'] == "quiz":
                         if activity['pointProgressMax'] == 50 and activity['pointProgress'] == 0:
@@ -169,7 +169,7 @@ class DailySet:
                             self.completeDailySetThisOrThat(cardNumber)
                         elif (activity['pointProgressMax'] == 40 or activity['pointProgressMax'] == 30) and activity['pointProgress'] == 0:
                             print('[DAILY SET]',
-                                'Completing quiz of card ' + str(cardNumber))
+                                  'Completing quiz of card ' + str(cardNumber))
                             self.completeDailySetQuiz(cardNumber)
                         elif activity['pointProgressMax'] == 10 and activity['pointProgress'] == 0:
                             searchUrl = urllib.parse.unquote(urllib.parse.parse_qs(

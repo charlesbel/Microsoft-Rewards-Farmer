@@ -12,6 +12,7 @@ from .constants import DESKTOP_USER_AGENT
 
 from lib.utils import Utils
 
+
 class Searches:
     def __init__(self, browser: WebDriver, lang: str, geo: str):
         self.browser = browser
@@ -25,7 +26,7 @@ class Searches:
         while len(searchTerms) < wordsCount:
             i += 1
             r = requests.get(
-                f'https://trends.google.com/trends/api/dailytrends?hl={self.lang}&ed={str((date.today() - timedelta(days=i)).strftime("%Y%m%d"))}&geo={self.geo}&ns=15')
+                f'https://trends.google.com/trends/api/dailytrends?hl={self.lang}&ed={(date.today() - timedelta(days=i)).strftime("%Y%m%d")}&geo={self.geo}&ns=15')
             trends = json.loads(r.text[6:])
             for topic in trends['default']['trendingSearchesDays'][0]['trendingSearches']:
                 searchTerms.append(topic['title']['query'].lower())
@@ -35,15 +36,13 @@ class Searches:
         del searchTerms[wordsCount:(len(searchTerms)+1)]
         return searchTerms
 
-
     def getRelatedTerms(self, word: str) -> list:
         try:
             r = requests.get('https://api.bing.com/osjson.aspx?query=' +
-                            word, headers={'User-agent': DESKTOP_USER_AGENT})
+                             word, headers={'User-agent': DESKTOP_USER_AGENT})
             return r.json()[1]
         except:
             return []
-
 
     def bingSearches(self, numberOfSearches: int, isMobile: bool = False, pointsCounter: int = 0):
         i = 0
@@ -53,7 +52,7 @@ class Searches:
             print('[BING]', str(i) + "/" + str(numberOfSearches))
             points = self.bingSearch(word, isMobile)
             if points <= pointsCounter:
-                relatedTerms = self.getRelatedTerms(word)
+                relatedTerms = self.getRelatedTerms(word)[:2]
                 for term in relatedTerms:
                     points = self.bingSearch(term, isMobile)
                     if not points <= pointsCounter:
@@ -63,7 +62,6 @@ class Searches:
             else:
                 break
         return pointsCounter
-
 
     def bingSearch(self, word: str, isMobile: bool):
         self.browser.get('https://bing.com')

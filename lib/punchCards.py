@@ -1,5 +1,6 @@
 import time
 import random
+import urllib.parse
 
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
@@ -44,7 +45,7 @@ class PunchCards:
         punchCards = self.utils.getDashboardData()['punchCards']
         for punchCard in punchCards:
             try:
-                if punchCard['parentPromotion'] != None and punchCard['childPromotions'] != None and punchCard['parentPromotion']['complete'] == False and punchCard['parentPromotion']['pointProgressMax'] != 0:
+                if punchCard['parentPromotion'] and punchCard['childPromotions'] and not punchCard['parentPromotion']['complete'] and punchCard['parentPromotion']['pointProgressMax'] != 0:
                     self.completePunchCard(
                         punchCard['parentPromotion']['attributes']['destination'], punchCard['childPromotions'])
             except:
@@ -56,7 +57,9 @@ class PunchCards:
     def completePromotionalItems(self):
         try:
             item = self.utils.getDashboardData()["promotionalItem"]
-            if (item["pointProgressMax"] in [100, 200, 500]) and item["complete"] == False and (item["destinationUrl"] == BASE_URL or item["destinationUrl"].startswith("https://www.bing.com/")):
+            destUrl = urllib.parse.urlparse(item["destinationUrl"])
+            baseUrl = urllib.parse.urlparse(BASE_URL)
+            if (item["pointProgressMax"] in [100, 200, 500]) and not item["complete"] and ((destUrl.hostname == baseUrl.hostname and destUrl.path == baseUrl.path) or destUrl.hostname == "www.bing.com"):
                 self.browser.find_element(
                     By.XPATH, '//*[@id="promo-item"]/section/div/div/div/span').click()
                 self.utils.visitNewTab(8)

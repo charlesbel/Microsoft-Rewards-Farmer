@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     LANG = args.lang
     GEO = args.geo
-    if LANG is None or GEO is None:
+    if not LANG or not GEO :
         l, g = getCCodeLang()
         if not LANG:
             LANG = l

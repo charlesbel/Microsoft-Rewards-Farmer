@@ -134,7 +134,5 @@ if __name__ == "__main__":
             prGreen('[BING] Finished Mobile Bing searches !')
             browser.quit()
 
-        prGreen('[POINTS] You have earned ' +
-                str(POINTS_COUNTER - startingPoints) + ' points today !')
-        prGreen('[POINTS] You are now at ' +
-                str(POINTS_COUNTER) + ' points !\n')
+        prGreen(f'[POINTS] You have earned {POINTS_COUNTER - startingPoints} points today !')
+        prGreen(f'[POINTS] You are now at {POINTS_COUNTER} points !\n')

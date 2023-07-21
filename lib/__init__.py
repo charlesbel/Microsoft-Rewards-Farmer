@@ -6,3 +6,4 @@ from .morePromotions import *
 from .punchCards import *
 from .searches import *
 from .utils import *
+from .activities import *

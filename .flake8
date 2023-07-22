@@ -1,0 +1,23 @@
+[flake8]
+max-line-length = 88
+ignore = E501, E203, W503, E302
+max-complexity = 14
+per-file-ignores =
+    __init__.py:F401
+exclude =
+    .git
+    __pycache__
+    setup.py
+    build
+    dist
+    releases
+    .venv
+    .tox
+    .mypy_cache
+    .pytest_cache
+    .vscode
+    .github
+select = C,E,F,W,B,B901
+classmethod-decorators =
+    classmethod
+    validator

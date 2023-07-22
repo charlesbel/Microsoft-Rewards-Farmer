@@ -1,138 +1,185 @@
-import json
-import random
-import ipapi
-import os
+"""Module main.py
+This module is the main module of the project.
+"""
 import argparse
+import json
+import os
+import random
+from pathlib import Path
 
-from lib import *
+import ipapi
 
+from lib.browser import browser_setup
+from lib.daily_set import DailySet
+from lib.login import Login
+from lib.more_promotions import MorePromotions
+from lib.punch_cards import PunchCards
+from lib.searches import Searches
+from lib.utils import Utils
 
 POINTS_COUNTER = 0
 
 
-def getCCodeLang() -> tuple:
+def get_c_code_lang() -> tuple[str, str]:
+    """
+    Returns the user's language and geolocation based on their IP address.
+
+    Returns:
+        tuple: A tuple containing the user's language (str) and geolocation (str).
+    """
     try:
         nfo = ipapi.location()
-        lang = nfo['languages'].split(',')[0].split('-')[0]
-        geo = nfo['country']
+
+        lang = nfo["languages"].split(",")[0].split("-")[0]  # type: ignore
+        geo = nfo["country"]  # type: ignore
         return (lang, geo)
-    except:
-        return ('en', 'US')
+    except Exception:
+        return ("en", "US")
 
 
-def prRed(prt):
-    print("\033[91m{}\033[00m".format(prt))
+def print_red(prt):
+    """
+    Prints the given string in red color in the console.
+
+    Args:
+        prt (str): The string to be printed in red color.
+    """
+    print(f"\033[91m{prt}\033[00m")
 
 
-def prGreen(prt):
-    print("\033[92m{}\033[00m".format(prt))
+def print_green(prt):
+    """
+    Prints the given string in green color in the console.
+
+    Args:
+        prt (str): The string to be printed in green color.
+    """
+    print(f"\033[92m{prt}\033[00m")
 
 
-def prPurple(prt):
-    print("\033[95m{}\033[00m".format(prt))
+def print_purple(prt):
+    """
+    Prints the given string in purple color in the console.
+
+    Args:
+        prt (str): The string to be printed in purple color.
+    """
+    print(f"\033[95m{prt}\033[00m")
 
 
-def prYellow(prt):
-    print("\033[93m{}\033[00m".format(prt))
+def print_yellow(prt):
+    """
+    Prints the given string in yellow color in the console.
+
+    Args:
+        prt (str): The string to be printed in yellow color.
+    """
+    print(f"\033[93m{prt}\033[00m")
 
 
 if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser(description='Microsoft Rewards Farmer')
-    parser.add_argument('-v', '--visible', action='store_true',
-                        help='Optional: Visible browser')
-    parser.add_argument('-l', '--lang', type=str, default=None,
-                        help='Optional: Language (ex: en)')
-    parser.add_argument('-g', '--geo', type=str, default=None,
-                        help='Optional: Geolocation (ex: US)')
+    parser = argparse.ArgumentParser(description="Microsoft Rewards Farmer")
+    parser.add_argument(
+        "-v", "--visible", action="store_true", help="Optional: Visible browser"
+    )
+    parser.add_argument(
+        "-l", "--lang", type=str, default=None, help="Optional: Language (ex: en)"
+    )
+    parser.add_argument(
+        "-g", "--geo", type=str, default=None, help="Optional: Geolocation (ex: US)"
+    )
     args = parser.parse_args()
 
-    prRed("""
+    print_red(
+        """
     ███╗   ███╗███████╗    ███████╗ █████╗ ██████╗ ███╗   ███╗███████╗██████╗
     ████╗ ████║██╔════╝    ██╔════╝██╔══██╗██╔══██╗████╗ ████║██╔════╝██╔══██╗
     ██╔████╔██║███████╗    █████╗  ███████║██████╔╝██╔████╔██║█████╗  ██████╔╝
     ██║╚██╔╝██║╚════██║    ██╔══╝  ██╔══██║██╔══██╗██║╚██╔╝██║██╔══╝  ██╔══██╗
     ██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
-    ╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝""")
-    prPurple("        by Charles Bel (@charlesbel)               version 3.0\n")
+    ╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝"""
+    )
+    print_purple("        by Charles Bel (@charlesbel)               version 3.0\n")
 
     headless = not args.visible
 
     LANG = args.lang
     GEO = args.geo
-    if not LANG or not GEO :
-        l, g = getCCodeLang()
-        if not LANG:
-            LANG = l
-        if not GEO:
-            GEO = g
+    l, g = get_c_code_lang()
+    if not LANG:
+        LANG = l
+    if not GEO:
+        GEO = g
 
-    try:
-        account_path = os.path.dirname(
-            os.path.abspath(__file__)) + '/accounts.json'
-        ACCOUNTS = json.load(open(account_path, "r"))
-    except FileNotFoundError:
-        with open(account_path, 'w') as f:
-            f.write(json.dumps([{
-                "username": "Your Email",
-                "password": "Your Password"
-            }], indent=4))
-        prPurple("""
+    account_path = Path(f"{os.path.dirname(os.path.abspath(__file__))}")
+    accounts_file = account_path / "accounts.json"
+    if not accounts_file.exists():
+        accounts_file.write_text(
+            json.dumps(
+                [{"username": "Your Email", "password": "Your Password"}], indent=4
+            )
+        )
+        print_purple(
+            """
     [ACCOUNT] Accounts credential file "accounts.json" created.
     [ACCOUNT] Edit with your credentials and save, then press any key to continue...
-        """)
+        """
+        )
         input()
-        ACCOUNTS = json.load(open(account_path, "r"))
+    ACCOUNTS = json.loads(accounts_file.read_text(encoding="utf-8"))
 
     random.shuffle(ACCOUNTS)
 
     for account in ACCOUNTS:
-
-        prYellow('********************' +
-                 account['username'] + '********************')
-        browser = browserSetup(account['username'], headless, False, LANG)
+        print_yellow(
+            "********************" + account["username"] + "********************"
+        )
+        browser = browser_setup(account["username"], headless, False, LANG)
         utils = Utils(browser)
 
-        print('[LOGIN]', 'Logging-in...')
-        POINTS_COUNTER = Login(browser).login(
-            account['username'], account['password'])
-        prGreen('[LOGIN] Logged-in successfully !')
+        print("[LOGIN]", "Logging-in...")
+        POINTS_COUNTER = Login(browser).login(account["username"], account["password"])
+        print_green("[LOGIN] Logged-in successfully !")
         startingPoints = POINTS_COUNTER
-        prGreen('[POINTS] You have ' + str(POINTS_COUNTER) +
-                ' points on your account !')
+        print_green(f"[POINTS] You have {str(POINTS_COUNTER)} points on your account !")
 
-        utils.goHome()
+        utils.go_home()
 
-        print('[DAILY SET]', 'Trying to complete the Daily Set...')
-        DailySet(browser).completeDailySet()
-        prGreen('[DAILY SET] Completed the Daily Set successfully !')
-        print('[PUNCH CARDS]', 'Trying to complete the Punch Cards...')
-        PunchCards(browser).completePunchCards()
-        prGreen('[PUNCH CARDS] Completed the Punch Cards successfully !')
-        print('[MORE PROMO]', 'Trying to complete More Promotions...')
-        MorePromotions(browser).completeMorePromotions()
-        prGreen('[MORE PROMO] Completed More Promotions successfully !')
-        remainingSearches, remainingSearchesM = utils.getRemainingSearches()
+        print("[DAILY SET]", "Trying to complete the Daily Set...")
+        DailySet(browser).complete_daily_set()
+        print_green("[DAILY SET] Completed the Daily Set successfully !")
+        print("[PUNCH CARDS]", "Trying to complete the Punch Cards...")
+        PunchCards(browser).complete_punch_cards()
+        print_green("[PUNCH CARDS] Completed the Punch Cards successfully !")
+        print("[MORE PROMO]", "Trying to complete More Promotions...")
+        MorePromotions(browser).complete_more_promotions()
+        print_green("[MORE PROMO] Completed More Promotions successfully !")
+        remainingSearches, remainingSearchesM = utils.get_remaining_searches()
         if remainingSearches != 0:
-            print('[BING]', 'Starting Desktop and Edge Bing searches...')
-            POINTS_COUNTER = Searches(
-                browser, LANG, GEO).bingSearches(remainingSearches)
-            prGreen('[BING] Finished Desktop and Edge Bing searches !')
+            print("[BING]", "Starting Desktop and Edge Bing searches...")
+            POINTS_COUNTER = Searches(browser, LANG, GEO).bing_searches(
+                remainingSearches
+            )
+            print_green("[BING] Finished Desktop and Edge Bing searches !")
         browser.quit()
 
         if remainingSearchesM != 0:
-            browser = browserSetup(account['username'], headless, True, LANG)
+            browser = browser_setup(account["username"], headless, True, LANG)
             utils = Utils(browser)
 
-            print('[LOGIN]', 'Logging-in...')
+            print("[LOGIN]", "Logging-in...")
             POINTS_COUNTER = Login(browser).login(
-                account['username'], account['password'], True)
-            print('[LOGIN]', 'Logged-in successfully !')
-            print('[BING]', 'Starting Mobile Bing searches...')
-            POINTS_COUNTER = Searches(browser, LANG, GEO).bingSearches(
-                remainingSearchesM, True)
-            prGreen('[BING] Finished Mobile Bing searches !')
+                account["username"], account["password"], True
+            )
+            print("[LOGIN]", "Logged-in successfully !")
+            print("[BING]", "Starting Mobile Bing searches...")
+            POINTS_COUNTER = Searches(browser, LANG, GEO).bing_searches(
+                remainingSearchesM, True
+            )
+            print_green("[BING] Finished Mobile Bing searches !")
             browser.quit()
 
-        prGreen(f'[POINTS] You have earned {POINTS_COUNTER - startingPoints} points today !')
-        prGreen(f'[POINTS] You are now at {POINTS_COUNTER} points !\n')
+        print_green(
+            f"[POINTS] You have earned {POINTS_COUNTER - startingPoints} points today !"
+        )
+        print_green(f"[POINTS] You are now at {POINTS_COUNTER} points !\n")

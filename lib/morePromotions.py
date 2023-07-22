@@ -32,7 +32,6 @@ class MorePromotions:
                         elif promotion['pointProgressMax'] == 50:
                             self.activities.completeThisOrThat()
                     else:
-                        if promotion['pointProgressMax'] in [100, 200, 500]:
-                            self.activities.completeSearch()
+                        self.activities.completeSearch()
             except:
                 self.utils.resetTabs()

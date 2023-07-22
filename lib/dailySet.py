@@ -18,13 +18,9 @@ class DailySet:
         self.activities = Activities(browser)
 
     def completeDailySet(self):
-        d = self.utils.getDashboardData()['dailySetPromotions']
+        data = self.utils.getDashboardData()['dailySetPromotions']
         todayDate = datetime.today().strftime('%m/%d/%Y')
-        todayPack = []
-        for date, data in d.items():
-            if date == todayDate:
-                todayPack = data
-        for activity in todayPack:
+        for activity in data[todayDate]:
             try:
                 if activity['complete'] == False:
                     cardId = int(activity['offerId'][-1:])

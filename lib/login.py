@@ -70,19 +70,7 @@ class Login:
 
         print('[LOGIN]', 'Logged-in !')
 
-        self.browser.get(BASE_URL)
-        while True:
-            self.utils.tryDismissCookieBanner()
-            try:
-                self.browser.find_element(By.ID, 'daily-sets')
-                break
-            except:
-                pass
-            if urllib.parse.urlparse(self.browser.current_url).hostname != urllib.parse.urlparse(BASE_URL).hostname:
-                if self.utils.tryDismissAllMessages():
-                    time.sleep(1)
-                    self.browser.get(BASE_URL)
-            time.sleep(1)
+        self.utils.goHome()
         points = self.utils.getAccountPoints()
 
         print('[LOGIN]', 'Ensuring login on Bing...')

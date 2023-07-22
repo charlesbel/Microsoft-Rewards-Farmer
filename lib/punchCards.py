@@ -51,7 +51,7 @@ class PunchCards:
             except:
                 self.utils.resetTabs()
         time.sleep(2)
-        self.browser.get(BASE_URL)
+        self.utils.goHome()
         time.sleep(2)
 
     def completePromotionalItems(self):

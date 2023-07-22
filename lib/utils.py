@@ -75,8 +75,18 @@ class Utils:
         targetUrl = urllib.parse.urlparse(BASE_URL)
         if currentUrl.hostname != targetUrl.hostname or currentUrl.path != targetUrl.path:
             self.browser.get(BASE_URL)
-            self.waitUntilVisible(By.ID, 'daily-sets', 10)
-        self.tryDismissCookieBanner()
+            while True:
+                self.tryDismissCookieBanner()
+                try:
+                    self.browser.find_element(By.ID, 'more-activities')
+                    break
+                except:
+                    pass
+                if urllib.parse.urlparse(self.browser.current_url).hostname != targetUrl.hostname:
+                    if self.tryDismissAllMessages():
+                        time.sleep(2)
+                        self.browser.get(BASE_URL)
+                time.sleep(0.5)
 
     def getAnswerCode(self, key: str, string: str) -> str:
         t = 0

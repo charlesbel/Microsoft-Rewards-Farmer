@@ -14,7 +14,7 @@ from selenium.common.exceptions import (
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
-from lib.utils import Utils
+from source.utils import Utils
 
 from .constants import DESKTOP_USER_AGENT
 

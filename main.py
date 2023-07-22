@@ -9,13 +9,13 @@ from pathlib import Path
 
 import ipapi
 
-from lib.browser import browser_setup
-from lib.daily_set import DailySet
-from lib.login import Login
-from lib.more_promotions import MorePromotions
-from lib.punch_cards import PunchCards
-from lib.searches import Searches
-from lib.utils import Utils
+from source.browser import browser_setup
+from source.daily_set import DailySet
+from source.login import Login
+from source.more_promos import MorePromotions
+from source.punch_cards import PunchCards
+from source.searches import Searches
+from source.utils import Utils
 
 POINTS_COUNTER = 0
 

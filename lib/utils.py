@@ -139,8 +139,18 @@ class Utils:
             or current_url.path != target_url.path
         ):
             self.browser.get(BASE_URL)
-            self.wait_until_visible(By.ID, "daily-sets", 10)
-        self.try_dismiss_cookie_banner()
+            while True:
+                self.try_dismiss_cookie_banner()
+                with contextlib.suppress(Exception):
+                    self.browser.find_element(By.ID, "more-activities")
+                    break
+                if (
+                    urllib.parse.urlparse(self.browser.current_url).hostname
+                    != target_url.hostname
+                ) and self.try_dismiss_all_messages():
+                    time.sleep(2)
+                    self.browser.get(BASE_URL)
+                time.sleep(0.5)
 
     def get_answer_code(self, key: str, string: str) -> str:
         """

@@ -7,7 +7,6 @@ import urllib.parse
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
-from .constants import BASE_URL
 from .utils import Utils
 
 
@@ -56,19 +55,7 @@ class Login:
 
         print("[LOGIN]", "Logged-in !")
 
-        self.browser.get(BASE_URL)
-        while True:
-            self.utils.try_dismiss_cookie_banner()
-            with contextlib.suppress(Exception):
-                self.browser.find_element(By.ID, "daily-sets")
-                break
-            if (
-                urllib.parse.urlparse(self.browser.current_url).hostname
-                != urllib.parse.urlparse(BASE_URL).hostname
-            ) and self.utils.try_dismiss_all_messages():
-                time.sleep(1)
-                self.browser.get(BASE_URL)
-            time.sleep(1)
+        self.utils.go_home()
         points = self.utils.get_account_points()
 
         print("[LOGIN]", "Ensuring login on Bing...")

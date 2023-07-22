@@ -90,7 +90,7 @@ class Activities:
             return
         self.browser.find_element(By.XPATH, '//*[@id="rqStartQuiz"]').click()
         self.utils.wait_until_visible(
-            By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 5
+            By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10
         )
         time.sleep(3)
         number_of_questions = self.browser.execute_script(
@@ -165,7 +165,7 @@ class Activities:
         It iterates through each question and randomly selects one of the two answer options
         before moving on to the next question.
         """
-        # method code here
+        number_of_questions = 10
         if not self.utils.wait_until_quiz_loads():
             self.utils.reset_tabs()
             return
@@ -174,7 +174,7 @@ class Activities:
             By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10
         )
         time.sleep(3)
-        for _ in range(10):
+        for question in range(number_of_questions):
             answer_encode_key = self.browser.execute_script("return _G.IG")
 
             answer1 = self.browser.find_element(By.ID, "rqAnswerOption0")
@@ -198,9 +198,9 @@ class Activities:
 
             if answer1_code == correct_answer_code:
                 answer1.click()
-                time.sleep(8)
             elif answer2_code == correct_answer_code:
                 answer2.click()
+            if question + 1 != number_of_questions:
                 time.sleep(8)
 
         time.sleep(5)

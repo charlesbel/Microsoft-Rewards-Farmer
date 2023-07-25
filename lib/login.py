@@ -89,6 +89,10 @@ class Login:
                 self.utils.tryDismissBingCookieBanner()
                 try:
                     if isMobile:
+                        try:
+                            self.browser.execute_script("document.getElementById('bnp_ttc_div').style.display = 'none';")
+                        except:
+                            pass
                         if not isHamburgerOpened:
                             self.browser.find_element(
                                 By.ID, 'mHamburger').click()

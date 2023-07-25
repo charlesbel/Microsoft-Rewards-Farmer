@@ -4,7 +4,7 @@ import ipapi
 import os
 import argparse
 
-from lib import *
+from src import *
 
 
 POINTS_COUNTER = 0

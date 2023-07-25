@@ -10,7 +10,7 @@ from selenium.common.exceptions import UnexpectedAlertPresentException, NoAlertP
 
 from .constants import DESKTOP_USER_AGENT
 
-from lib.utils import Utils
+from src.utils import Utils
 
 
 class Searches:

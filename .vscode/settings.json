@@ -1,0 +1,23 @@
+{
+  "[python]": {
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    },
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "python.formatting.autopep8Args": ["--aggressive"],
+  "python.linting.mypyEnabled": true,
+  "python.formatting.provider": "none",
+  "editor.formatOnSave": true,
+  "python.testing.pytestEnabled": true,
+  "python.linting.enabled": true,
+  "python.linting.flake8Enabled": true,
+  "python.linting.pylintEnabled": true,
+  "files.exclude": {
+    "**/*.pyc": {
+      "when": "$(basename).py"
+    },
+    "**/__pycache__": true
+  },
+  "python.analysis.typeCheckingMode": "basic"
+}

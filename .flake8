@@ -1,5 +1,11 @@
+# Ignore line length because black takes care of it
+# Ignore W503 because black takes care of it
+# Ignore E203 because black takes care of it
+# Ignore E501 because black takes care of it
+
 [flake8]
 max-line-length = 88
+ignore = W503, E203, E501
 max-complexity = 14
 exclude =
     .git

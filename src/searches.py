@@ -1,3 +1,4 @@
+import contextlib
 import json
 import random
 import time
@@ -35,8 +36,10 @@ class Searches:
                 "trendingSearches"
             ]:
                 searchTerms.append(topic["title"]["query"].lower())
-                for relatedTopic in topic["relatedQueries"]:
-                    searchTerms.append(relatedTopic["query"].lower())
+                searchTerms.extend(
+                    relatedTopic["query"].lower()
+                    for relatedTopic in topic["relatedQueries"]
+                )
             searchTerms = list(set(searchTerms))
         del searchTerms[wordsCount : (len(searchTerms) + 1)]
         return searchTerms
@@ -79,27 +82,23 @@ class Searches:
         searchbar.send_keys(word)
         searchbar.submit()
         time.sleep(random.randint(10, 15))
-        points = 0
-        try:
+        stringPoints = None
+        with contextlib.suppress(Exception):
             if not isMobile:
-                points = int(
-                    self.browser.find_element(By.ID, "id_rc").get_attribute("innerHTML")
+                stringPoints = self.browser.find_element(By.ID, "id_rc").get_attribute(
+                    "innerHTML"
                 )
+
             else:
                 try:
                     self.browser.find_element(By.ID, "mHamburger").click()
                     time.sleep(1)
                 except UnexpectedAlertPresentException:
-                    try:
+                    with contextlib.suppress(NoAlertPresentException):
                         self.browser.switch_to.alert.accept()
                         self.browser.find_element(By.ID, "mHamburger").click()
-                    except NoAlertPresentException:
-                        pass
-                points = int(
-                    self.browser.find_element(By.ID, "fly_id_rc").get_attribute(
-                        "innerHTML"
-                    )
-                )
-        except Exception:  # pylint: disable=broad-except
-            pass
-        return points
+                stringPoints = self.browser.find_element(
+                    By.ID, "fly_id_rc"
+                ).get_attribute("innerHTML")
+
+        return int(stringPoints) if stringPoints is not None else 0

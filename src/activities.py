@@ -54,12 +54,10 @@ class Activities:
             if numberOfOptions == 8:
                 answers = []
                 for i in range(numberOfOptions):
-                    if (
-                        self.browser.find_element(By.ID, f"rqAnswerOption{i}")
-                        .get_attribute("iscorrectoption")
-                        .lower()
-                        == "true"
-                    ):
+                    isCorrectOption = self.browser.find_element(
+                        By.ID, f"rqAnswerOption{i}"
+                    ).get_attribute("iscorrectoption")
+                    if isCorrectOption and isCorrectOption.lower() == "true":
                         answers.append(f"rqAnswerOption{i}")
                 for answer in answers:
                     self.browser.find_element(By.ID, answer).click()
@@ -93,7 +91,7 @@ class Activities:
         counter = self.browser.find_element(
             By.XPATH, '//*[@id="QuestionPane0"]/div[2]'
         ).text[:-1][1:]
-        numberOfQuestions = max([int(s) for s in counter.split() if s.isdigit()])
+        numberOfQuestions = max(int(s) for s in counter.split() if s.isdigit())
         for question in range(numberOfQuestions):
             self.browser.find_element(
                 By.ID, f"questionOptionChoice{question}{random.randint(0, 2)}"
@@ -114,20 +112,11 @@ class Activities:
         )
         time.sleep(3)
         for _ in range(10):
-            answerEncodeKey = self.browser.execute_script("return _G.IG")
-
-            answer1 = self.browser.find_element(By.ID, "rqAnswerOption0")
-            answer1Title = answer1.get_attribute("data-option")
-            answer1Code = self.utils.getAnswerCode(answerEncodeKey, answer1Title)
-
-            answer2 = self.browser.find_element(By.ID, "rqAnswerOption1")
-            answer2Title = answer2.get_attribute("data-option")
-            answer2Code = self.utils.getAnswerCode(answerEncodeKey, answer2Title)
-
             correctAnswerCode = self.browser.execute_script(
                 "return _w.rewardsQuizRenderInfo.correctAnswer"
             )
-
+            answer1, answer1Code = self.getAnswerAndCode("rqAnswerOption0")
+            answer2, answer2Code = self.getAnswerAndCode("rqAnswerOption1")
             if answer1Code == correctAnswerCode:
                 answer1.click()
                 time.sleep(8)
@@ -137,3 +126,12 @@ class Activities:
 
         time.sleep(5)
         self.utils.closeCurrentTab()
+
+    def getAnswerAndCode(self, answerId: str) -> tuple:
+        answerEncodeKey = self.browser.execute_script("return _G.IG")
+        answer = self.browser.find_element(By.ID, answerId)
+        answerTitle = answer.get_attribute("data-option")
+        if answerTitle is not None:
+            return (answer, self.utils.getAnswerCode(answerEncodeKey, answerTitle))
+        else:
+            return (answer, None)

@@ -1,3 +1,4 @@
+import contextlib
 import time
 import urllib.parse
 
@@ -40,14 +41,13 @@ class Utils:
                 if tries < checks:
                     tries += 1
                     time.sleep(checkingInterval)
+                elif refreshCount < refreshsAllowed:
+                    self.browser.refresh()
+                    refreshCount += 1
+                    tries = 0
+                    time.sleep(5)
                 else:
-                    if refreshCount < refreshsAllowed:
-                        self.browser.refresh()
-                        refreshCount += 1
-                        tries = 0
-                        time.sleep(5)
-                    else:
-                        return False
+                    return False
 
     def waitUntilQuestionRefresh(self):
         return self.waitForMSRewardElement(By.CLASS_NAME, "rqECredits")
@@ -84,9 +84,7 @@ class Utils:
         self.tryDismissCookieBanner()
 
     def getAnswerCode(self, key: str, string: str) -> str:
-        t = 0
-        for i in range(len(string)):
-            t += ord(string[i])
+        t = sum(ord(string[i]) for i in range(len(string)))
         t += int(key[-2:], 16)
         return str(t)
 
@@ -115,20 +113,16 @@ class Utils:
         return result
 
     def tryDismissCookieBanner(self):
-        try:
+        with contextlib.suppress(Exception):
             self.browser.find_element(By.ID, "cookie-banner").find_element(
                 By.TAG_NAME, "button"
             ).click()
             time.sleep(2)
-        except Exception:  # pylint: disable=broad-except
-            pass
 
     def tryDismissBingCookieBanner(self):
-        try:
+        with contextlib.suppress(Exception):
             self.browser.find_element(By.ID, "bnp_btn_accept").click()
             time.sleep(2)
-        except Exception:  # pylint: disable=broad-except
-            pass
 
     def switchToNewTab(self, timeToWait: int = 0):
         time.sleep(0.5)
@@ -160,17 +154,11 @@ class Utils:
             counters["pcSearch"][0]["pointProgressMax"]
             + counters["pcSearch"][1]["pointProgressMax"]
         )
-        if targetDesktop == 33:
-            # Level 1 EU
+        if targetDesktop == 33 or targetDesktop == 102:
+            # Level 1 or 2 EU
             searchPoints = 3
-        elif targetDesktop == 55:
-            # Level 1 US
-            searchPoints = 5
-        elif targetDesktop == 102:
-            # Level 2 EU
-            searchPoints = 3
-        elif targetDesktop >= 170:
-            # Level 2 US
+        elif targetDesktop == 55 or targetDesktop >= 170:
+            # Level 1 or 2 US
             searchPoints = 5
         remainingDesktop = int((targetDesktop - progressDesktop) / searchPoints)
         remainingMobile = 0

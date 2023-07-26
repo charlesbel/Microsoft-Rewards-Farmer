@@ -1,15 +1,9 @@
-<div align="center">
-<h2>NEW VERSION : V3.0</h2>
-</div>
+![Made with Python](https://forthebadge.com/images/badges/made-with-python.svg)
+![Built by Developers](http://ForTheBadge.com/images/badges/built-by-developers.svg)
+![Uses Git](http://ForTheBadge.com/images/badges/uses-git.svg)
+![Build with Love](http://ForTheBadge.com/images/badges/built-with-love.svg)
 
-<p align="center">
-  <img src="https://forthebadge.com/images/badges/made-with-python.svg"/>
-  <img src="http://ForTheBadge.com/images/badges/built-by-developers.svg"/>
-  <img src="http://ForTheBadge.com/images/badges/uses-git.svg"/>
-  <img src="http://ForTheBadge.com/images/badges/built-with-love.svg"/>
-</p>
-
-<pre align="center">
+```ascii
 ███╗   ███╗███████╗    ███████╗ █████╗ ██████╗ ███╗   ███╗███████╗██████╗ 
 ████╗ ████║██╔════╝    ██╔════╝██╔══██╗██╔══██╗████╗ ████║██╔════╝██╔══██╗
 ██╔████╔██║███████╗    █████╗  ███████║██████╔╝██╔████╔██║█████╗  ██████╔╝
@@ -17,69 +11,76 @@
 ██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
 ╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝
        by Charles Bel (@charlesbel)          version 3.0
-</pre>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge"/>
-  <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge"/>
-</p>
-
-<h2 align="center">👋 Welcome to the future of automation</h2>
-<h3 align="center">A simple bot that uses selenium to farm Microsoft Rewards written in Python.</h3>
-<h3 align="center">
-
-```diff
-- Use it at your own risk, Microsoft may ban your account (and I would not be responsible for it) -
 ```
 
-</h3>
+![Maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)
+![MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)
 
-<h2 align="center">Installation</h2>
-<p align="center">
-  <ul>
-    <li>Install requirements with the following command : <pre>pip install -r requirements.txt</pre></li>
-    <li>Make sure you have Chrome installed</li>
-    <li>Install ChromeDriver :<ul>
-      <li>Windows :<ul>
-        <li>Download Chrome WebDriver : https://chromedriver.chromium.org/downloads</li>
-        <li>Place the file in X:\Windows (X as your Windows disk letter)</li>
-      </ul>
-      <li>MacOS or Linux :<ul>
-        <li><pre>apt install chromium-chromedriver</pre></li>
-        <li>or if you have brew : <pre>brew install chromedriver</pre></li>
-        <li>If you get the following error, “chromedriver” cannot be opened because the developer cannot be verified, run this command :
-          <pre>xattr -d com.apple.quarantine /usr/local/bin/chromedriver</pre>
-        </li>
-      </ul>
-    </ul></li>
-    <li>Edit the accounts.json.sample with your accounts credentials and rename it by removing .sample at the end<br/>
-    If you want to add more than one account, the syntax is the following : <pre>[
-    {
-        "username": "Your Email",
-        "password": "Your Password"
-    },
-    {
-        "username": "Your Email",
-        "password": "Your Password"
-    }
-]</pre></li>
-    <li>Run the script:
-      <pre>python main.py</pre>
-    </li>
-   </ul>
-</p>
+## :wave: Welcome to the future of automation
 
-<h2 align="center">Features</h2>
-<p align="center">
-<ul>
-  <li>Bing searches (Desktop, Mobile and Edge) with User-Agents</li>
-  <li>Complete automatically the daily set</li>
-  <li>Complete automatically punch cards</li>
-  <li>Complete automatically the others promotions</li>
-  <li>Headless Mode</li>
-  <li>Multi-Account Management</li>
-  <li>Session storing</li>
-  <li>2FA Support</li>
-  <li>GUI (soon)</li>
-</ul>
-</p>
+### A simple bot that uses selenium to farm Microsoft Rewards written in Python
+
+```diff
+- Use it at your own risk, Microsoft may ban your account (and I would not be responsible for it)
+```
+
+## Installation
+
+1) Install requirements with the following command :
+
+    `pip install -r requirements.txt`
+
+2) Make sure you have Chrome installed
+
+3) Install ChromeDriver:
+
+   * Windows :
+     * Download Chrome WebDriver : <https://chromedriver.chromium.org/downloads>
+     * Place the file in X:\\Windows (X as your Windows disk letter)
+   * Linux :
+
+      `apt install chromium-chromedriver`
+
+   * MacOS w/Brew:
+
+      `brew install chromedriver`
+
+     * If you get the following error, `chromedriver cannot be opened because the developer cannot be verified`, run this command :
+
+        `xattr -d com.apple.quarantine /usr/local/bin/chromedriver`
+
+4) Edit the `accounts.json.sample` with your accounts credentials and rename it by removing `.sample` at the end (ex. `accounts.json`)
+
+   * If you want to add more than one account, the syntax is the following:
+
+    ```json
+        [
+            {
+                "username": "Your Email",
+                "password": "Your Password"
+            },
+            {
+                "username": "Your Email",
+                "password": "Your Password"
+            }
+        ]
+    ```
+
+5) Run the script:
+
+    `python main.py`
+
+## Features
+
+* Bing searches (Desktop, Mobile and Edge) with User-Agents
+* Complete automatically the daily set
+* Complete automatically punch cards
+* Complete automatically the others promotions
+* Headless Mode
+* Multi-Account Management
+* Session storing (3.0)
+* 2FA Support (3.0)
+
+## Future Features
+
+* GUI

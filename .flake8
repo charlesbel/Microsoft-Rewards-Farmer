@@ -1,0 +1,28 @@
+# Ignore line length because black takes care of it
+# Ignore W503 because black takes care of it
+# Ignore E203 because black takes care of it
+# Ignore E501 because black takes care of it
+
+[flake8]
+max-line-length = 88
+ignore = W503, E203, E501
+max-complexity = 14
+exclude =
+    .git
+    __pycache__
+    setup.py
+    build
+    dist
+    releases
+    .venv
+    .tox
+    .mypy_cache
+    .pytest_cache
+    .vscode
+    .github
+select = C,E,F,W,B,B901
+classmethod-decorators =
+    classmethod
+    validator
+per-file-ignores =
+    __init__.py:F401

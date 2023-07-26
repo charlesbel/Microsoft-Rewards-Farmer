@@ -44,7 +44,7 @@ class Searches:
     def getRelatedTerms(self, word: str) -> list:
         try:
             r = requests.get(
-                "https://api.bing.com/osjson.aspx?query=" + word,
+                f"https://api.bing.com/osjson.aspx?query={word}",
                 headers={"User-agent": DESKTOP_USER_AGENT},
             )
             return r.json()[1]
@@ -58,7 +58,7 @@ class Searches:
         search_terms = self.getGoogleTrends(numberOfSearches)
         for word in search_terms:
             i += 1
-            print("[BING]", str(i) + "/" + str(numberOfSearches))
+            print("[BING]", f"{i}/{numberOfSearches}")
             points = self.bingSearch(word, isMobile)
             if points <= pointsCounter:
                 relatedTerms = self.getRelatedTerms(word)[:2]

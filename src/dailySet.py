@@ -15,14 +15,14 @@ class DailySet:
 
     def completeDailySet(self):
         data = self.utils.getDashboardData()["dailySetPromotions"]
-        todayDate = datetime.today().strftime("%m/%d/%Y")
+        todayDate = datetime.now().strftime("%m/%d/%Y")
         for activity in data.get(todayDate, []):
             try:
                 if activity["complete"] is False:
                     cardId = int(activity["offerId"][-1:])
                     self.activities.openDailySetActivity(cardId)
                     if activity["promotionType"] == "urlreward":
-                        print("[DAILY SET]", "Completing search of card " + str(cardId))
+                        print("[DAILY SET]", f"Completing search of card {cardId}")
                         self.activities.completeSearch()
                     if activity["promotionType"] == "quiz":
                         if (
@@ -31,16 +31,14 @@ class DailySet:
                         ):
                             print(
                                 "[DAILY SET]",
-                                "Completing This or That of card " + str(cardId),
+                                f"Completing This or That of card {cardId}",
                             )
                             self.activities.completeThisOrThat()
                         elif (
-                            activity["pointProgressMax"] == 40
-                            or activity["pointProgressMax"] == 30
-                        ) and activity["pointProgress"] == 0:
-                            print(
-                                "[DAILY SET]", "Completing quiz of card " + str(cardId)
-                            )
+                            activity["pointProgressMax"] in [40, 30]
+                            and activity["pointProgress"] == 0
+                        ):
+                            print("[DAILY SET]", f"Completing quiz of card {cardId}")
                             self.activities.completeQuiz()
                         elif (
                             activity["pointProgressMax"] == 10
@@ -62,14 +60,12 @@ class DailySet:
                                 filters[filterEl[0]] = filterEl[1]
                             if "PollScenarioId" in filters:
                                 print(
-                                    "[DAILY SET]",
-                                    "Completing poll of card " + str(cardId),
+                                    "[DAILY SET]", f"Completing poll of card {cardId}"
                                 )
                                 self.activities.completeSurvey()
                             else:
                                 print(
-                                    "[DAILY SET]",
-                                    "Completing quiz of card " + str(cardId),
+                                    "[DAILY SET]", f"Completing quiz of card {cardId}"
                                 )
                                 try:
                                     self.activities.completeABC()

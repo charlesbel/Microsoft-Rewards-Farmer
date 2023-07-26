@@ -9,8 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import UnexpectedAlertPresentException, NoAlertPresentException
 
 from .constants import DESKTOP_USER_AGENT
-
-from lib.utils import Utils
+from .utils import Utils
 
 
 class Searches:

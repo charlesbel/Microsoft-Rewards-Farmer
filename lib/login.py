@@ -5,7 +5,6 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
 from .constants import BASE_URL
-
 from .utils import Utils
 
 
@@ -90,7 +89,8 @@ class Login:
                 try:
                     if isMobile:
                         try:
-                            self.browser.execute_script("document.getElementById('bnp_ttc_div').style.display = 'none';")
+                            self.browser.execute_script(
+                                "document.getElementById('bnp_ttc_div').style.display = 'none';")
                         except:
                             pass
                         if not isHamburgerOpened:

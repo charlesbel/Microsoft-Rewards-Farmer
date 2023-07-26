@@ -9,6 +9,7 @@ from .constants import BASE_URL
 from .utils import Utils
 from .activities import Activities
 
+
 class PunchCards:
     def __init__(self, browser: WebDriver):
         self.browser = browser

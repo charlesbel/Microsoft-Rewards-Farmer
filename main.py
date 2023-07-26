@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     LANG = args.lang
     GEO = args.geo
-    if not LANG or not GEO :
+    if not LANG or not GEO:
         l, g = getCCodeLang()
         if not LANG:
             LANG = l
@@ -134,5 +134,6 @@ if __name__ == "__main__":
             prGreen('[BING] Finished Mobile Bing searches !')
             browser.quit()
 
-        prGreen(f'[POINTS] You have earned {POINTS_COUNTER - startingPoints} points today !')
+        prGreen(
+            f'[POINTS] You have earned {POINTS_COUNTER - startingPoints} points today !')
         prGreen(f'[POINTS] You are now at {POINTS_COUNTER} points !\n')

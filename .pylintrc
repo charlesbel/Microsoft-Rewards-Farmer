@@ -48,20 +48,9 @@ expected-line-ending-format=LF
 # TODO: Probably switch to snake_case in the future
 
 # ---- Naming Conventions ----
-# Regular expression which should only match correct module names
-module-rgx=(([a-z][a-z0-9]*)|([A-Z][a-zA-Z0-9]+))$
-
-# Regular expression which should only match correct class names
-class-rgx=[A-Z][a-zA-Z0-9]+$
-
-# Regular expression which should only match correct function names
-function-rgx=[a-z_][a-zA-Z0-9]*$
-
-# Regular expression which should only match correct method names
-method-rgx=[a-z_][a-zA-Z0-9]*$
-
-# Regular expression which should only match correct argument names
-argument-rgx=[a-z][a-zA-Z0-9]*$
-
-# Regular expression which should only match correct variable names
-variable-rgx=[a-z][a-zA-Z0-9]*$
+module-naming-style="camelCase,snake_case"
+class-naming-style="camelCase,snake_case"
+function-naming-style="camelCase,snake_case"
+method-naming-style="camelCase,snake_case"
+argument-naming-style="camelCase,snake_case"
+variable-naming-style="camelCase,snake_case"

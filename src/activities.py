@@ -54,10 +54,10 @@ class Activities:
             if numberOfOptions == 8:
                 answers = []
                 for i in range(numberOfOptions):
-                    correctOption = self.browser.find_element(
+                    isCorrectOption = self.browser.find_element(
                         By.ID, f"rqAnswerOption{i}"
                     ).get_attribute("iscorrectoption")
-                    if correctOption and correctOption.lower() == "true":
+                    if isCorrectOption and isCorrectOption.lower() == "true":
                         answers.append(f"rqAnswerOption{i}")
                 for answer in answers:
                     self.browser.find_element(By.ID, answer).click()
@@ -115,8 +115,8 @@ class Activities:
             correctAnswerCode = self.browser.execute_script(
                 "return _w.rewardsQuizRenderInfo.correctAnswer"
             )
-            answer1, answer1Code = self.getElementAnswerCode("rqAnswerOption0")
-            answer2, answer2Code = self.getElementAnswerCode("rqAnswerOption1")
+            answer1, answer1Code = self.getAnswerAndCode("rqAnswerOption0")
+            answer2, answer2Code = self.getAnswerAndCode("rqAnswerOption1")
             if answer1Code == correctAnswerCode:
                 answer1.click()
                 time.sleep(8)
@@ -127,11 +127,11 @@ class Activities:
         time.sleep(5)
         self.utils.closeCurrentTab()
 
-    def getElementAnswerCode(self, element: str):
+    def getAnswerAndCode(self, answerId: str) -> tuple:
         answerEncodeKey = self.browser.execute_script("return _G.IG")
-        answer = self.browser.find_element(By.ID, element)
-        answer1Title = answer.get_attribute("data-option")
-        if answer1Title is not None:
-            return (answer, self.utils.getAnswerCode(answerEncodeKey, answer1Title))
+        answer = self.browser.find_element(By.ID, answerId)
+        answerTitle = answer.get_attribute("data-option")
+        if answerTitle is not None:
+            return (answer, self.utils.getAnswerCode(answerEncodeKey, answerTitle))
         else:
             return (answer, None)

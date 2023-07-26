@@ -117,13 +117,17 @@ class Login:
                             self.browser.find_element(By.ID, "mHamburger").click()
                             isHamburgerOpened = True
 
-                        self.browser.find_element(By.ID, "fly_id_rc").get_attribute(
-                            "innerHTML"
+                        int(
+                            self.browser.find_element(By.ID, "fly_id_rc").get_attribute(
+                                "innerHTML"
+                            )
                         )
 
                     else:
-                        self.browser.find_element(By.ID, "id_rc").get_attribute(
-                            "innerHTML"
+                        int(
+                            self.browser.find_element(By.ID, "id_rc").get_attribute(
+                                "innerHTML"
+                            )
                         )
 
                     break

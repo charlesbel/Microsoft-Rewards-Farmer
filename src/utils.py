@@ -154,11 +154,11 @@ class Utils:
             counters["pcSearch"][0]["pointProgressMax"]
             + counters["pcSearch"][1]["pointProgressMax"]
         )
-        if targetDesktop == 33 or targetDesktop != 55 and targetDesktop == 102:
-            # Level 1 EU
+        if targetDesktop == 33 or targetDesktop == 102:
+            # Level 1 or 2 EU
             searchPoints = 3
         elif targetDesktop == 55 or targetDesktop >= 170:
-            # Level 1 US
+            # Level 1 or 2 US
             searchPoints = 5
         remainingDesktop = int((targetDesktop - progressDesktop) / searchPoints)
         remainingMobile = 0

@@ -18,10 +18,12 @@ from src import (
 POINTS_COUNTER = 0
 
 
-def getCCodeLang() -> tuple:
-    lang = "en"
-    geo = "US"
+def getCCodeLang(lang: str = "en", geo: str = "US") -> tuple:
     try:
+        if lang is None:
+            lang = "en"
+        if geo is None:
+            geo = "US"
         nfo = ipapi.location()
         if isinstance(nfo, dict):
             lang = nfo["languages"].split(",")[0].split("-")[0]
@@ -73,14 +75,7 @@ if __name__ == "__main__":
 
     headless = not args.visible
 
-    LANG = args.lang
-    GEO = args.geo
-    if not LANG or not GEO:
-        l, g = getCCodeLang()
-        if not LANG:
-            LANG = l
-        if not GEO:
-            GEO = g
+    LANG, GEO = getCCodeLang(args.lang, args.geo)
 
     accountPath = f"{os.path.dirname(os.path.abspath(__file__))}/accounts.json"
     try:

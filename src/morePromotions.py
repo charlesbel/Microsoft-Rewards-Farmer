@@ -29,15 +29,11 @@ class MorePromotions:
                     ):
                         if promotion["pointProgressMax"] == 10:
                             self.activities.completeABC()
-                        elif (
-                            promotion["pointProgressMax"] == 30
-                            or promotion["pointProgressMax"] == 40
-                        ):
+                        elif promotion["pointProgressMax"] in [30, 40]:
                             self.activities.completeQuiz()
                         elif promotion["pointProgressMax"] == 50:
                             self.activities.completeThisOrThat()
-                    else:
-                        if promotion["pointProgressMax"] in [100, 200, 500]:
-                            self.activities.completeSearch()
+                    elif promotion["pointProgressMax"] in [100, 200, 500]:
+                        self.activities.completeSearch()
             except Exception:  # pylint: disable=broad-except
                 self.utils.resetTabs()

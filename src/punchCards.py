@@ -1,3 +1,4 @@
+import contextlib
 import random
 import time
 import urllib.parse
@@ -34,7 +35,7 @@ class PunchCards:
                         ).get_attribute("innerHTML")
                     )[:-1][1:]
                     numberOfQuestions = max(
-                        [int(s) for s in counter.split() if s.isdigit()]
+                        int(s) for s in counter.split() if s.isdigit()
                     )
                     for question in range(numberOfQuestions):
                         self.browser.execute_script(
@@ -71,7 +72,7 @@ class PunchCards:
         time.sleep(2)
 
     def completePromotionalItems(self):
-        try:
+        with contextlib.suppress(Exception):
             item = self.utils.getDashboardData()["promotionalItem"]
             destUrl = urllib.parse.urlparse(item["destinationUrl"])
             baseUrl = urllib.parse.urlparse(BASE_URL)
@@ -90,5 +91,3 @@ class PunchCards:
                     By.XPATH, '//*[@id="promo-item"]/section/div/div/div/span'
                 ).click()
                 self.utils.visitNewTab(8)
-        except Exception:  # pylint: disable=broad-except
-            pass

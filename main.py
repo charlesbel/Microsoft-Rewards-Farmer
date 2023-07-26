@@ -82,7 +82,7 @@ if __name__ == "__main__":
         if not GEO:
             GEO = g
 
-    accountPath = os.path.dirname(os.path.abspath(__file__)) + "/accounts.json"
+    accountPath = f"{os.path.dirname(os.path.abspath(__file__))}/accounts.json"
     try:
         with open(accountPath, "r", encoding="utf-8") as f:
             ACCOUNTS = json.load(f)
@@ -114,9 +114,7 @@ if __name__ == "__main__":
         POINTS_COUNTER = Login(browser).login(account["username"], account["password"])
         prGreen("[LOGIN] Logged-in successfully !")
         startingPoints = POINTS_COUNTER
-        prGreen(
-            "[POINTS] You have " + str(POINTS_COUNTER) + " points on your account !"
-        )
+        prGreen(f"[POINTS] You have {str(POINTS_COUNTER)} points on your account !")
 
         utils.goHome()
 

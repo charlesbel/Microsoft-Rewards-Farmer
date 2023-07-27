@@ -11,6 +11,15 @@
       "program": "main.py",
       "console": "integratedTerminal",
       "justMyCode": true
+    },
+    {
+      "name": "Microsoft Rewards Farmer Debug (visible browser)",
+      "type": "python",
+      "request": "launch",
+      "program": "main.py",
+      "args": ["-v"],
+      "console": "integratedTerminal",
+      "justMyCode": true
     }
   ]
 }

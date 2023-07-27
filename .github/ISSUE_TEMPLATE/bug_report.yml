@@ -1,5 +1,6 @@
 name: Bug report
 title: "[BUG] Title"
+about: Make sure you check if you are purposefully causing an error
 labels: bug
 body:
   - type: checkboxes

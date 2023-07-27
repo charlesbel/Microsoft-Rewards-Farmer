@@ -1,0 +1,48 @@
+name: Bug report
+description: Make sure you check if you are purposefully causing an error! (bad installation, etc.)
+title: "[BUG] Title"
+labels: bug
+body:
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Before submitting a bug report...
+      options:
+        - label: |
+            This bug wasn't already reported.
+            (I have checked every bug report on GitHub)
+          required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: |
+        A clear and concise description of what the issue is.
+        Provide as much information as possible.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Copy and paste your error
+      description: |
+        From the terminal that was running the farmer, copy and paste the error/bug here.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot of the bug
+      description: |
+        Add a screenshot of the page where the error appeared.
+    validations:
+      required: true
+  - type: textarea
+    id: dashboard
+    attributes:
+      label: Value of dashboard variable
+      description: |
+        Open the source code of the [Microsoft Rewards Dashboard Page](https://rewards.bing.com), search for "var dashboard = " Copy the whole json of this line and paste it here.
+    validations:
+      required: true

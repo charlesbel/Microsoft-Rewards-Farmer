@@ -16,25 +16,16 @@ body:
   - type: textarea
     id: description
     attributes:
-      label: Describe the Bug
+      label: Describe the bug
       description: |
         A clear and concise description of what the issue is.
         Provide as much information as possible.
     validations:
       required: true
   - type: textarea
-    id: replication
-    attributes:
-      label: Describe how to Replicate the Bug
-      description: |
-        Please provide a step-by-step explanation on how to reproduce the bug.
-        Make sure to test your replication steps.
-    validations:
-      required: true
-  - type: textarea
     id: logs
     attributes:
-      label: Copy and Paste Your Bug
+      label: Copy and paste your error
       description: |
         From the terminal that was running the farmer, copy and paste the error/bug here.
     validations:

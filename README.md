@@ -32,22 +32,9 @@
 
 2) Make sure you have Chrome installed
 
-3) Install ChromeDriver:
+3) ~~Install ChromeDriver:~~
 
-   * Windows :
-     * Download Chrome WebDriver : <https://chromedriver.chromium.org/downloads>
-     * Place the file in X:\\Windows (X as your Windows disk letter)
-   * Linux :
-
-      `apt install chromium-chromedriver`
-
-   * MacOS w/Brew:
-
-      `brew install chromedriver`
-
-     * If you get the following error, `chromedriver cannot be opened because the developer cannot be verified`, run this command :
-
-        `xattr -d com.apple.quarantine /usr/local/bin/chromedriver`
+   You no longer need to do this step since selenium >=4.10.0 include a webdriver manager
 
 4) Edit the `accounts.json.sample` with your accounts credentials and rename it by removing `.sample` at the end (ex. `accounts.json`)
 

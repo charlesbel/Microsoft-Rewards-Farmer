@@ -1,7 +1,7 @@
 name: Bug report
+description: Make sure you check if you are purposefully causing an error! (bad installation, etc.)
 title: "[BUG] Title"
 labels: bug
-about: 
 body:
 
   - type: checkboxes

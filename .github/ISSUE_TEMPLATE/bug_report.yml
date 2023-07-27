@@ -1,5 +1,4 @@
 name: Bug report
-about: !!! Make sure you check if you are purposefully causing an error! (bad installation, etc.) !!!
 title: "[BUG] Title"
 labels: bug
 body:

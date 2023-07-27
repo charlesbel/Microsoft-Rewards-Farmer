@@ -1,7 +1,7 @@
 import argparse
 import json
-import os
 import random
+from pathlib import Path
 
 import ipapi
 
@@ -75,38 +75,37 @@ if __name__ == "__main__":
 
     headless = not args.visible
 
-    LANG, GEO = getCCodeLang(args.lang, args.geo)
+    localeLang, localeGeo = getCCodeLang(args.lang, args.geo)
 
-    accountPath = f"{os.path.dirname(os.path.abspath(__file__))}/accounts.json"
-    try:
-        with open(accountPath, "r", encoding="utf-8") as f:
-            ACCOUNTS = json.load(f)
-    except FileNotFoundError:
-        with open(accountPath, "w", encoding="utf-8") as f:
-            f.write(
-                json.dumps(
-                    [{"username": "Your Email", "password": "Your Password"}], indent=4
-                )
-            )
+    accountPath = Path(__file__).resolve().parent / "accounts.json"
+    if not accountPath.exists():
+        accountPath.write_text(
+            json.dumps(
+                [{"username": "Your Email", "password": "Your Password"}], indent=4
+            ),
+            encoding="utf-8",
+        )
         prPurple(
             """
     [ACCOUNT] Accounts credential file "accounts.json" created.
     [ACCOUNT] Edit with your credentials and save, then press any key to continue...
         """
         )
-        input()
-        with open(accountPath, "r", encoding="utf-8") as f:
-            ACCOUNTS = json.load(f)
+        exit()
 
-    random.shuffle(ACCOUNTS)
+    loadedAccounts = json.loads(accountPath.read_text(encoding="utf-8"))
 
-    for account in ACCOUNTS:
-        prYellow("********************" + account["username"] + "********************")
-        browser = browserSetup(account["username"], headless, False, LANG)
+    random.shuffle(loadedAccounts)
+
+    for account in loadedAccounts:
+        currentUser = account["username"]
+        currentUserPassword = account["password"]
+        prYellow(f"********************{currentUser}********************")
+        browser = browserSetup(currentUser, headless, False, localeLang)
         utils = Utils(browser)
 
         print("[LOGIN]", "Logging-in...")
-        POINTS_COUNTER = Login(browser).login(account["username"], account["password"])
+        POINTS_COUNTER = Login(browser).login(currentUser, currentUserPassword)
         prGreen("[LOGIN] Logged-in successfully !")
         startingPoints = POINTS_COUNTER
         prGreen(f"[POINTS] You have {str(POINTS_COUNTER)} points on your account !")
@@ -125,23 +124,23 @@ if __name__ == "__main__":
         remainingSearches, remainingSearchesM = utils.getRemainingSearches()
         if remainingSearches != 0:
             print("[BING]", "Starting Desktop and Edge Bing searches...")
-            POINTS_COUNTER = Searches(browser, LANG, GEO).bingSearches(
+            POINTS_COUNTER = Searches(browser, localeLang, localeGeo).bingSearches(
                 remainingSearches
             )
             prGreen("[BING] Finished Desktop and Edge Bing searches !")
         browser.quit()
 
         if remainingSearchesM != 0:
-            browser = browserSetup(account["username"], headless, True, LANG)
+            browser = browserSetup(currentUser, headless, True, localeLang)
             utils = Utils(browser)
 
             print("[LOGIN]", "Logging-in...")
             POINTS_COUNTER = Login(browser).login(
-                account["username"], account["password"], True
+                currentUser, currentUserPassword, True
             )
             print("[LOGIN]", "Logged-in successfully !")
             print("[BING]", "Starting Mobile Bing searches...")
-            POINTS_COUNTER = Searches(browser, LANG, GEO).bingSearches(
+            POINTS_COUNTER = Searches(browser, localeLang, localeGeo).bingSearches(
                 remainingSearchesM, True
             )
             prGreen("[BING] Finished Mobile Bing searches !")

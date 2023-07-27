@@ -1,6 +1,7 @@
 name: Bug report
 title: "[BUG] Title"
 labels: bug
+about: 
 body:
   - type: checkboxes
     id: prerequisites

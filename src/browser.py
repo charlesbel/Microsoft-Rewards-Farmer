@@ -27,26 +27,24 @@ def browserSetup(
     return webdriver.Chrome(options=options)
 
 
-def setupProfiles(is_mobile: bool, session_name: str):
+def setupProfiles(isMobile: bool, sessionName: str) -> Path:
     """
     Sets up the sessions profile for the chrome browser.
     Uses the session name to create a unique profile for the session.
 
     Args:
-        is_mobile: A boolean indicating whether the device is mobile or desktop.
-        session_name: A string containing the name of the session.
+        isMobile: A boolean indicating whether the device is mobile or desktop.
+        sessionName: A string containing the name of the session.
 
     Returns:
-        None
+        Path
     """
-    current_path = Path(__file__)
-    parent = current_path.parent.parent
-    sessions_dir = parent / "sessions"
+    currentPath = Path(__file__)
+    parent = currentPath.parent.parent
+    sessionsDir = parent / "sessions"
 
     # In effort to avoid any issues with the session name, we will seed the session name as a uuid.
-    session_uuid = uuid.uuid5(uuid.NAMESPACE_DNS, session_name)
-    sessions_dir = (
-        sessions_dir / str(session_uuid) / ("mobile" if is_mobile else "desktop")
-    )
-    sessions_dir.mkdir(parents=True, exist_ok=True)
-    return sessions_dir
+    sessionUuid = uuid.uuid5(uuid.NAMESPACE_DNS, sessionName)
+    sessionsDir = sessionsDir / str(sessionUuid) / ("mobile" if isMobile else "desktop")
+    sessionsDir.mkdir(parents=True, exist_ok=True)
+    return sessionsDir

@@ -20,14 +20,10 @@ class PunchCards:
         for child in childPromotions:
             if child["complete"] is False:
                 if child["promotionType"] == "urlreward":
-                    self.browser.execute_script(
-                        "document.getElementsByClassName('offer-cta')[0].click()"
-                    )
+                    self.browser.find_element(By.CLASS_NAME, "offer-cta").click()
                     self.utils.visitNewTab(random.randint(13, 17))
                 if child["promotionType"] == "quiz":
-                    self.browser.execute_script(
-                        "document.getElementsByClassName('offer-cta')[0].click()"
-                    )
+                    self.browser.find_element(By.CLASS_NAME, "offer-cta").click()
                     self.utils.switchToNewTab(8)
                     counter = str(
                         self.browser.find_element(
@@ -38,9 +34,10 @@ class PunchCards:
                         int(s) for s in counter.split() if s.isdigit()
                     )
                     for question in range(numberOfQuestions):
-                        self.browser.execute_script(
-                            f'document.evaluate("//*[@id=\'QuestionPane{question}]/div[1]/div[2]/a[{random.randint(1, 3)}]/div", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.click()'
-                        )
+                        self.browser.find_element(
+                            By.XPATH,
+                            f'//*[@id="QuestionPane{question}"]/div[1]/div[2]/a[{random.randint(1, 3)}]/div',
+                        ).click()
                         time.sleep(5)
                         self.browser.find_element(
                             By.XPATH,

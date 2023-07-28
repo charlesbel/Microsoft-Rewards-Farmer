@@ -10,12 +10,9 @@ if __name__ == "__main__":
     exclusions = ["sessions", "accounts.json"]
     print("Removing old files...")
     for root, dirs, files in os.walk(".", topdown=False):
-        for name in files:
+        for name in files + dirs:
             if name not in exclusions:
                 os.remove(os.path.join(root, name))
-        for name in dirs:
-            if name not in exclusions:
-                os.rmdir(os.path.join(root, name))
     print("Downloading...")
     r = requests.get(url)
     data = BytesIO(r.content)

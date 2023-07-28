@@ -7,12 +7,19 @@ import requests
 if __name__ == "__main__":
     url = "https://github.com/charlesbel/Microsoft-Rewards-Farmer/archive/refs/heads/master.zip"
     folderName = "Microsoft-Rewards-Farmer-master"
-    exclusions = ["sessions", "accounts.json"]
+    with open(".gitignore", "r") as f:
+        exclusions = f.read().splitlines()
+        exclusions = [e for e in exclusions if e != "" and not e.startswith("#")] + [
+            ".gitignore",
+            ".git",
+        ]
     print("Removing old files...")
     for root, dirs, files in os.walk(".", topdown=False):
-        for name in files + dirs:
-            if name not in exclusions:
-                os.remove(os.path.join(root, name))
+        for name in files:
+            path = os.path.join(root, name)
+            relativePath = path[2:]
+            if not relativePath.startswith(tuple(exclusions)):
+                os.remove(path)
     print("Downloading...")
     r = requests.get(url)
     data = BytesIO(r.content)

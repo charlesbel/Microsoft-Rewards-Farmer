@@ -1,6 +1,7 @@
 import argparse
 import json
 import random
+import requests
 from pathlib import Path
 
 import ipapi
@@ -13,6 +14,7 @@ from src import (
     Searches,
     Utils,
     browserSetup,
+    Telegram,
 )
 
 POINTS_COUNTER = 0
@@ -60,6 +62,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "-g", "--geo", type=str, default=None, help="Optional: Geolocation (ex: US)"
     )
+    parser.add_argument(
+        "-t", "--telegram", action="store_true", help="Optional: send a telegram message with the summary"
+    )
+
     args = parser.parse_args()
 
     prRed(
@@ -150,3 +156,6 @@ if __name__ == "__main__":
             f"[POINTS] You have earned {POINTS_COUNTER - startingPoints} points today !"
         )
         prGreen(f"[POINTS] You are now at {POINTS_COUNTER} points !\n")
+
+    if args.telegram:
+        Telegram.send_to_telegram(f"For the: {currentUser} account he has won {POINTS_COUNTER - startingPoints} points today. Total points: {POINTS_COUNTER}")

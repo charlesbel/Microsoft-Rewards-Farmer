@@ -8,7 +8,7 @@ from .activities import Activities
 
 
 class DailySet:
-    def __init__(self, browser: "Browser"):
+    def __init__(self, browser: Browser):
         self.browser = browser
         self.webdriver = browser.webdriver
         self.activities = Activities(browser)

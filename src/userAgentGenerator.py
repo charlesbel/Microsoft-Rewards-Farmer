@@ -38,21 +38,9 @@ class GenerateUserAgent:
     OS_PLATFORM = {"win": "Windows NT 10.0", "android": "Linux"}
     OS_CPU = {"win": "Win64; x64", "android": "Android 10"}
     grabbed: bool = False
-    browser_versions: dict[str, Any] = {}
+    browserVersions: dict[str, Any] = {}
 
-    def generate_user_agent(self) -> dict[str, str]:
-        """
-        Generates a dictionary containing user agents for both mobile and PC devices.
-
-        Returns:
-            A dictionary containing user agents for both mobile and PC devices.
-        """
-        return {
-            "Mobile": self.user_agent(mobile=True),
-            "PC": self.user_agent(mobile=False),
-        }
-
-    def user_agent(
+    def userAgent(
         self,
         mobile: bool = False,
         fetch: bool = True,
@@ -68,17 +56,17 @@ class GenerateUserAgent:
             A string containing the user agent for the specified device.
         """
 
-        system = self.__get_system_components(mobile)
-        app = self.__get_app_components(mobile, fetch)
-        ua_template = (
+        system = self.__getSystemComponents(mobile)
+        app = self.__getAppComponents(mobile, fetch)
+        uaTemplate = (
             self.USER_AGENT_TEMPLATE.get("edge_mobile", "")
             if mobile
             else self.USER_AGENT_TEMPLATE.get("edge_pc", "")
         )
 
-        return ua_template.format(system=system, app=app)
+        return uaTemplate.format(system=system, app=app)
 
-    def __get_system_components(self, mobile: bool) -> str:
+    def __getSystemComponents(self, mobile: bool) -> str:
         """
         Generates the system components for the user agent string.
 
@@ -88,15 +76,15 @@ class GenerateUserAgent:
         Returns:
             A string containing the system components for the user agent string.
         """
-        os_id = self.OS_CPU.get("android") if mobile else self.OS_CPU.get("win")
-        ua_platform = (
+        osId = self.OS_CPU.get("android") if mobile else self.OS_CPU.get("win")
+        uaPlatform = (
             self.OS_PLATFORM.get("android") if mobile else self.OS_PLATFORM.get("win")
         )
         if mobile:
-            os_id = f"{os_id}; {self.MOBILE_DEVICE}"
-        return f"{ua_platform}; {os_id}"
+            osId = f"{osId}; {self.MOBILE_DEVICE}"
+        return f"{uaPlatform}; {osId}"
 
-    def __get_app_components(self, mobile: bool, fetch: bool) -> dict[str, Any]:
+    def __getAppComponents(self, mobile: bool, fetch: bool) -> dict[str, Any]:
         """
         Generates the application components for the user agent string.
 
@@ -107,22 +95,18 @@ class GenerateUserAgent:
         Returns:
             A dictionary containing the application components for the user agent string.
         """
-        chrome_minor_version = (
+        chromeMinorVersion = (
             self.CHROME_VERSION_MOBILE if mobile else self.CHROME_VERSION_PC
         )
-        chrome_version = self.__generate_version(
-            self.CHROME_VERSION_MAJOR, chrome_minor_version
+        chromeVersion = self.__generateVersion(
+            self.CHROME_VERSION_MAJOR, chromeMinorVersion
         )
 
-        edge_minor_version = (
-            self.EDGE_VERSION_MOBILE if mobile else self.EDGE_VERSION_PC
-        )
-        edge_version = self.__generate_version(
-            self.EDGE_VERSION_MAJOR, edge_minor_version
-        )
+        edgeMinorVersion = self.EDGE_VERSION_MOBILE if mobile else self.EDGE_VERSION_PC
+        edgeVersion = self.__generateVersion(self.EDGE_VERSION_MAJOR, edgeMinorVersion)
         if fetch and not self.grabbed:
             try:
-                fetched_edge_version = self.get_edge_version()
+                fetchedEdgeVersion = self.getEdgeVersion()
                 # TODO: Add a logger to increase verbosity
                 # if fetched_edge_version != edge_version:
                 #     log_msg = (
@@ -130,30 +114,30 @@ class GenerateUserAgent:
                 #         f"is different from the expected {edge_version}"
                 #     )
                 #     logger.trace(log_msg)
-                fetched_chrome_version = self.get_chrome_version()
+                fetchedChromeVersion = self.getChromeVersion()
                 # if fetched_chrome_version != chrome_version:
                 #     log_msg = (
                 #         f"Fetched Chrome version {fetched_chrome_version} "
                 #         f"is different from the expected {chrome_version}"
                 #     )
                 #     logger.trace(log_msg)
-                self.browser_versions = {
-                    "chrome_version": fetched_chrome_version,
-                    "edge_version": fetched_edge_version,
+                self.browserVersions = {
+                    "chrome_version": fetchedChromeVersion,
+                    "edge_version": fetchedEdgeVersion,
                 }
                 self.grabbed = True
             except Exception:  # pylint: disable=broad-except
                 print("Failed to get webdriver version.")
                 # logger.warning("Failed to get webdriver version.")
-        if not self.browser_versions:
-            self.browser_versions = {
-                "chrome_version": chrome_version,
-                "edge_version": edge_version,
+        if not self.browserVersions:
+            self.browserVersions = {
+                "chrome_version": chromeVersion,
+                "edge_version": edgeVersion,
             }
-        return self.browser_versions
+        return self.browserVersions
 
     @staticmethod
-    def __generate_version(major: list[str], minor: str) -> str:
+    def __generateVersion(major: list[str], minor: str) -> str:
         """
         Generate a version.
 
@@ -166,19 +150,17 @@ class GenerateUserAgent:
         """
         return f"{major[0]}.{major[1]}.{major[2]}.{minor}"
 
-    def get_chrome_version(self) -> str:
+    def getChromeVersion(self) -> str:
         """
         Get the latest version of Chrome.
 
         Returns:
             str: The latest version of Chrome.
         """
-        latest_release_url = (
-            "https://chromedriver.storage.googleapis.com/LATEST_RELEASE"
-        )
-        return self.get_webdriver_page(latest_release_url).text
+        latestReleaseUrl = "https://chromedriver.storage.googleapis.com/LATEST_RELEASE"
+        return self.getWebdriverPage(latestReleaseUrl).text
 
-    def get_edge_version(self) -> str:
+    def getEdgeVersion(self) -> str:
         """
         Get the latest version of Microsoft Edge.
 
@@ -189,11 +171,11 @@ class GenerateUserAgent:
             "https://msedgewebdriverstorage.blob.core.windows.net"
             "/edgewebdriver/LATEST_STABLE"
         )
-        response = self.get_webdriver_page(edge_release_url)
+        response = self.getWebdriverPage(edge_release_url)
         return response.content.decode("utf-16").split("\r")[0].split("\n")[0]
 
     @staticmethod
-    def get_webdriver_page(url: str) -> Response:
+    def getWebdriverPage(url: str) -> Response:
         """
         Get the webdriver page.
 

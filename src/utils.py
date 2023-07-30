@@ -1,4 +1,5 @@
 import contextlib
+import locale as pylocale
 import time
 import urllib.parse
 
@@ -11,8 +12,9 @@ from .constants import BASE_URL
 
 
 class Utils:
-    def __init__(self, webdriver: WebDriver):
+    def __init__(self, webdriver: WebDriver, locale: str):
         self.webdriver = webdriver
+        pylocale.setlocale(pylocale.LC_NUMERIC, locale)
 
     def waitUntilVisible(self, by: str, selector: str, timeToWait: float = 10):
         WebDriverWait(self.webdriver, timeToWait).until(
@@ -168,6 +170,9 @@ class Utils:
             remainingMobile = int((targetMobile - progressMobile) / searchPoints)
         return remainingDesktop, remainingMobile
 
+    def formatNumber(self, number, num_decimals=2):
+        return pylocale.format_string(f"%10.{num_decimals}f", number, grouping=True)
+
 
 def prRed(prt):
     print(f"\033[91m{prt}\033[00m")
@@ -183,41 +188,3 @@ def prPurple(prt):
 
 def prYellow(prt):
     print(f"\033[93m{prt}\033[00m")
-
-
-def format_number(number, num_decimals=2):
-    """
-    Format a number as a string including thousands separators.
-
-    :param number: The number to format (a number like an :class:`int`,
-                   :class:`long` or :class:`float`).
-    :param num_decimals: The number of decimals to render (2 by default). If no
-                         decimal places are required to represent the number
-                         they will be omitted regardless of this argument.
-    :returns: The formatted number (a string).
-
-    This function is intended to make it easier to recognize the order of size
-    of the number being formatted.
-
-    Here's an example:
-
-    >>> print(format_number(6000000))
-    6,000,000
-    > print(format_number(6000000000.42))
-    6,000,000,000.42
-    > print(format_number(6000000000.42, num_decimals=0))
-    6,000,000,000
-    """
-    integer_part, _, decimal_part = str(float(number)).partition(".")
-    negative_sign = integer_part.startswith("-")
-    reversed_digits = "".join(reversed(integer_part.lstrip("-")))
-    parts = []
-    while reversed_digits:
-        parts.append(reversed_digits[:3])
-        reversed_digits = reversed_digits[3:]
-    formatted_number = "".join(reversed(",".join(parts)))
-    if decimals_to_add := decimal_part[:num_decimals].rstrip("0"):
-        formatted_number += f".{decimals_to_add}"
-    if negative_sign:
-        formatted_number = f"-{formatted_number}"
-    return formatted_number

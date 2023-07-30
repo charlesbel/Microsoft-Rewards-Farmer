@@ -7,7 +7,7 @@ from src.browser import Browser
 
 
 class Activities:
-    def __init__(self, browser: "Browser"):
+    def __init__(self, browser: Browser):
         self.browser = browser
         self.webdriver = browser.webdriver
 

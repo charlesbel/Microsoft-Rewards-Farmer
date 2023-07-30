@@ -5,7 +5,7 @@ from .activities import Activities
 
 
 class MorePromotions:
-    def __init__(self, browser: "Browser"):
+    def __init__(self, browser: Browser):
         self.browser = browser
         self.activities = Activities(browser)
 

@@ -12,7 +12,7 @@ from .constants import BASE_URL
 
 
 class PunchCards:
-    def __init__(self, browser: "Browser"):
+    def __init__(self, browser: Browser):
         self.browser = browser
         self.webdriver = browser.webdriver
 

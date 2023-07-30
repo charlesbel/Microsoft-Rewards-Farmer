@@ -16,7 +16,7 @@ from src.utils import prGreen
 
 
 class Searches:
-    def __init__(self, browser: "Browser"):
+    def __init__(self, browser: Browser):
         self.browser = browser
         self.webdriver = browser.webdriver
 

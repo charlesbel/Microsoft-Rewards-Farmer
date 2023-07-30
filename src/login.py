@@ -11,7 +11,7 @@ from .constants import BASE_URL
 
 
 class Login:
-    def __init__(self, browser: "Browser"):
+    def __init__(self, browser: Browser):
         self.browser = browser
         self.webdriver = browser.webdriver
         self.utils = browser.utils
@@ -121,13 +121,17 @@ class Login:
                             self.webdriver.find_element(By.ID, "mHamburger").click()
                             isHamburgerOpened = True
 
-                        self.webdriver.find_element(By.ID, "fly_id_rc").get_attribute(
-                            "innerHTML"
+                        int(
+                            self.webdriver.find_element(
+                                By.ID, "fly_id_rc"
+                            ).get_attribute("innerHTML")
                         )
 
                     else:
-                        self.webdriver.find_element(By.ID, "id_rc").get_attribute(
-                            "innerHTML"
+                        int(
+                            self.webdriver.find_element(By.ID, "id_rc").get_attribute(
+                                "innerHTML"
+                            )
                         )
 
                     break

@@ -5,7 +5,7 @@ from pathlib import Path
 
 from src import Browser, DailySet, Login, MorePromotions, PunchCards, Searches
 from src.constants import VERSION
-from src.utils import format_number, prGreen, prPurple, prRed, prYellow
+from src.utils import prGreen, prPurple, prRed, prYellow
 
 POINTS_COUNTER = 0
 
@@ -70,34 +70,40 @@ def executeBot(loadedAccounts):
         )
         with Browser(
             mobile=False, account=currentAccount, args=argumentParser()
-        ) as browser:
-            accountPointsCounter = Login(browser).login()
+        ) as desktopBrowser:
+            accountPointsCounter = Login(desktopBrowser).login()
             startingPoints = accountPointsCounter
             prGreen(
-                f"[POINTS] You have {format_number(accountPointsCounter)} points on your account !"
+                f"[POINTS] You have {desktopBrowser.utils.formatNumber(accountPointsCounter)} points on your account !"
             )
-            DailySet(browser).completeDailySet()
-            PunchCards(browser).completePunchCards()
-            MorePromotions(browser).completeMorePromotions()
-            remainingSearches, remainingSearchesM = browser.utils.getRemainingSearches()
+            DailySet(desktopBrowser).completeDailySet()
+            PunchCards(desktopBrowser).completePunchCards()
+            MorePromotions(desktopBrowser).completeMorePromotions()
+            (
+                remainingSearches,
+                remainingSearchesM,
+            ) = desktopBrowser.utils.getRemainingSearches()
             if remainingSearches != 0:
-                accountPointsCounter = Searches(browser).bingSearches(remainingSearches)
-
-        if remainingSearchesM != 0:
-            with Browser(
-                mobile=True, account=currentAccount, args=argumentParser()
-            ) as browser:
-                accountPointsCounter = Login(browser).login()
-                accountPointsCounter = Searches(browser).bingSearches(
-                    remainingSearchesM
+                accountPointsCounter = Searches(desktopBrowser).bingSearches(
+                    remainingSearches
                 )
 
-        prGreen(
-            f"[POINTS] You have earned {format_number(accountPointsCounter - startingPoints)} points today !"
-        )
-        prGreen(
-            f"[POINTS] You are now at {format_number(accountPointsCounter)} points !\n"
-        )
+            if remainingSearchesM != 0:
+                desktopBrowser.closeBrowser()
+                with Browser(
+                    mobile=True, account=currentAccount, args=argumentParser()
+                ) as mobileBrowser:
+                    accountPointsCounter = Login(mobileBrowser).login()
+                    accountPointsCounter = Searches(mobileBrowser).bingSearches(
+                        remainingSearchesM
+                    )
+
+            prGreen(
+                f"[POINTS] You have earned {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)} points today !"
+            )
+            prGreen(
+                f"[POINTS] You are now at {desktopBrowser.utils.formatNumber(accountPointsCounter)} points !\n"
+            )
 
 
 if __name__ == "__main__":

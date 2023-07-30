@@ -21,17 +21,17 @@ class Browser:
         self.username = account["username"]
         self.password = account["password"]
         self.localeLang, self.localeGeo = self.getCCodeLang(args.lang, args.geo)
-        self.userAgent = GenerateUserAgent().user_agent(mobile)
+        self.userAgent = GenerateUserAgent().userAgent(mobile)
         self.webdriver = self.browserSetup()
-        self.utils = Utils(self.webdriver)
+        self.utils = Utils(self.webdriver, f"{self.localeLang}_{self.localeGeo}")
 
     def __enter__(self) -> "Browser":
         return self
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
-        self.close_browser()
+        self.closeBrowser()
 
-    def close_browser(self) -> None:
+    def closeBrowser(self) -> None:
         """Perform actions to close the browser cleanly."""
         # close web browser
         with contextlib.suppress(Exception):

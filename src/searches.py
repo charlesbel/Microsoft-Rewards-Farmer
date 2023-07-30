@@ -9,19 +9,16 @@ from selenium.common.exceptions import (
     NoAlertPresentException,
     UnexpectedAlertPresentException,
 )
-from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
-from .constants import DESKTOP_USER_AGENT
-from .utils import Utils
+from src.browser import Browser
+from src.utils import prGreen
 
 
 class Searches:
-    def __init__(self, browser: WebDriver, lang: str, geo: str):
+    def __init__(self, browser: Browser):
         self.browser = browser
-        self.utils = Utils(browser)
-        self.lang = lang
-        self.geo = geo
+        self.webdriver = browser.webdriver
 
     def getGoogleTrends(self, wordsCount: int) -> list:
         searchTerms: list[str] = []
@@ -29,7 +26,7 @@ class Searches:
         while len(searchTerms) < wordsCount:
             i += 1
             r = requests.get(
-                f'https://trends.google.com/trends/api/dailytrends?hl={self.lang}&ed={(date.today() - timedelta(days=i)).strftime("%Y%m%d")}&geo={self.geo}&ns=15'
+                f'https://trends.google.com/trends/api/dailytrends?hl={self.browser.localeLang}&ed={(date.today() - timedelta(days=i)).strftime("%Y%m%d")}&geo={self.browser.localeGeo}&ns=15'
             )
             trends = json.loads(r.text[6:])
             for topic in trends["default"]["trendingSearchesDays"][0][
@@ -48,56 +45,62 @@ class Searches:
         try:
             r = requests.get(
                 f"https://api.bing.com/osjson.aspx?query={word}",
-                headers={"User-agent": DESKTOP_USER_AGENT},
+                headers={"User-agent": self.browser.userAgent},
             )
             return r.json()[1]
         except Exception:  # pylint: disable=broad-except
             return []
 
-    def bingSearches(
-        self, numberOfSearches: int, isMobile: bool = False, pointsCounter: int = 0
-    ):
+    def bingSearches(self, numberOfSearches: int, pointsCounter: int = 0):
+        print(
+            "[BING]",
+            f"Starting {self.browser.browserType.capitalize()} Edge Bing searches...",
+        )
+
         i = 0
         search_terms = self.getGoogleTrends(numberOfSearches)
         for word in search_terms:
             i += 1
             print("[BING]", f"{i}/{numberOfSearches}")
-            points = self.bingSearch(word, isMobile)
+            points = self.bingSearch(word)
             if points <= pointsCounter:
                 relatedTerms = self.getRelatedTerms(word)[:2]
                 for term in relatedTerms:
-                    points = self.bingSearch(term, isMobile)
+                    points = self.bingSearch(term)
                     if not points <= pointsCounter:
                         break
             if points > 0:
                 pointsCounter = points
             else:
                 break
+        prGreen(
+            f"[BING] Finished {self.browser.browserType.capitalize()} Edge Bing searches !"
+        )
         return pointsCounter
 
-    def bingSearch(self, word: str, isMobile: bool):
-        self.browser.get("https://bing.com")
-        self.utils.waitUntilClickable(By.ID, "sb_form_q")
-        searchbar = self.browser.find_element(By.ID, "sb_form_q")
+    def bingSearch(self, word: str):
+        self.webdriver.get("https://bing.com")
+        self.browser.utils.waitUntilClickable(By.ID, "sb_form_q")
+        searchbar = self.webdriver.find_element(By.ID, "sb_form_q")
         searchbar.send_keys(word)
         searchbar.submit()
         time.sleep(random.randint(10, 15))
         stringPoints = None
         with contextlib.suppress(Exception):
-            if not isMobile:
-                stringPoints = self.browser.find_element(By.ID, "id_rc").get_attribute(
-                    "innerHTML"
-                )
+            if not self.browser.mobile:
+                stringPoints = self.webdriver.find_element(
+                    By.ID, "id_rc"
+                ).get_attribute("innerHTML")
 
             else:
                 try:
-                    self.browser.find_element(By.ID, "mHamburger").click()
+                    self.webdriver.find_element(By.ID, "mHamburger").click()
                     time.sleep(1)
                 except UnexpectedAlertPresentException:
                     with contextlib.suppress(NoAlertPresentException):
-                        self.browser.switch_to.alert.accept()
-                        self.browser.find_element(By.ID, "mHamburger").click()
-                stringPoints = self.browser.find_element(
+                        self.webdriver.switch_to.alert.accept()
+                        self.webdriver.find_element(By.ID, "mHamburger").click()
+                stringPoints = self.webdriver.find_element(
                     By.ID, "fly_id_rc"
                 ).get_attribute("innerHTML")
 

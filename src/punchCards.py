@@ -3,30 +3,31 @@ import random
 import time
 import urllib.parse
 
-from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
+from src.browser import Browser
+from src.utils import prGreen
+
 from .constants import BASE_URL
-from .utils import Utils
 
 
 class PunchCards:
-    def __init__(self, browser: WebDriver):
+    def __init__(self, browser: Browser):
         self.browser = browser
-        self.utils = Utils(browser)
+        self.webdriver = browser.webdriver
 
     def completePunchCard(self, url: str, childPromotions: dict):
-        self.browser.get(url)
+        self.webdriver.get(url)
         for child in childPromotions:
             if child["complete"] is False:
                 if child["promotionType"] == "urlreward":
-                    self.browser.find_element(By.CLASS_NAME, "offer-cta").click()
-                    self.utils.visitNewTab(random.randint(13, 17))
+                    self.webdriver.find_element(By.CLASS_NAME, "offer-cta").click()
+                    self.browser.utils.visitNewTab(random.randint(13, 17))
                 if child["promotionType"] == "quiz":
-                    self.browser.find_element(By.CLASS_NAME, "offer-cta").click()
-                    self.utils.switchToNewTab(8)
+                    self.webdriver.find_element(By.CLASS_NAME, "offer-cta").click()
+                    self.browser.utils.switchToNewTab(8)
                     counter = str(
-                        self.browser.find_element(
+                        self.webdriver.find_element(
                             By.XPATH, '//*[@id="QuestionPane0"]/div[2]'
                         ).get_attribute("innerHTML")
                     )[:-1][1:]
@@ -34,22 +35,23 @@ class PunchCards:
                         int(s) for s in counter.split() if s.isdigit()
                     )
                     for question in range(numberOfQuestions):
-                        self.browser.find_element(
+                        self.webdriver.find_element(
                             By.XPATH,
                             f'//*[@id="QuestionPane{question}"]/div[1]/div[2]/a[{random.randint(1, 3)}]/div',
                         ).click()
                         time.sleep(5)
-                        self.browser.find_element(
+                        self.webdriver.find_element(
                             By.XPATH,
                             f'//*[@id="AnswerPane{question}"]/div[1]/div[2]/div[4]/a/div/span/input',
                         ).click()
                         time.sleep(3)
                     time.sleep(5)
-                    self.utils.closeCurrentTab()
+                    self.browser.utils.closeCurrentTab()
 
     def completePunchCards(self):
+        print("[PUNCH CARDS]", "Trying to complete the Punch Cards...")
         self.completePromotionalItems()
-        punchCards = self.utils.getDashboardData()["punchCards"]
+        punchCards = self.browser.utils.getDashboardData()["punchCards"]
         for punchCard in punchCards:
             try:
                 if (
@@ -63,14 +65,15 @@ class PunchCards:
                         punchCard["childPromotions"],
                     )
             except Exception:  # pylint: disable=broad-except
-                self.utils.resetTabs()
+                self.browser.utils.resetTabs()
+        prGreen("[PUNCH CARDS] Completed the Punch Cards successfully !")
         time.sleep(2)
-        self.browser.get(BASE_URL)
+        self.webdriver.get(BASE_URL)
         time.sleep(2)
 
     def completePromotionalItems(self):
         with contextlib.suppress(Exception):
-            item = self.utils.getDashboardData()["promotionalItem"]
+            item = self.browser.utils.getDashboardData()["promotionalItem"]
             destUrl = urllib.parse.urlparse(item["destinationUrl"])
             baseUrl = urllib.parse.urlparse(BASE_URL)
             if (
@@ -84,7 +87,7 @@ class PunchCards:
                     or destUrl.hostname == "www.bing.com"
                 )
             ):
-                self.browser.find_element(
+                self.webdriver.find_element(
                     By.XPATH, '//*[@id="promo-item"]/section/div/div/div/span'
                 ).click()
-                self.utils.visitNewTab(8)
+                self.browser.utils.visitNewTab(8)

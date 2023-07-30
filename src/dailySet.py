@@ -1,20 +1,22 @@
 import urllib.parse
 from datetime import datetime
 
-from selenium.webdriver.chrome.webdriver import WebDriver
+from src.browser import Browser
+from src.utils import prGreen
 
 from .activities import Activities
-from .utils import Utils
 
 
 class DailySet:
-    def __init__(self, browser: WebDriver):
+    def __init__(self, browser: Browser):
         self.browser = browser
-        self.utils = Utils(browser)
+        self.webdriver = browser.webdriver
         self.activities = Activities(browser)
 
     def completeDailySet(self):
-        data = self.utils.getDashboardData()["dailySetPromotions"]
+        print("[DAILY SET]", "Trying to complete the Daily Set...")
+        self.browser.utils.goHome()
+        data = self.browser.utils.getDashboardData()["dailySetPromotions"]
         todayDate = datetime.now().strftime("%m/%d/%Y")
         for activity in data.get(todayDate, []):
             try:
@@ -72,4 +74,5 @@ class DailySet:
                                 except Exception:  # pylint: disable=broad-except
                                     self.activities.completeQuiz()
             except Exception:  # pylint: disable=broad-except
-                self.utils.resetTabs()
+                self.browser.utils.resetTabs()
+        prGreen("[DAILY SET] Completed the Daily Set successfully !")

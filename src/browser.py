@@ -1,4 +1,5 @@
 import contextlib
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -46,27 +47,30 @@ class Browser:
         if self.headless:
             options.add_argument("headless")
         options.add_argument("log-level=3")
-        userDataDir, profileType = self.setupProfiles()
+        userDataDir = self.setupProfiles()
         options.add_argument(f"user-data-dir={userDataDir.as_posix()}")
-        options.add_argument(f"profile-directory={profileType}")
         return webdriver.Chrome(options=options)
 
-    def setupProfiles(self) -> tuple[Path, str]:
+    def setupProfiles(self) -> Path:
         """
         Sets up the sessions profile for the chrome browser.
         Uses the session name to create a unique profile for the session.
 
+        Args:
+            isMobile: A boolean indicating whether the device is mobile or desktop.
+            sessionName: A string containing the name of the session.
+
         Returns:
-            tuple[Path, str]: A tuple containing the path to the session directory and the profile type.
+            Path
         """
         currentPath = Path(__file__)
         parent = currentPath.parent.parent
         sessionsDir = parent / "sessions"
 
-        profileType = f"{str(self.username)} {self.browserType}"
-
+        sessionUuid = uuid.uuid5(uuid.NAMESPACE_DNS, self.username)
+        sessionsDir = sessionsDir / str(sessionUuid) / self.browserType
         sessionsDir.mkdir(parents=True, exist_ok=True)
-        return sessionsDir, profileType
+        return sessionsDir
 
     def getCCodeLang(self, lang: str = "en", geo: str = "US") -> tuple:
         try:

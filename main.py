@@ -3,7 +3,8 @@ import json
 import random
 from pathlib import Path
 
-from src import Browser, DailySet, Login, MorePromotions, PunchCards, Searches
+from src import (Browser, DailySet, Discord, Login, MorePromotions, PunchCards,
+                 Searches)
 from src.constants import VERSION
 from src.utils import prGreen, prPurple, prRed, prYellow
 
@@ -25,6 +26,9 @@ def argumentParser():
     )
     parser.add_argument(
         "-g", "--geo", type=str, default=None, help="Optional: Geolocation (ex: US)"
+    )
+    parser.add_argument(
+        "-wh", "--webhook", action="store_true", help="Optional: send a discord webhook message with the summary"
     )
     return parser.parse_args()
 
@@ -104,6 +108,11 @@ def executeBot(loadedAccounts):
             prGreen(
                 f"[POINTS] You are now at {desktopBrowser.utils.formatNumber(accountPointsCounter)} points !\n"
             )
+            
+            args = argumentParser()
+            
+            if args.webhook:
+                Discord.send_to_webhook(f'`{currentAccount.get("username", "")}` has farmed {accountPointsCounter - startingPoints} points today. Total points: {accountPointsCounter}')
 
 
 if __name__ == "__main__":

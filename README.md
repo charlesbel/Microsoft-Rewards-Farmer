@@ -69,6 +69,7 @@
 * Multi-Account Management
 * Session storing (3.0)
 * 2FA Support (3.0)
+* Send a Discord Webhook when done (-wh, -webhook)
 
 ## Future Features
 

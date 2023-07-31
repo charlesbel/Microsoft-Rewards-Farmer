@@ -30,6 +30,9 @@ def argumentParser():
     parser.add_argument(
         "-wh", "--webhook", action="store_true", help="Optional: send a discord webhook message with the summary"
     )
+    parser.add_argument(
+        "-s", "--shuffle", action="store_true", help="Optional: shuffle the order in which accounts will be farmed on"
+    )
     return parser.parse_args()
 
 
@@ -61,7 +64,12 @@ def setupAccounts() -> dict:
         prPurple(noAccountsNotice)
         exit()
     loadedAccounts = json.loads(accountPath.read_text(encoding="utf-8"))
-    random.shuffle(loadedAccounts)
+
+    args = argumentParser()
+
+    if args.shuffle:  
+        random.shuffle(loadedAccounts)
+
     return loadedAccounts
 
 

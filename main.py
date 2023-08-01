@@ -74,6 +74,8 @@ def setupAccounts() -> dict:
 
 
 def executeBot(loadedAccounts):
+    Discord.check_json()
+    
     for currentAccount in loadedAccounts:
         prYellow(
             "********************{ "

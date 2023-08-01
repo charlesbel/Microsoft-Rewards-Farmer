@@ -24,7 +24,7 @@ class Browser:
         self.localeLang, self.localeGeo = self.getCCodeLang(args.lang, args.geo)
         self.userAgent = GenerateUserAgent().userAgent(mobile)
         self.webdriver = self.browserSetup()
-        self.utils = Utils(self.webdriver, f"{self.localeLang}_{self.localeGeo}")
+        self.utils = Utils(self.webdriver, f"{self.localeLang}_{self.localeGeo}.utf8")
 
     def __enter__(self) -> "Browser":
         return self

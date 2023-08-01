@@ -7,8 +7,6 @@ from selenium.webdriver.common.by import By
 from src.browser import Browser
 from src.utils import prGreen
 
-from .constants import BASE_URL
-
 
 class Login:
     def __init__(self, browser: Browser):
@@ -41,19 +39,7 @@ class Login:
 
         print("[LOGIN]", "Logged-in !")
 
-        self.webdriver.get(BASE_URL)
-        while True:
-            self.utils.tryDismissCookieBanner()
-            with contextlib.suppress(Exception):
-                self.webdriver.find_element(By.ID, "daily-sets")
-                break
-            if (
-                urllib.parse.urlparse(self.webdriver.current_url).hostname
-                != urllib.parse.urlparse(BASE_URL).hostname
-            ) and self.utils.tryDismissAllMessages():
-                time.sleep(1)
-                self.webdriver.get(BASE_URL)
-            time.sleep(1)
+        self.utils.goHome()
         points = self.utils.getAccountPoints()
 
         print("[LOGIN]", "Ensuring login on Bing...")

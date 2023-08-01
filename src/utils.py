@@ -75,15 +75,20 @@ class Utils:
             self.goHome()
 
     def goHome(self):
-        currentUrl = urllib.parse.urlparse(self.webdriver.current_url)
         targetUrl = urllib.parse.urlparse(BASE_URL)
-        if (
-            currentUrl.hostname != targetUrl.hostname
-            or currentUrl.path != targetUrl.path
-        ):
-            self.webdriver.get(BASE_URL)
-            self.waitUntilVisible(By.ID, "daily-sets", 10)
-        self.tryDismissCookieBanner()
+        self.webdriver.get(BASE_URL)
+        while True:
+            self.tryDismissCookieBanner()
+            with contextlib.suppress(Exception):
+                self.webdriver.find_element(By.ID, "more-activities")
+                break
+            currentUrl = urllib.parse.urlparse(self.webdriver.current_url)
+            if (
+                currentUrl.hostname != targetUrl.hostname
+            ) and self.tryDismissAllMessages():
+                time.sleep(1)
+                self.webdriver.get(BASE_URL)
+            time.sleep(1)
 
     def getAnswerCode(self, key: str, string: str) -> str:
         t = sum(ord(string[i]) for i in range(len(string)))

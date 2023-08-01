@@ -3,6 +3,7 @@ import locale as pylocale
 import time
 import urllib.parse
 
+import requests
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
@@ -98,8 +99,34 @@ class Utils:
     def getDashboardData(self) -> dict:
         return self.webdriver.execute_script("return dashboard")
 
+    def getBingInfo(self):
+        cookieJar = self.webdriver.get_cookies()
+        cookies = {cookie["name"]: cookie["value"] for cookie in cookieJar}
+        response = requests.get(
+            "https://www.bing.com/rewards/panelflyout/getuserinfo", cookies=cookies
+        )
+        if response.status_code == requests.codes.ok:
+            data = response.json()
+            return data
+        else:
+            return None
+
+    def checkBingLogin(self):
+        data = self.getBingInfo()
+        if data:
+            return data["userInfo"]["isRewardsUser"]
+        else:
+            return False
+
     def getAccountPoints(self) -> int:
         return self.getDashboardData()["userStatus"]["availablePoints"]
+
+    def getBingAccountPoints(self) -> int:
+        data = self.getBingInfo()
+        if data:
+            return data["userInfo"]["balance"]
+        else:
+            return 0
 
     def tryDismissAllMessages(self):
         buttons = [
@@ -176,7 +203,9 @@ class Utils:
         return remainingDesktop, remainingMobile
 
     def formatNumber(self, number, num_decimals=2):
-        return pylocale.format_string(f"%10.{num_decimals}f", number, grouping=True)
+        return pylocale.format_string(
+            f"%10.{num_decimals}f", number, grouping=True
+        ).strip()
 
 
 def prRed(prt):

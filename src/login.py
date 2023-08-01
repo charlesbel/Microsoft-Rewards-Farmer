@@ -95,30 +95,12 @@ class Login:
         self.webdriver.get(
             "https://www.bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=https%3A%2F%2Fwww.bing.com%2F"
         )
-        isHamburgerOpened = False
         while True:
             currentUrl = urllib.parse.urlparse(self.webdriver.current_url)
             if currentUrl.hostname == "www.bing.com" and currentUrl.path == "/":
                 time.sleep(3)
                 self.utils.tryDismissBingCookieBanner()
                 with contextlib.suppress(Exception):
-                    if self.browser.mobile:
-                        if not isHamburgerOpened:
-                            self.webdriver.find_element(By.ID, "mHamburger").click()
-                            isHamburgerOpened = True
-
-                        int(
-                            self.webdriver.find_element(
-                                By.ID, "fly_id_rc"
-                            ).get_attribute("innerHTML")
-                        )
-
-                    else:
-                        int(
-                            self.webdriver.find_element(By.ID, "id_rc").get_attribute(
-                                "innerHTML"
-                            )
-                        )
-
-                    break
+                    if self.utils.checkBingLogin():
+                        return
             time.sleep(1)

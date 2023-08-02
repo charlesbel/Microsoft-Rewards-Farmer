@@ -42,7 +42,7 @@ class Browser:
     def browserSetup(
         self,
     ) -> ChromiumDriver:
-        options = Options()
+        options = ChromiumOptions()
         options.add_argument(f"user-agent={self.userAgent}")
         options.add_argument(f"lang={self.localeLang}")
         if self.headless:

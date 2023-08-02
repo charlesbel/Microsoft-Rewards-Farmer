@@ -1,5 +1,6 @@
 import contextlib
 import uuid
+import platform
 from pathlib import Path
 from typing import Any
 
@@ -49,6 +50,10 @@ class Browser:
         options.add_argument("log-level=3")
         userDataDir = self.setupProfiles()
         options.add_argument(f"user-data-dir={userDataDir.as_posix()}")
+        if platform.system() == 'Linux':
+            options.add_argument("--no-sandbox")
+            options.add_argument("--disable-dev-shm-usage")
+
         return webdriver.Chrome(options=options)
 
     def setupProfiles(self) -> Path:

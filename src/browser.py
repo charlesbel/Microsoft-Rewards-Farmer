@@ -6,7 +6,7 @@ from typing import Any
 
 import ipapi
 from selenium import webdriver
-from selenium.webdriver.chromium.options import Options
+from selenium.webdriver.chromium.options import ChromiumOptions
 from selenium.webdriver.chromium.webdriver import ChromiumDriver
 
 from src.userAgentGenerator import GenerateUserAgent

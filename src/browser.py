@@ -6,8 +6,8 @@ from typing import Any
 
 import ipapi
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.chromium.options import Options
+from selenium.webdriver.chromium.webdriver import ChromiumDriver
 
 from src.userAgentGenerator import GenerateUserAgent
 from src.utils import Utils
@@ -41,7 +41,7 @@ class Browser:
 
     def browserSetup(
         self,
-    ) -> WebDriver:
+    ) -> ChromiumDriver:
         options = Options()
         options.add_argument(f"user-agent={self.userAgent}")
         options.add_argument(f"lang={self.localeLang}")

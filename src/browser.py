@@ -46,10 +46,25 @@ class Browser:
         options.add_argument(f"user-agent={self.userAgent}")
         options.add_argument(f"lang={self.localeLang}")
         if self.headless:
-            options.add_argument("headless")
+            options.add_argument("--headless=new")
         options.add_argument("log-level=3")
         userDataDir = self.setupProfiles()
         options.add_argument(f"user-data-dir={userDataDir.as_posix()}")
+        options.add_argument("--start-maximized")
+
+        prefs = {
+            "profile.default_content_setting_values.geolocation": 2,
+            "credentials_enable_service": False,
+            "profile.password_manager_enabled": False,
+            "webrtc.ip_handling_policy": "disable_non_proxied_udp",
+            "webrtc.multiple_routes_enabled": False,
+            "webrtc.nonproxied_udp_enabled": False,
+            "profile.managed_default_content_settings.images": 2
+        }
+        options.add_experimental_option("prefs", prefs)
+        options.add_experimental_option("useAutomationExtension", False)
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+
         if platform.system() == 'Linux':
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")

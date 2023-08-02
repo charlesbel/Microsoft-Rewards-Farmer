@@ -1,14 +1,9 @@
-import contextlib
 import json
 import random
 import time
 from datetime import date, timedelta
 
 import requests
-from selenium.common.exceptions import (
-    NoAlertPresentException,
-    UnexpectedAlertPresentException,
-)
 from selenium.webdriver.common.by import By
 
 from src.browser import Browser
@@ -85,23 +80,4 @@ class Searches:
         searchbar.send_keys(word)
         searchbar.submit()
         time.sleep(random.randint(10, 15))
-        stringPoints = None
-        with contextlib.suppress(Exception):
-            if not self.browser.mobile:
-                stringPoints = self.webdriver.find_element(
-                    By.ID, "id_rc"
-                ).get_attribute("innerHTML")
-
-            else:
-                try:
-                    self.webdriver.find_element(By.ID, "mHamburger").click()
-                    time.sleep(1)
-                except UnexpectedAlertPresentException:
-                    with contextlib.suppress(NoAlertPresentException):
-                        self.webdriver.switch_to.alert.accept()
-                        self.webdriver.find_element(By.ID, "mHamburger").click()
-                stringPoints = self.webdriver.find_element(
-                    By.ID, "fly_id_rc"
-                ).get_attribute("innerHTML")
-
-        return int(stringPoints) if stringPoints is not None else 0
+        return self.browser.utils.getBingAccountPoints()

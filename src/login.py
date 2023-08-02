@@ -7,8 +7,6 @@ from selenium.webdriver.common.by import By
 from src.browser import Browser
 from src.utils import prGreen
 
-from .constants import BASE_URL
-
 
 class Login:
     def __init__(self, browser: Browser):
@@ -41,19 +39,7 @@ class Login:
 
         print("[LOGIN]", "Logged-in !")
 
-        self.webdriver.get(BASE_URL)
-        while True:
-            self.utils.tryDismissCookieBanner()
-            with contextlib.suppress(Exception):
-                self.webdriver.find_element(By.ID, "daily-sets")
-                break
-            if (
-                urllib.parse.urlparse(self.webdriver.current_url).hostname
-                != urllib.parse.urlparse(BASE_URL).hostname
-            ) and self.utils.tryDismissAllMessages():
-                time.sleep(1)
-                self.webdriver.get(BASE_URL)
-            time.sleep(1)
+        self.utils.goHome()
         points = self.utils.getAccountPoints()
 
         print("[LOGIN]", "Ensuring login on Bing...")
@@ -109,30 +95,12 @@ class Login:
         self.webdriver.get(
             "https://www.bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=https%3A%2F%2Fwww.bing.com%2F"
         )
-        isHamburgerOpened = False
         while True:
             currentUrl = urllib.parse.urlparse(self.webdriver.current_url)
             if currentUrl.hostname == "www.bing.com" and currentUrl.path == "/":
                 time.sleep(3)
                 self.utils.tryDismissBingCookieBanner()
                 with contextlib.suppress(Exception):
-                    if self.browser.mobile:
-                        if not isHamburgerOpened:
-                            self.webdriver.find_element(By.ID, "mHamburger").click()
-                            isHamburgerOpened = True
-
-                        int(
-                            self.webdriver.find_element(
-                                By.ID, "fly_id_rc"
-                            ).get_attribute("innerHTML")
-                        )
-
-                    else:
-                        int(
-                            self.webdriver.find_element(By.ID, "id_rc").get_attribute(
-                                "innerHTML"
-                            )
-                        )
-
-                    break
+                    if self.utils.checkBingLogin():
+                        return
             time.sleep(1)

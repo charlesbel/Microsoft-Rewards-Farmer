@@ -64,7 +64,7 @@ class Activities:
                     if not self.browser.utils.waitUntilQuestionRefresh():
                         self.browser.utils.resetTabs()
                         return
-            elif numberOfOptions in [2, 4]:
+            elif numberOfOptions in [2, 3, 4]:
                 correctOption = self.webdriver.execute_script(
                     "return _w.rewardsQuizRenderInfo.correctAnswer"
                 )

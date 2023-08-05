@@ -24,7 +24,7 @@ class Browser:
         self.localeLang, self.localeGeo = self.getCCodeLang(args.lang, args.geo)
         self.userAgent = GenerateUserAgent().userAgent(mobile)
         self.webdriver = self.browserSetup()
-        self.utils = Utils(self.webdriver, f"{self.localeLang}_{self.localeGeo}")
+        self.utils = Utils(self.webdriver)
 
     def __enter__(self) -> "Browser":
         return self
@@ -72,16 +72,15 @@ class Browser:
         sessionsDir.mkdir(parents=True, exist_ok=True)
         return sessionsDir
 
-    def getCCodeLang(self, lang: str = "en", geo: str = "US") -> tuple:
-        try:
-            if lang is None:
-                lang = "en"
-            if geo is None:
-                geo = "US"
-            nfo = ipapi.location()
-            if isinstance(nfo, dict):
-                lang = nfo["languages"].split(",")[0].split("-")[0]
-                geo = nfo["country"]
-            return (lang, geo)
-        except Exception:  # pylint: disable=broad-except
-            return (lang, geo)
+    def getCCodeLang(self, lang: str, geo: str) -> tuple:
+        if lang is None or geo is None:
+            try:
+                nfo = ipapi.location()
+                if isinstance(nfo, dict):
+                    if lang is None:
+                        lang = nfo["languages"].split(",")[0].split("-")[0]
+                    if geo is None:
+                        geo = nfo["country"]
+            except Exception:  # pylint: disable=broad-except
+                return ("en", "US")
+        return (lang, geo)

@@ -4,7 +4,7 @@ import random
 from pathlib import Path
 
 from src import (Browser, DailySet, Discord, Login, MorePromotions, PunchCards,
-                 Searches)
+                 Redeem, Searches)
 from src.constants import VERSION
 from src.utils import prGreen, prPurple, prRed, prYellow
 
@@ -32,6 +32,9 @@ def argumentParser():
     )
     parser.add_argument(
         "-s", "--shuffle", action="store_true", help="Optional: shuffle the order in which accounts will be farmed on"
+    )
+    parser.add_argument(
+        "-r", "--redeem", action="store_true", help="Optional: auto redeem rewards based on the goal set in the microsoft account"
     )
     return parser.parse_args()
 
@@ -123,6 +126,9 @@ def executeBot(loadedAccounts):
             
             if args.webhook:
                 Discord.send_to_webhook(f'`{currentAccount.get("username", "")}` has farmed {accountPointsCounter - startingPoints} points today. Total points: {accountPointsCounter}')
+            
+            if args.redeem:
+                Redeem.auto_redeem(desktopBrowser, currentAccount.get("username", ""), accountPointsCounter, args.webhook)
 
 
 if __name__ == "__main__":

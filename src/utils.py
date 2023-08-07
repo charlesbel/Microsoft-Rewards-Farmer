@@ -15,7 +15,9 @@ from .constants import BASE_URL
 class Utils:
     def __init__(self, webdriver: WebDriver):
         self.webdriver = webdriver
-        pylocale.setlocale(pylocale.LC_NUMERIC, pylocale.getdefaultlocale()[0])
+        locale = pylocale.getdefaultlocale()[0]
+        if locale is not None:
+            pylocale.setlocale(pylocale.LC_NUMERIC, locale)
 
     def waitUntilVisible(self, by: str, selector: str, timeToWait: float = 10):
         WebDriverWait(self.webdriver, timeToWait).until(

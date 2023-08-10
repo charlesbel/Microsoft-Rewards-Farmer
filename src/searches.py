@@ -9,6 +9,7 @@ from selenium.webdriver.common.by import By
 from src.browser import Browser
 from src.utils import prGreen
 
+import logging
 
 class Searches:
     def __init__(self, browser: Browser):
@@ -47,8 +48,8 @@ class Searches:
             return []
 
     def bingSearches(self, numberOfSearches: int, pointsCounter: int = 0):
-        print(
-            "[BING]",
+        logging.info(
+            "[BING] " +
             f"Starting {self.browser.browserType.capitalize()} Edge Bing searches...",
         )
 
@@ -56,7 +57,7 @@ class Searches:
         search_terms = self.getGoogleTrends(numberOfSearches)
         for word in search_terms:
             i += 1
-            print("[BING]", f"{i}/{numberOfSearches}")
+            logging.info("[BING] " + f"{i}/{numberOfSearches}")
             points = self.bingSearch(word)
             if points <= pointsCounter:
                 relatedTerms = self.getRelatedTerms(word)[:2]
@@ -68,7 +69,7 @@ class Searches:
                 pointsCounter = points
             else:
                 break
-        prGreen(
+        logging.info(
             f"[BING] Finished {self.browser.browserType.capitalize()} Edge Bing searches !"
         )
         return pointsCounter

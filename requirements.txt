@@ -5,3 +5,4 @@ requests
 selenium
 urllib3
 ipapi
+undetected-chromedriver

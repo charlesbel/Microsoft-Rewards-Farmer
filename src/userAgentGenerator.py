@@ -198,3 +198,45 @@ class GenerateUserAgent:
                 f"Status code: {response.status_code}"
             )
         return response
+        
+        
+    def getCMDArgs(self, mobile: bool = False, fetch: bool = True):
+        agentString = self.userAgent(mobile, fetch)
+        
+        if mobile:
+            platform = "Android"
+            edgeVersionString = f"{self.EDGE_VERSION_MAJOR[0]}.{self.EDGE_VERSION_MAJOR[1]}.{self.EDGE_VERSION_MAJOR[1]}.{self.EDGE_VERSION_MOBILE}"
+            chromeVersionString = f"{self.CHROME_VERSION_MAJOR[0]}.{self.CHROME_VERSION_MAJOR[1]}.{self.CHROME_VERSION_MAJOR[1]}.{self.CHROME_VERSION_MOBILE}"
+        else:
+            platform = "Windows"
+            edgeVersionString = f"{self.EDGE_VERSION_MAJOR[0]}.{self.EDGE_VERSION_MAJOR[1]}.{self.EDGE_VERSION_MAJOR[1]}.{self.CHROME_VERSION_PC}"
+            chromeVersionString = f"{self.CHROME_VERSION_MAJOR[0]}.{self.CHROME_VERSION_MAJOR[1]}.{self.CHROME_VERSION_MAJOR[1]}.{self.CHROME_VERSION_PC}"
+        
+        cmd_args = {
+            "userAgent": agentString,
+
+            # DO NOT USE THE DATA BELOW. IT'S AN EXAMPLE AND IT DOESN'T MATCH THE USERAGENT ABOVE
+
+            "userAgentMetadata": {
+                "brands": [
+                    {"brand": "Chromium", "version": self.CHROME_VERSION_MAJOR[0]},
+                    {"brand": "Microsoft Edge", "version": self.EDGE_VERSION_MAJOR[0]},
+                    {"brand": "Not;A=Brand", "version": "99"},
+                ],
+                "mobile": mobile,
+                "model": "KB2003",
+                "platform": platform,
+                "platformVersion": "12.0.0",
+                "fullVersion": edgeVersionString,
+                "fullVersionList": [
+                    {"brand": "Chromium", "version": chromeVersionString},
+                    {"brand": "Microsoft Edge", "version": edgeVersionString},
+                    {"brand": "Not;A=Brand", "version": "99.0.0.0"},
+                ],
+                "architecture": "",
+                "bitness": "",
+                "wow64": False,
+            },
+        }
+        
+        return cmd_args

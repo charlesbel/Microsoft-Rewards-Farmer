@@ -11,6 +11,11 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from src.userAgentGenerator import GenerateUserAgent
 from src.utils import Utils
 
+try:
+    import undetected_chromedriver as uc
+    noUndetectedChromeDriver = False
+except:
+    noUndetectedChromeDriver = True
 
 class Browser:
     """WebDriver wrapper class."""
@@ -41,15 +46,45 @@ class Browser:
     def browserSetup(
         self,
     ) -> WebDriver:
-        options = Options()
-        options.add_argument(f"user-agent={self.userAgent}")
-        options.add_argument(f"lang={self.localeLang}")
-        if self.headless:
-            options.add_argument("headless")
-        options.add_argument("log-level=3")
-        userDataDir = self.setupProfiles()
-        options.add_argument(f"user-data-dir={userDataDir.as_posix()}")
-        return webdriver.Chrome(options=options)
+        if noUndetectedChromeDriver:
+            options = Options()
+            options.add_argument(f'user-agent="{self.userAgent}"')
+            options.add_argument(f"lang={self.localeLang}")
+            if self.headless:
+                options.add_argument("headless")
+            options.add_argument("log-level=3")
+            userDataDir = self.setupProfiles()
+            options.add_argument(f"user-data-dir={userDataDir.as_posix()}")
+            return webdriver.Chrome(options=options)
+        else:
+            options = Options()
+            userDataDir = self.setupProfiles()
+            
+            driver = uc.Chrome(user_data_dir=userDataDir.as_posix(), headless=self.headless, log_level=3, options=options)
+            cmd_args = GenerateUserAgent().getCMDArgs(self.mobile)
+            
+            driver.execute_cdp_cmd(
+                cmd="Emulation.setUserAgentOverride",
+                cmd_args=cmd_args,
+            )
+            
+            driver.execute_cdp_cmd(
+                cmd="Network.setUserAgentOverride",
+                cmd_args=cmd_args,
+            )
+            
+            if self.mobile:
+                driver.execute_cdp_cmd(
+                    cmd="Emulation.setDeviceMetricsOverride",
+                    cmd_args={
+                        "width": 393,
+                        "height": 851,
+                        "deviceScaleFactor": 2.75,
+                        "mobile": True,
+                    },
+                )
+            
+            return driver
 
     def setupProfiles(self) -> Path:
         """

@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from src.browser import Browser
 from src.utils import prGreen
 
+import logging
 
 class Login:
     def __init__(self, browser: Browser):
@@ -15,7 +16,7 @@ class Login:
         self.utils = browser.utils
 
     def login(self):
-        print("[LOGIN]", "Logging-in...")
+        logging.info("[LOGIN] " + "Logging-in...")
         self.webdriver.get("https://login.live.com/")
         alreadyLoggedIn = False
         while True:
@@ -37,19 +38,19 @@ class Login:
             self.executeLogin()
         self.utils.tryDismissCookieBanner()
 
-        print("[LOGIN]", "Logged-in !")
+        logging.info("[LOGIN] " + "Logged-in !")
 
         self.utils.goHome()
         points = self.utils.getAccountPoints()
 
-        print("[LOGIN]", "Ensuring login on Bing...")
+        logging.info("[LOGIN] " + "Ensuring login on Bing...")
         self.checkBingLogin()
-        prGreen("[LOGIN] Logged-in successfully !")
+        logging.info("[LOGIN] Logged-in successfully !")
         return points
 
     def executeLogin(self):
         self.utils.waitUntilVisible(By.ID, "loginHeader", 10)
-        print("[LOGIN]", "Writing email...")
+        logging.info("[LOGIN] " + "Writing email...")
         self.webdriver.find_element(By.NAME, "loginfmt").send_keys(
             self.browser.username
         )
@@ -58,12 +59,12 @@ class Login:
         try:
             self.enterPassword(self.browser.password)
         except Exception:  # pylint: disable=broad-except
-            print("[LOGIN]", "2FA required !")
+            logging.error("[LOGIN]" + "2FA required !")
             with contextlib.suppress(Exception):
                 code = self.webdriver.find_element(
                     By.ID, "idRemoteNGC_DisplaySign"
                 ).get_attribute("innerHTML")
-                print("[LOGIN]", "2FA code:", code)
+                logging.error("[LOGIN]" + f"2FA code: {code}")
             input("[LOGIN] Press enter when confirmed...")
 
         while not (
@@ -87,7 +88,7 @@ class Login:
         self.webdriver.execute_script(
             f'document.getElementsByName("passwd")[0].value = "{password}";'
         )
-        print("[LOGIN]", "Writing password...")
+        logging.info("[LOGIN] " + "Writing password...")
         self.webdriver.find_element(By.ID, "idSIButton9").click()
         time.sleep(3)
 

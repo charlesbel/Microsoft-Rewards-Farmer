@@ -23,6 +23,11 @@ class Browser:
         self.username = account["username"]
         self.password = account["password"]
         self.localeLang, self.localeGeo = self.getCCodeLang(args.lang, args.geo)
+        self.proxy = None
+        if args.proxy:
+            self.proxy = args.proxy
+        elif account.get("proxy"):
+            self.proxy = account["proxy"]
         self.userDataDir = self.setupProfiles()
         self.browserConfig = Utils.getBrowserConfig(self.userDataDir)
         (
@@ -62,6 +67,14 @@ class Browser:
 
         seleniumwireOptions = {
             "verify_ssl": False,
+            "proxy": (
+                {
+                    "http": self.proxy,
+                    "https": self.proxy,
+                }
+            )
+            if self.proxy
+            else None,
         }
 
         driver = webdriver.Chrome(

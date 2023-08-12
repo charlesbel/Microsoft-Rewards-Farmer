@@ -57,6 +57,13 @@ def argumentParser():
     parser.add_argument(
         "-g", "--geo", type=str, default=None, help="Optional: Geolocation (ex: US)"
     )
+    parser.add_argument(
+        "-p",
+        "--proxy",
+        type=str,
+        default=None,
+        help="Optional: Global Proxy (ex: http://user:pass@host:port)",
+    )
     return parser.parse_args()
 
 

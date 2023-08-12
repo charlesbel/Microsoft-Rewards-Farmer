@@ -13,7 +13,6 @@ def update(version: str):
         exclusions = [e for e in exclusions if e != "" and not e.startswith("#")] + [
             ".gitignore",
             ".git",
-            os.path.basename(__file__),
         ]
     print("Removing old files...")
     for root, dirs, files in os.walk(".", topdown=False):

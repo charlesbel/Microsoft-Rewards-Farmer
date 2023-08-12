@@ -1,4 +1,5 @@
 import contextlib
+import logging
 import random
 import time
 import urllib.parse
@@ -6,7 +7,6 @@ import urllib.parse
 from selenium.webdriver.common.by import By
 
 from src.browser import Browser
-from src.utils import prGreen
 
 from .constants import BASE_URL
 
@@ -49,7 +49,7 @@ class PunchCards:
                     self.browser.utils.closeCurrentTab()
 
     def completePunchCards(self):
-        print("[PUNCH CARDS]", "Trying to complete the Punch Cards...")
+        logging.info("[PUNCH CARDS] " + "Trying to complete the Punch Cards...")
         self.completePromotionalItems()
         punchCards = self.browser.utils.getDashboardData()["punchCards"]
         for punchCard in punchCards:
@@ -66,7 +66,7 @@ class PunchCards:
                     )
             except Exception:  # pylint: disable=broad-except
                 self.browser.utils.resetTabs()
-        prGreen("[PUNCH CARDS] Completed the Punch Cards successfully !")
+        logging.info("[PUNCH CARDS] Completed the Punch Cards successfully !")
         time.sleep(2)
         self.webdriver.get(BASE_URL)
         time.sleep(2)

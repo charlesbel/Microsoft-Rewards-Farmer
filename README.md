@@ -63,6 +63,10 @@
 
     `python main.py`
 
+   Or if you want to keep it updated (it will check on each run if a new version is available, if so, will download and run it), use :
+
+   `python autoupdate_main.py`
+
 ## Features
 
 * Bing searches (Desktop, Mobile and Edge) with User-Agents

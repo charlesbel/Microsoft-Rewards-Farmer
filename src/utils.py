@@ -104,14 +104,22 @@ class Utils:
     def getBingInfo(self):
         cookieJar = self.webdriver.get_cookies()
         cookies = {cookie["name"]: cookie["value"] for cookie in cookieJar}
-        response = requests.get(
-            "https://www.bing.com/rewards/panelflyout/getuserinfo", cookies=cookies
-        )
-        if response.status_code == requests.codes.ok:
-            data = response.json()
-            return data
-        else:
-            return None
+        tries = 0
+        maxTries = 5
+        while tries < maxTries:
+            with contextlib.suppress(Exception):
+                response = requests.get(
+                    "https://www.bing.com/rewards/panelflyout/getuserinfo",
+                    cookies=cookies,
+                )
+                if response.status_code == requests.codes.ok:
+                    data = response.json()
+                    return data
+                else:
+                    pass
+            tries += 1
+            time.sleep(1)
+        return None
 
     def checkBingLogin(self):
         data = self.getBingInfo()

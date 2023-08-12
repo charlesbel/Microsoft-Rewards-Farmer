@@ -69,6 +69,12 @@
 
    `python autoupdate_main.py`
 
+## Launch arguments
+* -v/--visible to disable headless
+* -l/--lang to force a language (ex: en)
+* -g/--geo to force a geolocation (ex: US)
+* -p/--proxy to add a proxy to the whole program, supports http/https/socks4/socks5 (overrides per-account proxy in accounts.json) (ex: http://user:pass@host:port)
+
 ## Features
 
 * Bing searches (Desktop, Mobile and Edge) with User-Agents

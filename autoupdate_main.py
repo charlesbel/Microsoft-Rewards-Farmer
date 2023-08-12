@@ -4,7 +4,8 @@ from zipfile import ZipFile
 
 import requests
 
-if __name__ == "__main__":
+
+def update(version: str):
     url = "https://github.com/charlesbel/Microsoft-Rewards-Farmer/archive/refs/heads/master.zip"
     folderName = "Microsoft-Rewards-Farmer-master"
     with open(".gitignore", "r") as f:
@@ -12,6 +13,7 @@ if __name__ == "__main__":
         exclusions = [e for e in exclusions if e != "" and not e.startswith("#")] + [
             ".gitignore",
             ".git",
+            os.path.basename(__file__),
         ]
     print("Removing old files...")
     for root, dirs, files in os.walk(".", topdown=False):
@@ -38,4 +40,34 @@ if __name__ == "__main__":
                 os.makedirs(dirName)
             with zipObj.open(file) as src, open(newName, "wb") as dst:
                 dst.write(src.read())
+    with open("version.txt", "w") as f:
+        f.write(version)
     print("Done !")
+
+
+def getCurrentVersion():
+    if os.path.exists("version.txt"):
+        with open("version.txt", "r") as f:
+            version = f.read()
+        return version
+    return None
+
+
+def getLatestVersion():
+    r = requests.get(
+        "https://api.github.com/repos/charlesbel/Microsoft-Rewards-Farmer/commits/master"
+    )
+    return r.json()["sha"]
+
+
+if __name__ == "__main__":
+    currentVersion = getCurrentVersion()
+    latestVersion = getLatestVersion()
+    if currentVersion != latestVersion:
+        print("New version available !")
+        update(latestVersion)
+
+    print("Starting...")
+    from main import main
+
+    main()

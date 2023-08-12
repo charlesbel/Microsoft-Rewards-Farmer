@@ -58,13 +58,14 @@ class Login:
         try:
             self.enterPassword(self.browser.password)
         except Exception:  # pylint: disable=broad-except
-            logging.error("[LOGIN]" + "2FA required !")
+            logging.error("[LOGIN] " + "2FA required !")
             with contextlib.suppress(Exception):
                 code = self.webdriver.find_element(
                     By.ID, "idRemoteNGC_DisplaySign"
                 ).get_attribute("innerHTML")
-                logging.error("[LOGIN]" + f"2FA code: {code}")
-            input("[LOGIN] Press enter when confirmed...")
+                logging.error("[LOGIN] " + f"2FA code: {code}")
+            logging.info("[LOGIN] Press enter when confirmed...")
+            input()
 
         while not (
             urllib.parse.urlparse(self.webdriver.current_url).path == "/"

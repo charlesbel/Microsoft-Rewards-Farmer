@@ -1,13 +1,12 @@
 import contextlib
+import logging
 import time
 import urllib.parse
 
 from selenium.webdriver.common.by import By
 
 from src.browser import Browser
-from src.utils import prGreen
 
-import logging
 
 class Login:
     def __init__(self, browser: Browser):

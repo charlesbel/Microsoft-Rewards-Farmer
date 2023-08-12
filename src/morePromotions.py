@@ -1,9 +1,9 @@
+import logging
+
 from src.browser import Browser
-from src.utils import prGreen
 
 from .activities import Activities
 
-import logging
 
 class MorePromotions:
     def __init__(self, browser: Browser):

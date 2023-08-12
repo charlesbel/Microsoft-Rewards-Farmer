@@ -1,7 +1,9 @@
 import contextlib
+import json
 import locale as pylocale
 import time
 import urllib.parse
+from pathlib import Path
 
 import requests
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -15,8 +17,8 @@ from .constants import BASE_URL
 class Utils:
     def __init__(self, webdriver: WebDriver):
         self.webdriver = webdriver
-        locale = pylocale.getdefaultlocale()[0]
-        if locale is not None:
+        with contextlib.suppress(Exception):
+            locale = pylocale.getdefaultlocale()[0]
             pylocale.setlocale(pylocale.LC_NUMERIC, locale)
 
     def waitUntilVisible(self, by: str, selector: str, timeToWait: float = 10):
@@ -209,18 +211,18 @@ class Utils:
             f"%10.{num_decimals}f", number, grouping=True
         ).strip()
 
+    @staticmethod
+    def getBrowserConfig(sessionPath: Path) -> dict:
+        configFile = sessionPath.joinpath("config.json")
+        if configFile.exists():
+            with open(configFile, "r") as f:
+                config = json.load(f)
+                return config
+        else:
+            return {}
 
-def prRed(prt):
-    print(f"\033[91m{prt}\033[00m")
-
-
-def prGreen(prt):
-    print(f"\033[92m{prt}\033[00m")
-
-
-def prPurple(prt):
-    print(f"\033[95m{prt}\033[00m")
-
-
-def prYellow(prt):
-    print(f"\033[93m{prt}\033[00m")
+    @staticmethod
+    def saveBrowserConfig(sessionPath: Path, config: dict):
+        configFile = sessionPath.joinpath("config.json")
+        with open(configFile, "w") as f:
+            json.dump(config, f)

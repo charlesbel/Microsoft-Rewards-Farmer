@@ -1,63 +1,49 @@
 import argparse
 import json
+import logging
+import logging.handlers as handlers
 import random
+import sys
 from pathlib import Path
 
 from src import Browser, DailySet, Login, MorePromotions, PunchCards, Searches
 from src.constants import VERSION
-from src.utils import prGreen, prPurple, prRed, prYellow
+from src.loggingColoredFormatter import ColoredFormatter
 
 POINTS_COUNTER = 0
 
-import logging
-import logging.handlers as handlers
-import sys
-
-class ColoredFormatter(logging.Formatter):
-    """Logging colored formatter, adapted from https://stackoverflow.com/a/56944256/3638629"""
-
-    grey = '\x1b[38;21m'
-    blue = '\x1b[38;5;39m'
-    yellow = '\x1b[38;5;226m'
-    red = '\x1b[38;5;196m'
-    bold_red = '\x1b[31;1m'
-    reset = '\x1b[0m'
-
-    def __init__(self, fmt):
-        super().__init__()
-        self.fmt = fmt
-        self.FORMATS = {
-            logging.DEBUG: self.grey + self.fmt + self.reset,
-            logging.INFO: self.blue + self.fmt + self.reset,
-            logging.WARNING: self.yellow + self.fmt + self.reset,
-            logging.ERROR: self.red + self.fmt + self.reset,
-            logging.CRITICAL: self.bold_red + self.fmt + self.reset
-        }
-
-    def format(self, record):
-        log_fmt = self.FORMATS.get(record.levelno)
-        formatter = logging.Formatter(log_fmt)
-        return formatter.format(record)
-
-terminalHandler = logging.StreamHandler(sys.stdout)
-terminalHandler.setFormatter(ColoredFormatter("%(asctime)s [%(levelname)s] %(message)s"))
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        handlers.TimedRotatingFileHandler("activity.log", when='midnight', interval=1, backupCount=2, encoding="utf-8"),
-        terminalHandler
-    ]
-)
 
 def main():
+    setupLogging()
     loadedAccounts = setupAccounts()
     for currentAccount in loadedAccounts:
         try:
             executeBot(currentAccount)
         except Exception as e:
-            logging.error(e)
+            logging.error(f"{e.__class__.__name__}: {e}")
+
+
+def setupLogging():
+    format = "%(asctime)s [%(levelname)s] %(message)s"
+    terminalHandler = logging.StreamHandler(sys.stdout)
+    terminalHandler.setFormatter(ColoredFormatter(format))
+
+    (Path(__file__).resolve().parent / "logs").mkdir(parents=True, exist_ok=True)
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format=format,
+        handlers=[
+            handlers.TimedRotatingFileHandler(
+                "logs/activity.log",
+                when="midnight",
+                interval=1,
+                backupCount=2,
+                encoding="utf-8",
+            ),
+            terminalHandler,
+        ],
+    )
 
 
 def argumentParser():
@@ -83,7 +69,9 @@ def bannerDisplay():
     ██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
     ╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝"""
     logging.error(farmerBanner)
-    logging.warning(f"        by Charles Bel (@charlesbel)               version {VERSION}\n")
+    logging.warning(
+        f"        by Charles Bel (@charlesbel)               version {VERSION}\n"
+    )
 
 
 def setupAccounts() -> dict:

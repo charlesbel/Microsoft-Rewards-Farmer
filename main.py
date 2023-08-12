@@ -111,7 +111,7 @@ def setupAccounts() -> dict:
 
     args = argumentParser()
 
-    if args.shuffle:  
+    if args.shuffle:
         random.shuffle(loadedAccounts)
 
     return loadedAccounts
@@ -157,14 +157,14 @@ def executeBot(currentAccount):
         logging.debug(
             f"[POINTS] You are now at {desktopBrowser.utils.formatNumber(accountPointsCounter)} points !\n"
         )
-          
+
         args = argumentParser()
-            
+
         if args.webhook:
             Discord.send_to_webhook(f'`{currentAccount.get("username", "")}` has farmed {accountPointsCounter - startingPoints} points today. Total points: {accountPointsCounter}')
-            
+
         if args.redeem:
-            Redeem.auto_redeem(desktopBrowser, currentAccount.get("username", ""), accountPointsCounter, args.webhook)
+            Redeem.auto_redeem(desktopBrowser, currentAccount.get("username", ""), args.webhook)
 
 
 if __name__ == "__main__":

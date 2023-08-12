@@ -80,8 +80,13 @@ class Utils:
             self.goHome()
 
     def goHome(self):
+        reloadThreshold = 5
+        reloadInterval = 10
         targetUrl = urllib.parse.urlparse(BASE_URL)
         self.webdriver.get(BASE_URL)
+        reloads = 0
+        interval = 1
+        intervalCount = 0
         while True:
             self.tryDismissCookieBanner()
             with contextlib.suppress(Exception):
@@ -93,7 +98,14 @@ class Utils:
             ) and self.tryDismissAllMessages():
                 time.sleep(1)
                 self.webdriver.get(BASE_URL)
-            time.sleep(1)
+            time.sleep(interval)
+            intervalCount += 1
+            if intervalCount >= reloadInterval:
+                intervalCount = 0
+                reloads += 1
+                self.webdriver.refresh()
+                if reloads >= reloadThreshold:
+                    break
 
     def getAnswerCode(self, key: str, string: str) -> str:
         t = sum(ord(string[i]) for i in range(len(string)))

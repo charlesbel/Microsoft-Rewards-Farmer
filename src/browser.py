@@ -65,17 +65,14 @@ class Browser:
         options.add_argument("--ignore-certificate-errors-spki-list")
         options.add_argument("--ignore-ssl-errors")
 
-        seleniumwireOptions = {
+        seleniumwireOptions: dict[str, Any] = {
             "verify_ssl": False,
-            "proxy": (
-                {
-                    "http": self.proxy,
-                    "https": self.proxy,
-                }
-            )
-            if self.proxy
-            else None,
         }
+        if self.proxy:
+            seleniumwireOptions["proxy"] = {
+                "http": self.proxy,
+                "https": self.proxy,
+            }
 
         driver = webdriver.Chrome(
             options=options,

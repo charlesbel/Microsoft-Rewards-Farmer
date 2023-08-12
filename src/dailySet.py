@@ -1,12 +1,11 @@
+import logging
 import urllib.parse
 from datetime import datetime
 
 from src.browser import Browser
-from src.utils import prGreen
 
 from .activities import Activities
 
-import logging
 
 class DailySet:
     def __init__(self, browser: Browser):
@@ -25,23 +24,27 @@ class DailySet:
                     cardId = int(activity["offerId"][-1:])
                     self.activities.openDailySetActivity(cardId)
                     if activity["promotionType"] == "urlreward":
-                        logging.info("[DAILY SET] ", f"Completing search of card {cardId}")
+                        logging.info(
+                            "[DAILY SET] ", f"Completing search of card {cardId}"
+                        )
                         self.activities.completeSearch()
                     if activity["promotionType"] == "quiz":
                         if (
                             activity["pointProgressMax"] == 50
                             and activity["pointProgress"] == 0
                         ):
-                            logging.info( 
-                                "[DAILY SET] " +
-                                f"Completing This or That of card {cardId}"
+                            logging.info(
+                                "[DAILY SET] "
+                                + f"Completing This or That of card {cardId}"
                             )
                             self.activities.completeThisOrThat()
                         elif (
                             activity["pointProgressMax"] in [40, 30]
                             and activity["pointProgress"] == 0
                         ):
-                            logging.info("[DAILY SET] ", f"Completing quiz of card {cardId}")
+                            logging.info(
+                                "[DAILY SET] ", f"Completing quiz of card {cardId}"
+                            )
                             self.activities.completeQuiz()
                         elif (
                             activity["pointProgressMax"] == 10

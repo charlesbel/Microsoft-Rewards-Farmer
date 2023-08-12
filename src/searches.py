@@ -1,4 +1,5 @@
 import json
+import logging
 import random
 import time
 from datetime import date, timedelta
@@ -7,9 +8,7 @@ import requests
 from selenium.webdriver.common.by import By
 
 from src.browser import Browser
-from src.utils import prGreen
 
-import logging
 
 class Searches:
     def __init__(self, browser: Browser):
@@ -49,8 +48,8 @@ class Searches:
 
     def bingSearches(self, numberOfSearches: int, pointsCounter: int = 0):
         logging.info(
-            "[BING] " +
-            f"Starting {self.browser.browserType.capitalize()} Edge Bing searches...",
+            "[BING] "
+            + f"Starting {self.browser.browserType.capitalize()} Edge Bing searches...",
         )
 
         i = 0

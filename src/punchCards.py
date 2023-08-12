@@ -1,4 +1,5 @@
 import contextlib
+import logging
 import random
 import time
 import urllib.parse
@@ -6,11 +7,9 @@ import urllib.parse
 from selenium.webdriver.common.by import By
 
 from src.browser import Browser
-from src.utils import prGreen
 
 from .constants import BASE_URL
 
-import logging
 
 class PunchCards:
     def __init__(self, browser: Browser):

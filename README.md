@@ -49,12 +49,14 @@
     ```json
         [
             {
-                "username": "Your Email",
-                "password": "Your Password"
+                "username": "Your Email 1",
+                "password": "Your Password 1",
+                "proxy": "http://user:pass@host1:port"
             },
             {
-                "username": "Your Email",
-                "password": "Your Password"
+                "username": "Your Email 2",
+                "password": "Your Password 2",
+                "proxy": "http://user:pass@host2:port"
             }
         ]
     ```
@@ -77,6 +79,7 @@
 * Multi-Account Management
 * Session storing (3.0)
 * 2FA Support (3.0)
+* Proxy Support (3.0)
 
 ## Future Features
 

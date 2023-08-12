@@ -1,4 +1,5 @@
 import json
+import logging
 import random
 import time
 from datetime import date, timedelta
@@ -7,7 +8,6 @@ import requests
 from selenium.webdriver.common.by import By
 
 from src.browser import Browser
-from src.utils import prGreen
 
 
 class Searches:
@@ -47,16 +47,16 @@ class Searches:
             return []
 
     def bingSearches(self, numberOfSearches: int, pointsCounter: int = 0):
-        print(
-            "[BING]",
-            f"Starting {self.browser.browserType.capitalize()} Edge Bing searches...",
+        logging.info(
+            "[BING] "
+            + f"Starting {self.browser.browserType.capitalize()} Edge Bing searches...",
         )
 
         i = 0
         search_terms = self.getGoogleTrends(numberOfSearches)
         for word in search_terms:
             i += 1
-            print("[BING]", f"{i}/{numberOfSearches}")
+            logging.info("[BING] " + f"{i}/{numberOfSearches}")
             points = self.bingSearch(word)
             if points <= pointsCounter:
                 relatedTerms = self.getRelatedTerms(word)[:2]
@@ -68,7 +68,7 @@ class Searches:
                 pointsCounter = points
             else:
                 break
-        prGreen(
+        logging.info(
             f"[BING] Finished {self.browser.browserType.capitalize()} Edge Bing searches !"
         )
         return pointsCounter

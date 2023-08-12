@@ -1,5 +1,6 @@
+import logging
+
 from src.browser import Browser
-from src.utils import prGreen
 
 from .activities import Activities
 
@@ -10,7 +11,7 @@ class MorePromotions:
         self.activities = Activities(browser)
 
     def completeMorePromotions(self):
-        print("[MORE PROMO]", "Trying to complete More Promotions...")
+        logging.info("[MORE PROMO] " + "Trying to complete More Promotions...")
         morePromotions = self.browser.utils.getDashboardData()["morePromotions"]
         i = 0
         for promotion in morePromotions:
@@ -37,4 +38,4 @@ class MorePromotions:
                         self.activities.completeSearch()
             except Exception:  # pylint: disable=broad-except
                 self.browser.utils.resetTabs()
-        prGreen("[MORE PROMO] Completed More Promotions successfully !")
+        logging.info("[MORE PROMO] Completed More Promotions successfully !")

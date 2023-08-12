@@ -1,18 +1,49 @@
 import argparse
 import json
+import logging
+import logging.handlers as handlers
 import random
+import sys
 from pathlib import Path
 
 from src import Browser, DailySet, Login, MorePromotions, PunchCards, Searches
 from src.constants import VERSION
-from src.utils import prGreen, prPurple, prRed, prYellow
+from src.loggingColoredFormatter import ColoredFormatter
 
 POINTS_COUNTER = 0
 
 
 def main():
+    setupLogging()
     loadedAccounts = setupAccounts()
-    executeBot(loadedAccounts)
+    for currentAccount in loadedAccounts:
+        try:
+            executeBot(currentAccount)
+        except Exception as e:
+            logging.error(f"{e.__class__.__name__}: {e}")
+
+
+def setupLogging():
+    format = "%(asctime)s [%(levelname)s] %(message)s"
+    terminalHandler = logging.StreamHandler(sys.stdout)
+    terminalHandler.setFormatter(ColoredFormatter(format))
+
+    (Path(__file__).resolve().parent / "logs").mkdir(parents=True, exist_ok=True)
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format=format,
+        handlers=[
+            handlers.TimedRotatingFileHandler(
+                "logs/activity.log",
+                when="midnight",
+                interval=1,
+                backupCount=2,
+                encoding="utf-8",
+            ),
+            terminalHandler,
+        ],
+    )
 
 
 def argumentParser():
@@ -37,8 +68,10 @@ def bannerDisplay():
     ██║╚██╔╝██║╚════██║    ██╔══╝  ██╔══██║██╔══██╗██║╚██╔╝██║██╔══╝  ██╔══██╗
     ██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
     ╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝"""
-    prRed(farmerBanner)
-    prPurple(f"        by Charles Bel (@charlesbel)               version {VERSION}\n")
+    logging.error(farmerBanner)
+    logging.warning(
+        f"        by Charles Bel (@charlesbel)               version {VERSION}\n"
+    )
 
 
 def setupAccounts() -> dict:
@@ -54,56 +87,53 @@ def setupAccounts() -> dict:
     [ACCOUNT] Accounts credential file "accounts.json" not found.
     [ACCOUNT] A new file has been created, please edit with your credentials and save.
     """
-        prPurple(noAccountsNotice)
+        logging.warning(noAccountsNotice)
         exit()
     loadedAccounts = json.loads(accountPath.read_text(encoding="utf-8"))
     random.shuffle(loadedAccounts)
     return loadedAccounts
 
 
-def executeBot(loadedAccounts):
-    for currentAccount in loadedAccounts:
-        prYellow(
-            "********************{ "
-            + currentAccount.get("username", "")
-            + " }********************"
+def executeBot(currentAccount):
+    logging.info(
+        f'********************{ currentAccount.get("username", "") }********************'
+    )
+    with Browser(
+        mobile=False, account=currentAccount, args=argumentParser()
+    ) as desktopBrowser:
+        accountPointsCounter = Login(desktopBrowser).login()
+        startingPoints = accountPointsCounter
+        logging.debug(
+            f"[POINTS] You have {desktopBrowser.utils.formatNumber(accountPointsCounter)} points on your account !"
         )
-        with Browser(
-            mobile=False, account=currentAccount, args=argumentParser()
-        ) as desktopBrowser:
-            accountPointsCounter = Login(desktopBrowser).login()
-            startingPoints = accountPointsCounter
-            prGreen(
-                f"[POINTS] You have {desktopBrowser.utils.formatNumber(accountPointsCounter)} points on your account !"
+        DailySet(desktopBrowser).completeDailySet()
+        PunchCards(desktopBrowser).completePunchCards()
+        MorePromotions(desktopBrowser).completeMorePromotions()
+        (
+            remainingSearches,
+            remainingSearchesM,
+        ) = desktopBrowser.utils.getRemainingSearches()
+        if remainingSearches != 0:
+            accountPointsCounter = Searches(desktopBrowser).bingSearches(
+                remainingSearches
             )
-            DailySet(desktopBrowser).completeDailySet()
-            PunchCards(desktopBrowser).completePunchCards()
-            MorePromotions(desktopBrowser).completeMorePromotions()
-            (
-                remainingSearches,
-                remainingSearchesM,
-            ) = desktopBrowser.utils.getRemainingSearches()
-            if remainingSearches != 0:
-                accountPointsCounter = Searches(desktopBrowser).bingSearches(
-                    remainingSearches
+
+        if remainingSearchesM != 0:
+            desktopBrowser.closeBrowser()
+            with Browser(
+                mobile=True, account=currentAccount, args=argumentParser()
+            ) as mobileBrowser:
+                accountPointsCounter = Login(mobileBrowser).login()
+                accountPointsCounter = Searches(mobileBrowser).bingSearches(
+                    remainingSearchesM
                 )
 
-            if remainingSearchesM != 0:
-                desktopBrowser.closeBrowser()
-                with Browser(
-                    mobile=True, account=currentAccount, args=argumentParser()
-                ) as mobileBrowser:
-                    accountPointsCounter = Login(mobileBrowser).login()
-                    accountPointsCounter = Searches(mobileBrowser).bingSearches(
-                        remainingSearchesM
-                    )
-
-            prGreen(
-                f"[POINTS] You have earned {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)} points today !"
-            )
-            prGreen(
-                f"[POINTS] You are now at {desktopBrowser.utils.formatNumber(accountPointsCounter)} points !\n"
-            )
+        logging.debug(
+            f"[POINTS] You have earned {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)} points today !"
+        )
+        logging.debug(
+            f"[POINTS] You are now at {desktopBrowser.utils.formatNumber(accountPointsCounter)} points !\n"
+        )
 
 
 if __name__ == "__main__":

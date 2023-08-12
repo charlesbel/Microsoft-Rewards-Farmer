@@ -26,7 +26,7 @@ class Browser:
         self.proxy = None
         if args.proxy:
             self.proxy = args.proxy
-        elif "proxy" in account:
+        elif account.get("proxy"):
             self.proxy = account["proxy"]
         self.userDataDir = self.setupProfiles()
         self.browserConfig = Utils.getBrowserConfig(self.userDataDir)
@@ -65,15 +65,13 @@ class Browser:
         options.add_argument("--ignore-certificate-errors-spki-list")
         options.add_argument("--ignore-ssl-errors")
 
-        seleniumwireOptions = {
-            "verify_ssl": False
-        }
-        
+        seleniumwireOptions: dict[str, Any] = {"verify_ssl": False}
+
         if self.proxy:
-            seleniumwireOptions['proxy'] = {
-                    "http": self.proxy,
-                    "https": self.proxy,
-                }
+            seleniumwireOptions["proxy"] = {
+                "http": self.proxy,
+                "https": self.proxy,
+            }
 
         driver = webdriver.Chrome(
             options=options,

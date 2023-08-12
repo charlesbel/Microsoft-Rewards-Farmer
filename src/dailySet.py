@@ -14,7 +14,7 @@ class DailySet:
         self.activities = Activities(browser)
 
     def completeDailySet(self):
-        logging.info("[DAILY SET] ", "Trying to complete the Daily Set...")
+        logging.info("[DAILY SET] " + "Trying to complete the Daily Set...")
         self.browser.utils.goHome()
         data = self.browser.utils.getDashboardData()["dailySetPromotions"]
         todayDate = datetime.now().strftime("%m/%d/%Y")
@@ -25,7 +25,7 @@ class DailySet:
                     self.activities.openDailySetActivity(cardId)
                     if activity["promotionType"] == "urlreward":
                         logging.info(
-                            "[DAILY SET] ", f"Completing search of card {cardId}"
+                            "[DAILY SET] " + f"Completing search of card {cardId}"
                         )
                         self.activities.completeSearch()
                     if activity["promotionType"] == "quiz":
@@ -43,7 +43,7 @@ class DailySet:
                             and activity["pointProgress"] == 0
                         ):
                             logging.info(
-                                "[DAILY SET] ", f"Completing quiz of card {cardId}"
+                                "[DAILY SET] " + f"Completing quiz of card {cardId}"
                             )
                             self.activities.completeQuiz()
                         elif (

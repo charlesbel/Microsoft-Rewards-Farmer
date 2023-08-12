@@ -49,12 +49,14 @@
     ```json
         [
             {
-                "username": "Your Email",
-                "password": "Your Password"
+                "username": "Your Email 1",
+                "password": "Your Password 1",
+                "proxy": "http://user:pass@host1:port"
             },
             {
-                "username": "Your Email",
-                "password": "Your Password"
+                "username": "Your Email 2",
+                "password": "Your Password 2",
+                "proxy": "http://user:pass@host2:port"
             }
         ]
     ```
@@ -67,6 +69,12 @@
 
    `python autoupdate_main.py`
 
+## Launch arguments
+* -v/--visible to disable headless
+* -l/--lang to force a language (ex: en)
+* -g/--geo to force a geolocation (ex: US)
+* -p/--proxy to add a proxy to the whole program, supports http/https/socks4/socks5 (overrides per-account proxy in accounts.json) (ex: http://user:pass@host:port)
+
 ## Features
 
 * Bing searches (Desktop, Mobile and Edge) with User-Agents
@@ -77,6 +85,7 @@
 * Multi-Account Management
 * Session storing (3.0)
 * 2FA Support (3.0)
+* Proxy Support (3.0)
 
 ## Future Features
 

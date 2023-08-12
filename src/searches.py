@@ -1,18 +1,13 @@
-import contextlib
 import json
+import logging
 import random
 import time
 from datetime import date, timedelta
 
 import requests
-from selenium.common.exceptions import (
-    NoAlertPresentException,
-    UnexpectedAlertPresentException,
-)
 from selenium.webdriver.common.by import By
 
 from src.browser import Browser
-from src.utils import prGreen
 
 
 class Searches:
@@ -52,16 +47,16 @@ class Searches:
             return []
 
     def bingSearches(self, numberOfSearches: int, pointsCounter: int = 0):
-        print(
-            "[BING]",
-            f"Starting {self.browser.browserType.capitalize()} Edge Bing searches...",
+        logging.info(
+            "[BING] "
+            + f"Starting {self.browser.browserType.capitalize()} Edge Bing searches...",
         )
 
         i = 0
         search_terms = self.getGoogleTrends(numberOfSearches)
         for word in search_terms:
             i += 1
-            print("[BING]", f"{i}/{numberOfSearches}")
+            logging.info("[BING] " + f"{i}/{numberOfSearches}")
             points = self.bingSearch(word)
             if points <= pointsCounter:
                 relatedTerms = self.getRelatedTerms(word)[:2]
@@ -73,7 +68,7 @@ class Searches:
                 pointsCounter = points
             else:
                 break
-        prGreen(
+        logging.info(
             f"[BING] Finished {self.browser.browserType.capitalize()} Edge Bing searches !"
         )
         return pointsCounter
@@ -85,23 +80,4 @@ class Searches:
         searchbar.send_keys(word)
         searchbar.submit()
         time.sleep(random.randint(10, 15))
-        stringPoints = None
-        with contextlib.suppress(Exception):
-            if not self.browser.mobile:
-                stringPoints = self.webdriver.find_element(
-                    By.ID, "id_rc"
-                ).get_attribute("innerHTML")
-
-            else:
-                try:
-                    self.webdriver.find_element(By.ID, "mHamburger").click()
-                    time.sleep(1)
-                except UnexpectedAlertPresentException:
-                    with contextlib.suppress(NoAlertPresentException):
-                        self.webdriver.switch_to.alert.accept()
-                        self.webdriver.find_element(By.ID, "mHamburger").click()
-                stringPoints = self.webdriver.find_element(
-                    By.ID, "fly_id_rc"
-                ).get_attribute("innerHTML")
-
-        return int(stringPoints) if stringPoints is not None else 0
+        return self.browser.utils.getBingAccountPoints()

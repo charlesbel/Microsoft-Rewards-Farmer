@@ -1,8 +1,11 @@
 import contextlib
+import json
 import locale as pylocale
 import time
 import urllib.parse
+from pathlib import Path
 
+import requests
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
@@ -12,9 +15,11 @@ from .constants import BASE_URL
 
 
 class Utils:
-    def __init__(self, webdriver: WebDriver, locale: str):
+    def __init__(self, webdriver: WebDriver):
         self.webdriver = webdriver
-        pylocale.setlocale(pylocale.LC_NUMERIC, locale)
+        with contextlib.suppress(Exception):
+            locale = pylocale.getdefaultlocale()[0]
+            pylocale.setlocale(pylocale.LC_NUMERIC, locale)
 
     def waitUntilVisible(self, by: str, selector: str, timeToWait: float = 10):
         WebDriverWait(self.webdriver, timeToWait).until(
@@ -75,15 +80,32 @@ class Utils:
             self.goHome()
 
     def goHome(self):
-        currentUrl = urllib.parse.urlparse(self.webdriver.current_url)
+        reloadThreshold = 5
+        reloadInterval = 10
         targetUrl = urllib.parse.urlparse(BASE_URL)
-        if (
-            currentUrl.hostname != targetUrl.hostname
-            or currentUrl.path != targetUrl.path
-        ):
-            self.webdriver.get(BASE_URL)
-            self.waitUntilVisible(By.ID, "daily-sets", 10)
-        self.tryDismissCookieBanner()
+        self.webdriver.get(BASE_URL)
+        reloads = 0
+        interval = 1
+        intervalCount = 0
+        while True:
+            self.tryDismissCookieBanner()
+            with contextlib.suppress(Exception):
+                self.webdriver.find_element(By.ID, "more-activities")
+                break
+            currentUrl = urllib.parse.urlparse(self.webdriver.current_url)
+            if (
+                currentUrl.hostname != targetUrl.hostname
+            ) and self.tryDismissAllMessages():
+                time.sleep(1)
+                self.webdriver.get(BASE_URL)
+            time.sleep(interval)
+            intervalCount += 1
+            if intervalCount >= reloadInterval:
+                intervalCount = 0
+                reloads += 1
+                self.webdriver.refresh()
+                if reloads >= reloadThreshold:
+                    break
 
     def getAnswerCode(self, key: str, string: str) -> str:
         t = sum(ord(string[i]) for i in range(len(string)))
@@ -93,8 +115,42 @@ class Utils:
     def getDashboardData(self) -> dict:
         return self.webdriver.execute_script("return dashboard")
 
+    def getBingInfo(self):
+        cookieJar = self.webdriver.get_cookies()
+        cookies = {cookie["name"]: cookie["value"] for cookie in cookieJar}
+        tries = 0
+        maxTries = 5
+        while tries < maxTries:
+            with contextlib.suppress(Exception):
+                response = requests.get(
+                    "https://www.bing.com/rewards/panelflyout/getuserinfo",
+                    cookies=cookies,
+                )
+                if response.status_code == requests.codes.ok:
+                    data = response.json()
+                    return data
+                else:
+                    pass
+            tries += 1
+            time.sleep(1)
+        return None
+
+    def checkBingLogin(self):
+        data = self.getBingInfo()
+        if data:
+            return data["userInfo"]["isRewardsUser"]
+        else:
+            return False
+
     def getAccountPoints(self) -> int:
         return self.getDashboardData()["userStatus"]["availablePoints"]
+
+    def getBingAccountPoints(self) -> int:
+        data = self.getBingInfo()
+        if data:
+            return data["userInfo"]["balance"]
+        else:
+            return 0
 
     def tryDismissAllMessages(self):
         buttons = [
@@ -171,20 +227,22 @@ class Utils:
         return remainingDesktop, remainingMobile
 
     def formatNumber(self, number, num_decimals=2):
-        return pylocale.format_string(f"%10.{num_decimals}f", number, grouping=True)
+        return pylocale.format_string(
+            f"%10.{num_decimals}f", number, grouping=True
+        ).strip()
 
+    @staticmethod
+    def getBrowserConfig(sessionPath: Path) -> dict:
+        configFile = sessionPath.joinpath("config.json")
+        if configFile.exists():
+            with open(configFile, "r") as f:
+                config = json.load(f)
+                return config
+        else:
+            return {}
 
-def prRed(prt):
-    print(f"\033[91m{prt}\033[00m")
-
-
-def prGreen(prt):
-    print(f"\033[92m{prt}\033[00m")
-
-
-def prPurple(prt):
-    print(f"\033[95m{prt}\033[00m")
-
-
-def prYellow(prt):
-    print(f"\033[93m{prt}\033[00m")
+    @staticmethod
+    def saveBrowserConfig(sessionPath: Path, config: dict):
+        configFile = sessionPath.joinpath("config.json")
+        with open(configFile, "w") as f:
+            json.dump(config, f)

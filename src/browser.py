@@ -1,11 +1,12 @@
 import contextlib
+import logging
+import random
 import uuid
 from pathlib import Path
 from typing import Any
 
 import ipapi
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
+import seleniumwire.undetected_chromedriver as webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
 
 from src.userAgentGenerator import GenerateUserAgent
@@ -22,14 +23,28 @@ class Browser:
         self.username = account["username"]
         self.password = account["password"]
         self.localeLang, self.localeGeo = self.getCCodeLang(args.lang, args.geo)
-        self.userAgent = GenerateUserAgent().userAgent(mobile)
+        self.proxy = None
+        if args.proxy:
+            self.proxy = args.proxy
+        elif account.get("proxy"):
+            self.proxy = account["proxy"]
+        self.userDataDir = self.setupProfiles()
+        self.browserConfig = Utils.getBrowserConfig(self.userDataDir)
+        (
+            self.userAgent,
+            self.userAgentMetadata,
+            newBrowserConfig,
+        ) = GenerateUserAgent().userAgent(self.browserConfig, mobile)
+        if newBrowserConfig:
+            self.browserConfig = newBrowserConfig
+            Utils.saveBrowserConfig(self.userDataDir, self.browserConfig)
         self.webdriver = self.browserSetup()
-        self.utils = Utils(self.webdriver, f"{self.localeLang}_{self.localeGeo}")
+        self.utils = Utils(self.webdriver)
 
     def __enter__(self) -> "Browser":
         return self
 
-    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+    def __exit__(self, *args: Any) -> None:
         self.closeBrowser()
 
     def closeBrowser(self) -> None:
@@ -41,24 +56,103 @@ class Browser:
     def browserSetup(
         self,
     ) -> WebDriver:
-        options = Options()
-        options.add_argument(f"user-agent={self.userAgent}")
-        options.add_argument(f"lang={self.localeLang}")
-        if self.headless:
-            options.add_argument("headless")
-        options.add_argument("log-level=3")
-        userDataDir = self.setupProfiles()
-        options.add_argument(f"user-data-dir={userDataDir.as_posix()}")
-        return webdriver.Chrome(options=options)
+        options = webdriver.ChromeOptions()
+        options.headless = self.headless
+        options.add_argument(f"--lang={self.localeLang}")
+        options.add_argument("--log-level=3")
+
+        options.add_argument("--ignore-certificate-errors")
+        options.add_argument("--ignore-certificate-errors-spki-list")
+        options.add_argument("--ignore-ssl-errors")
+
+        seleniumwireOptions: dict[str, Any] = {
+            "verify_ssl": False,
+        }
+        if self.proxy:
+            seleniumwireOptions["proxy"] = {
+                "http": self.proxy,
+                "https": self.proxy,
+            }
+
+        driver = webdriver.Chrome(
+            options=options,
+            seleniumwire_options=seleniumwireOptions,
+            user_data_dir=self.userDataDir.as_posix(),
+        )
+
+        seleniumLogger = logging.getLogger("seleniumwire")
+        seleniumLogger.setLevel(logging.ERROR)
+
+        if self.browserConfig.get("sizes"):
+            deviceHeight = self.browserConfig["sizes"]["height"]
+            deviceWidth = self.browserConfig["sizes"]["width"]
+        else:
+            if self.mobile:
+                deviceHeight = random.randint(568, 1024)
+                deviceWidth = random.randint(320, min(576, int(deviceHeight * 0.7)))
+            else:
+                deviceWidth = random.randint(1024, 2560)
+                deviceHeight = random.randint(768, min(1440, int(deviceWidth * 0.8)))
+            self.browserConfig["sizes"] = {
+                "height": deviceHeight,
+                "width": deviceWidth,
+            }
+            Utils.saveBrowserConfig(self.userDataDir, self.browserConfig)
+
+        if self.mobile:
+            screenHeight = deviceHeight + 146
+            screenWidth = deviceWidth
+        else:
+            screenWidth = deviceWidth + 55
+            screenHeight = deviceHeight + 151
+
+        logging.info(f"Screen size: {screenWidth}x{screenHeight}")
+        logging.info(f"Device size: {deviceWidth}x{deviceHeight}")
+
+        if self.mobile:
+            driver.execute_cdp_cmd(
+                "Emulation.setTouchEmulationEnabled",
+                {
+                    "enabled": True,
+                },
+            )
+
+        driver.execute_cdp_cmd(
+            "Emulation.setDeviceMetricsOverride",
+            {
+                "width": deviceWidth,
+                "height": deviceHeight,
+                "deviceScaleFactor": 0,
+                "mobile": self.mobile,
+                "screenWidth": screenWidth,
+                "screenHeight": screenHeight,
+                "positionX": 0,
+                "positionY": 0,
+                "viewport": {
+                    "x": 0,
+                    "y": 0,
+                    "width": deviceWidth,
+                    "height": deviceHeight,
+                    "scale": 1,
+                },
+            },
+        )
+
+        driver.execute_cdp_cmd(
+            "Emulation.setUserAgentOverride",
+            {
+                "userAgent": self.userAgent,
+                "platform": self.userAgentMetadata["platform"],
+                "userAgentMetadata": self.userAgentMetadata,
+            },
+        )
+
+        return driver
 
     def setupProfiles(self) -> Path:
         """
         Sets up the sessions profile for the chrome browser.
-        Uses the session name to create a unique profile for the session.
-
-        Args:
-            isMobile: A boolean indicating whether the device is mobile or desktop.
-            sessionName: A string containing the name of the session.
+        Uses the username to create a unique profile for the session.
 
         Returns:
             Path
@@ -72,16 +166,15 @@ class Browser:
         sessionsDir.mkdir(parents=True, exist_ok=True)
         return sessionsDir
 
-    def getCCodeLang(self, lang: str = "en", geo: str = "US") -> tuple:
-        try:
-            if lang is None:
-                lang = "en"
-            if geo is None:
-                geo = "US"
-            nfo = ipapi.location()
-            if isinstance(nfo, dict):
-                lang = nfo["languages"].split(",")[0].split("-")[0]
-                geo = nfo["country"]
-            return (lang, geo)
-        except Exception:  # pylint: disable=broad-except
-            return (lang, geo)
+    def getCCodeLang(self, lang: str, geo: str) -> tuple:
+        if lang is None or geo is None:
+            try:
+                nfo = ipapi.location()
+                if isinstance(nfo, dict):
+                    if lang is None:
+                        lang = nfo["languages"].split(",")[0].split("-")[0]
+                    if geo is None:
+                        geo = nfo["country"]
+            except Exception:  # pylint: disable=broad-except
+                return ("en", "US")
+        return (lang, geo)

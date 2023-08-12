@@ -20,7 +20,7 @@ def main():
         try:
             executeBot(currentAccount)
         except Exception as e:
-            logging.error(f"{e.__class__.__name__}: {e}")
+            logging.exception(f"{e.__class__.__name__}: {e}")
 
 
 def setupLogging():
@@ -110,7 +110,7 @@ def executeBot(currentAccount):
     ) as desktopBrowser:
         accountPointsCounter = Login(desktopBrowser).login()
         startingPoints = accountPointsCounter
-        logging.debug(
+        logging.info(
             f"[POINTS] You have {desktopBrowser.utils.formatNumber(accountPointsCounter)} points on your account !"
         )
         DailySet(desktopBrowser).completeDailySet()
@@ -135,10 +135,10 @@ def executeBot(currentAccount):
                     remainingSearchesM
                 )
 
-        logging.debug(
+        logging.info(
             f"[POINTS] You have earned {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)} points today !"
         )
-        logging.debug(
+        logging.info(
             f"[POINTS] You are now at {desktopBrowser.utils.formatNumber(accountPointsCounter)} points !\n"
         )
 

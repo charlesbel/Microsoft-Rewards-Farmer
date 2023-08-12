@@ -38,9 +38,9 @@
    
    To update your selenium version, run this command : ```pip install selenium --upgrade```
 
-4) (Windows Only) Make sure Visual c++ redistributable DLLs are installed
+4) (Windows Only) Make sure Visual C++ redistributable DLLs are installed
 
-   If they're not, install the current "vc_redist.exe" from this link : https://learn.microsoft.com/en-GB/cpp/windows/latest-supported-vc-redist?view=msvc-170
+   If they're not, install the current "vc_redist.exe" from this link and reboot your computer : https://learn.microsoft.com/en-GB/cpp/windows/latest-supported-vc-redist?view=msvc-170
 
 5) Edit the `accounts.json.sample` with your accounts credentials and rename it by removing `.sample` at the end (ex. `accounts.json`)
 

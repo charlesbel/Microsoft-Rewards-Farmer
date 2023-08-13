@@ -15,9 +15,9 @@ class Discord:
                 ),
                 encoding="utf-8",
             )
-            logging.info("[WEBHOOK]", "WEBHOOK file: discord.json created.")
-            logging.info("[WEBHOOK]", "Edit with your webhook information and save, then press any key to continue...")
-            exit()
+            logging.info("[WEBHOOK] WEBHOOK file: discord.json created.")
+            logging.info("[WEBHOOK] Edit with your webhook information and save, then press any key to continue...")
+            input()
     def send_to_webhook(message):        
         logging.info("[Discord]", "Sending webhook.")
         accountPath = Path(__file__).resolve().parent.parent / "discord.json"

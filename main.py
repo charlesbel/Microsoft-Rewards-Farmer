@@ -18,7 +18,7 @@ def main():
     loadedAccounts = setupAccounts()
     for currentAccount in loadedAccounts:
         try:
-            executeBot(currentAccount)
+            executeBot(currentAccount, argumentParser())
         except Exception as e:
             logging.exception(f"{e.__class__.__name__}: {e}")
 
@@ -46,7 +46,7 @@ def setupLogging():
     )
 
 
-def argumentParser():
+def argumentParser() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Microsoft Rewards Farmer")
     parser.add_argument(
         "-v", "--visible", action="store_true", help="Optional: Visible browser"
@@ -101,13 +101,11 @@ def setupAccounts() -> dict:
     return loadedAccounts
 
 
-def executeBot(currentAccount):
+def executeBot(currentAccount, args: argparse.Namespace):
     logging.info(
         f'********************{ currentAccount.get("username", "") }********************'
     )
-    with Browser(
-        mobile=False, account=currentAccount, args=argumentParser()
-    ) as desktopBrowser:
+    with Browser(mobile=False, account=currentAccount, args=args) as desktopBrowser:
         accountPointsCounter = Login(desktopBrowser).login()
         startingPoints = accountPointsCounter
         logging.info(
@@ -128,7 +126,7 @@ def executeBot(currentAccount):
         if remainingSearchesM != 0:
             desktopBrowser.closeBrowser()
             with Browser(
-                mobile=True, account=currentAccount, args=argumentParser()
+                mobile=True, account=currentAccount, args=args
             ) as mobileBrowser:
                 accountPointsCounter = Login(mobileBrowser).login()
                 accountPointsCounter = Searches(mobileBrowser).bingSearches(

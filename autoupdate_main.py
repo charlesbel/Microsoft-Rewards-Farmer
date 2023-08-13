@@ -1,4 +1,5 @@
 import os
+import sys
 from io import BytesIO
 from zipfile import ZipFile
 
@@ -67,6 +68,8 @@ if __name__ == "__main__":
         update(latestVersion)
 
     print("Starting...")
-    from main import main
 
-    main()
+    import main
+
+    main.sys.argv[1:] = sys.argv[1:]
+    main.main()

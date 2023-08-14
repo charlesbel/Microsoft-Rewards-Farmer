@@ -6,23 +6,24 @@ import random
 import sys
 from pathlib import Path
 
-from src import (Browser, DailySet, Discord, Login, MorePromotions, PunchCards,
-                 Redeem, Searches)
+from src import Browser, DailySet, Login, MorePromotions, PunchCards, Searches
 from src.constants import VERSION
 from src.loggingColoredFormatter import ColoredFormatter
+from src.notifier import Notifier
 
 POINTS_COUNTER = 0
 
 
 def main():
     setupLogging()
-    Discord.check_json()
+    args = argumentParser()
+    notifier = Notifier(args)
     loadedAccounts = setupAccounts()
     for currentAccount in loadedAccounts:
         try:
-            executeBot(currentAccount)
+            executeBot(currentAccount, notifier, args)
         except Exception as e:
-            logging.error(f"{e.__class__.__name__}: {e}")
+            logging.exception(f"{e.__class__.__name__}: {e}")
 
 
 def setupLogging():
@@ -48,7 +49,7 @@ def setupLogging():
     )
 
 
-def argumentParser():
+def argumentParser() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Microsoft Rewards Farmer")
     parser.add_argument(
         "-v", "--visible", action="store_true", help="Optional: Visible browser"
@@ -60,20 +61,20 @@ def argumentParser():
         "-g", "--geo", type=str, default=None, help="Optional: Geolocation (ex: US)"
     )
     parser.add_argument(
-        "-wh", "--webhook", action="store_true", help="Optional: send a discord webhook message with the summary"
-    )
-    parser.add_argument(
-        "-s", "--shuffle", action="store_true", help="Optional: shuffle the order in which accounts will be farmed on"
-    )
-    parser.add_argument(
-        "-r", "--redeem", action="store_true", help="Optional: auto redeem rewards based on the goal set in the microsoft account"
-    )
-    parser.add_argument(
         "-p",
         "--proxy",
         type=str,
         default=None,
         help="Optional: Global Proxy (ex: http://user:pass@host:port)",
+    )
+    parser.add_argument(
+        "-t",
+        "--telegram",
+        metavar=("TOKEN", "CHAT_ID"),
+        nargs=2,
+        type=str,
+        default=None,
+        help="Optional: Telegram Bot Token and Chat ID (ex: 123456789:ABCdefGhIjKlmNoPQRsTUVwxyZ 123456789)",
     )
     return parser.parse_args()
 
@@ -108,25 +109,18 @@ def setupAccounts() -> dict:
         logging.warning(noAccountsNotice)
         exit()
     loadedAccounts = json.loads(accountPath.read_text(encoding="utf-8"))
-
-    args = argumentParser()
-
-    if args.shuffle:
-        random.shuffle(loadedAccounts)
-
+    random.shuffle(loadedAccounts)
     return loadedAccounts
 
 
-def executeBot(currentAccount):
+def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
     logging.info(
         f'********************{ currentAccount.get("username", "") }********************'
     )
-    with Browser(
-        mobile=False, account=currentAccount, args=argumentParser()
-    ) as desktopBrowser:
+    with Browser(mobile=False, account=currentAccount, args=args) as desktopBrowser:
         accountPointsCounter = Login(desktopBrowser).login()
         startingPoints = accountPointsCounter
-        logging.debug(
+        logging.info(
             f"[POINTS] You have {desktopBrowser.utils.formatNumber(accountPointsCounter)} points on your account !"
         )
         DailySet(desktopBrowser).completeDailySet()
@@ -144,27 +138,30 @@ def executeBot(currentAccount):
         if remainingSearchesM != 0:
             desktopBrowser.closeBrowser()
             with Browser(
-                mobile=True, account=currentAccount, args=argumentParser()
+                mobile=True, account=currentAccount, args=args
             ) as mobileBrowser:
                 accountPointsCounter = Login(mobileBrowser).login()
                 accountPointsCounter = Searches(mobileBrowser).bingSearches(
                     remainingSearchesM
                 )
 
-        logging.debug(
+        logging.info(
             f"[POINTS] You have earned {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)} points today !"
         )
-        logging.debug(
+        logging.info(
             f"[POINTS] You are now at {desktopBrowser.utils.formatNumber(accountPointsCounter)} points !\n"
         )
 
-        args = argumentParser()
-
-        if args.webhook:
-            Discord.send_to_webhook(f'`{currentAccount.get("username", "")}` has farmed {accountPointsCounter - startingPoints} points today. Total points: {accountPointsCounter}')
-
-        if args.redeem:
-            Redeem.auto_redeem(desktopBrowser, currentAccount.get("username", ""), args.webhook)
+        notifier.send(
+            "\n".join(
+                [
+                    "Microsoft Rewards Farmer",
+                    f"Account: {currentAccount.get('username', '')}",
+                    f"Points earned today: {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)}",
+                    f"Total points: {desktopBrowser.utils.formatNumber(accountPointsCounter)}",
+                ]
+            )
+        )
 
 
 if __name__ == "__main__":

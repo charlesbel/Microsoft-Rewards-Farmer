@@ -13,6 +13,14 @@ body:
             This bug wasn't already reported.
             (I have checked every bug report on GitHub)
           required: true
+  - type: checkboxes
+    id: title
+    attributes:
+      label: Title
+      options:
+        - label: |
+            The title is no longer "[BUG] Title" and I edited it with the right error name.
+          required: true
   - type: textarea
     id: description
     attributes:

@@ -2,6 +2,7 @@ import requests
 
 MAX_LENGTHS = {
     "telegram": 4096,
+    "discord": 2000,
 }
 
 
@@ -26,4 +27,9 @@ class Notifier:
         token, chat_id = self.args["telegram"]
         url = f"https://api.telegram.org/bot{token}/sendMessage"
         data = {"chat_id": chat_id, "text": message}
+        requests.post(url, data=data)
+
+    def discord(self, message):
+        url = self.args["discord"]
+        data = {"username": "Microsoft Rewards Farmer", "content": message}
         requests.post(url, data=data)

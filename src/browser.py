@@ -71,6 +71,7 @@ class Browser:
             seleniumwireOptions["proxy"] = {
                 "http": self.proxy,
                 "https": self.proxy,
+                "no_proxy": "localhost,127.0.0.1",
             }
 
         driver = webdriver.Chrome(

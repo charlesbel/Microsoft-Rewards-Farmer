@@ -5,6 +5,7 @@ import time
 from datetime import date, timedelta
 
 import requests
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 
 from src.browser import Browser
@@ -74,10 +75,16 @@ class Searches:
         return pointsCounter
 
     def bingSearch(self, word: str):
-        self.webdriver.get("https://bing.com")
-        self.browser.utils.waitUntilClickable(By.ID, "sb_form_q")
-        searchbar = self.webdriver.find_element(By.ID, "sb_form_q")
-        searchbar.send_keys(word)
-        searchbar.submit()
-        time.sleep(random.randint(10, 15))
-        return self.browser.utils.getBingAccountPoints()
+        while True:
+            try:
+                self.webdriver.get("https://bing.com")
+                self.browser.utils.waitUntilClickable(By.ID, "sb_form_q")
+                searchbar = self.webdriver.find_element(By.ID, "sb_form_q")
+                searchbar.send_keys(word)
+                searchbar.submit()
+                time.sleep(random.randint(10, 15))
+                return self.browser.utils.getBingAccountPoints()
+            except TimeoutException:
+                logging.error("[BING] " + "Timeout, retrying in 5 seconds...")
+                time.sleep(5)
+                continue

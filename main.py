@@ -9,16 +9,19 @@ from pathlib import Path
 from src import Browser, DailySet, Login, MorePromotions, PunchCards, Searches
 from src.constants import VERSION
 from src.loggingColoredFormatter import ColoredFormatter
+from src.notifier import Notifier
 
 POINTS_COUNTER = 0
 
 
 def main():
     setupLogging()
+    args = argumentParser()
+    notifier = Notifier(args)
     loadedAccounts = setupAccounts()
     for currentAccount in loadedAccounts:
         try:
-            executeBot(currentAccount, argumentParser())
+            executeBot(currentAccount, notifier, args)
         except Exception as e:
             logging.exception(f"{e.__class__.__name__}: {e}")
 
@@ -64,6 +67,15 @@ def argumentParser() -> argparse.Namespace:
         default=None,
         help="Optional: Global Proxy (ex: http://user:pass@host:port)",
     )
+    parser.add_argument(
+        "-t",
+        "--telegram",
+        metavar=("TOKEN", "CHAT_ID"),
+        nargs=2,
+        type=str,
+        default=None,
+        help="Optional: Telegram Bot Token and Chat ID (ex: 123456789:ABCdefGhIjKlmNoPQRsTUVwxyZ 123456789)",
+    )
     return parser.parse_args()
 
 
@@ -101,7 +113,7 @@ def setupAccounts() -> dict:
     return loadedAccounts
 
 
-def executeBot(currentAccount, args: argparse.Namespace):
+def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
     logging.info(
         f'********************{ currentAccount.get("username", "") }********************'
     )
@@ -138,6 +150,17 @@ def executeBot(currentAccount, args: argparse.Namespace):
         )
         logging.info(
             f"[POINTS] You are now at {desktopBrowser.utils.formatNumber(accountPointsCounter)} points !\n"
+        )
+
+        notifier.send(
+            "\n".join(
+                [
+                    "Microsoft Rewards Farmer",
+                    f"Account: {currentAccount.get('username', '')}",
+                    f"Points earned today: {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)}",
+                    f"Total points: {desktopBrowser.utils.formatNumber(accountPointsCounter)}",
+                ]
+            )
         )
 
 

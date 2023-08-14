@@ -76,6 +76,13 @@ def argumentParser() -> argparse.Namespace:
         default=None,
         help="Optional: Telegram Bot Token and Chat ID (ex: 123456789:ABCdefGhIjKlmNoPQRsTUVwxyZ 123456789)",
     )
+    parser.add_argument(
+        "-d",
+        "--discord",
+        type=str,
+        default=None,
+        help="Optional: Discord Webhook URL (ex: https://discord.com/api/webhooks/123456789/ABCdefGhIjKlmNoPQRsTUVwxyZ)",
+    )
     return parser.parse_args()
 
 

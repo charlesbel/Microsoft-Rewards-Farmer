@@ -1,57 +1,52 @@
 import argparse
 import json
+import logging
+import logging.handlers as handlers
 import random
-import requests
+import sys
 from pathlib import Path
 
-import ipapi
-
-from src import (
-    DailySet,
-    Login,
-    MorePromotions,
-    PunchCards,
-    Searches,
-    Utils,
-    browserSetup,
-    Telegram,
-)
+from src import Browser, DailySet, Login, MorePromotions, PunchCards, Searches
+from src.constants import VERSION
+from src.loggingColoredFormatter import ColoredFormatter
 
 POINTS_COUNTER = 0
 
 
-def getCCodeLang(lang: str = "en", geo: str = "US") -> tuple:
-    try:
-        if lang is None:
-            lang = "en"
-        if geo is None:
-            geo = "US"
-        nfo = ipapi.location()
-        if isinstance(nfo, dict):
-            lang = nfo["languages"].split(",")[0].split("-")[0]
-            geo = nfo["country"]
-        return (lang, geo)
-    except Exception:  # pylint: disable=broad-except
-        return (lang, geo)
+def main():
+    setupLogging()
+    loadedAccounts = setupAccounts()
+    for currentAccount in loadedAccounts:
+        try:
+            executeBot(currentAccount, argumentParser())
+        except Exception as e:
+            logging.exception(f"{e.__class__.__name__}: {e}")
 
 
-def prRed(prt):
-    print(f"\033[91m{prt}\033[00m")
+def setupLogging():
+    format = "%(asctime)s [%(levelname)s] %(message)s"
+    terminalHandler = logging.StreamHandler(sys.stdout)
+    terminalHandler.setFormatter(ColoredFormatter(format))
+
+    (Path(__file__).resolve().parent / "logs").mkdir(parents=True, exist_ok=True)
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format=format,
+        handlers=[
+            handlers.TimedRotatingFileHandler(
+                "logs/activity.log",
+                when="midnight",
+                interval=1,
+                backupCount=2,
+                encoding="utf-8",
+            ),
+            terminalHandler,
+        ],
+    )
 
 
-def prGreen(prt):
-    print(f"\033[92m{prt}\033[00m")
-
-
-def prPurple(prt):
-    print(f"\033[95m{prt}\033[00m")
-
-
-def prYellow(prt):
-    print(f"\033[93m{prt}\033[00m")
-
-
-if __name__ == "__main__":
+def argumentParser() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Microsoft Rewards Farmer")
     parser.add_argument(
         "-v", "--visible", action="store_true", help="Optional: Visible browser"
@@ -63,26 +58,30 @@ if __name__ == "__main__":
         "-g", "--geo", type=str, default=None, help="Optional: Geolocation (ex: US)"
     )
     parser.add_argument(
-        "-t", "--telegram", action="store_true", help="Optional: send a telegram message with the summary"
+        "-p",
+        "--proxy",
+        type=str,
+        default=None,
+        help="Optional: Global Proxy (ex: http://user:pass@host:port)",
     )
+    return parser.parse_args()
 
-    args = parser.parse_args()
 
-    prRed(
-        """
+def bannerDisplay():
+    farmerBanner = """
     ███╗   ███╗███████╗    ███████╗ █████╗ ██████╗ ███╗   ███╗███████╗██████╗
     ████╗ ████║██╔════╝    ██╔════╝██╔══██╗██╔══██╗████╗ ████║██╔════╝██╔══██╗
     ██╔████╔██║███████╗    █████╗  ███████║██████╔╝██╔████╔██║█████╗  ██████╔╝
     ██║╚██╔╝██║╚════██║    ██╔══╝  ██╔══██║██╔══██╗██║╚██╔╝██║██╔══╝  ██╔══██╗
     ██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
     ╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝"""
+    logging.error(farmerBanner)
+    logging.warning(
+        f"        by Charles Bel (@charlesbel)               version {VERSION}\n"
     )
-    prPurple("        by Charles Bel (@charlesbel)               version 3.0\n")
 
-    headless = not args.visible
 
-    localeLang, localeGeo = getCCodeLang(args.lang, args.geo)
-
+def setupAccounts() -> dict:
     accountPath = Path(__file__).resolve().parent / "accounts.json"
     if not accountPath.exists():
         accountPath.write_text(
@@ -91,71 +90,56 @@ if __name__ == "__main__":
             ),
             encoding="utf-8",
         )
-        prPurple(
-            """
-    [ACCOUNT] Accounts credential file "accounts.json" created.
-    [ACCOUNT] Edit with your credentials and save, then press any key to continue...
-        """
-        )
+        noAccountsNotice = """
+    [ACCOUNT] Accounts credential file "accounts.json" not found.
+    [ACCOUNT] A new file has been created, please edit with your credentials and save.
+    """
+        logging.warning(noAccountsNotice)
         exit()
-
     loadedAccounts = json.loads(accountPath.read_text(encoding="utf-8"))
-
     random.shuffle(loadedAccounts)
+    return loadedAccounts
 
-    for account in loadedAccounts:
-        currentUser = account["username"]
-        currentUserPassword = account["password"]
-        prYellow(f"********************{currentUser}********************")
-        browser = browserSetup(currentUser, headless, False, localeLang)
-        utils = Utils(browser)
 
-        print("[LOGIN]", "Logging-in...")
-        POINTS_COUNTER = Login(browser).login(currentUser, currentUserPassword)
-        prGreen("[LOGIN] Logged-in successfully !")
-        startingPoints = POINTS_COUNTER
-        prGreen(f"[POINTS] You have {str(POINTS_COUNTER)} points on your account !")
-
-        utils.goHome()
-
-        print("[DAILY SET]", "Trying to complete the Daily Set...")
-        DailySet(browser).completeDailySet()
-        prGreen("[DAILY SET] Completed the Daily Set successfully !")
-        print("[PUNCH CARDS]", "Trying to complete the Punch Cards...")
-        PunchCards(browser).completePunchCards()
-        prGreen("[PUNCH CARDS] Completed the Punch Cards successfully !")
-        print("[MORE PROMO]", "Trying to complete More Promotions...")
-        MorePromotions(browser).completeMorePromotions()
-        prGreen("[MORE PROMO] Completed More Promotions successfully !")
-        remainingSearches, remainingSearchesM = utils.getRemainingSearches()
+def executeBot(currentAccount, args: argparse.Namespace):
+    logging.info(
+        f'********************{ currentAccount.get("username", "") }********************'
+    )
+    with Browser(mobile=False, account=currentAccount, args=args) as desktopBrowser:
+        accountPointsCounter = Login(desktopBrowser).login()
+        startingPoints = accountPointsCounter
+        logging.info(
+            f"[POINTS] You have {desktopBrowser.utils.formatNumber(accountPointsCounter)} points on your account !"
+        )
+        DailySet(desktopBrowser).completeDailySet()
+        PunchCards(desktopBrowser).completePunchCards()
+        MorePromotions(desktopBrowser).completeMorePromotions()
+        (
+            remainingSearches,
+            remainingSearchesM,
+        ) = desktopBrowser.utils.getRemainingSearches()
         if remainingSearches != 0:
-            print("[BING]", "Starting Desktop and Edge Bing searches...")
-            POINTS_COUNTER = Searches(browser, localeLang, localeGeo).bingSearches(
+            accountPointsCounter = Searches(desktopBrowser).bingSearches(
                 remainingSearches
             )
-            prGreen("[BING] Finished Desktop and Edge Bing searches !")
-        browser.quit()
 
         if remainingSearchesM != 0:
-            browser = browserSetup(currentUser, headless, True, localeLang)
-            utils = Utils(browser)
+            desktopBrowser.closeBrowser()
+            with Browser(
+                mobile=True, account=currentAccount, args=args
+            ) as mobileBrowser:
+                accountPointsCounter = Login(mobileBrowser).login()
+                accountPointsCounter = Searches(mobileBrowser).bingSearches(
+                    remainingSearchesM
+                )
 
-            print("[LOGIN]", "Logging-in...")
-            POINTS_COUNTER = Login(browser).login(
-                currentUser, currentUserPassword, True
-            )
-            print("[LOGIN]", "Logged-in successfully !")
-            print("[BING]", "Starting Mobile Bing searches...")
-            POINTS_COUNTER = Searches(browser, localeLang, localeGeo).bingSearches(
-                remainingSearchesM, True
-            )
-            prGreen("[BING] Finished Mobile Bing searches !")
-            browser.quit()
-
-        prGreen(
-            f"[POINTS] You have earned {POINTS_COUNTER - startingPoints} points today !"
+        logging.info(
+            f"[POINTS] You have earned {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)} points today !"
         )
-        prGreen(f"[POINTS] You are now at {POINTS_COUNTER} points !\n")
+        logging.info(
+            f"[POINTS] You are now at {desktopBrowser.utils.formatNumber(accountPointsCounter)} points !\n"
+        )
 
-    if args.telegram:
-        Telegram.send_to_telegram(f"For the: {currentUser} account he has won {POINTS_COUNTER - startingPoints} points today. Total points: {POINTS_COUNTER}")
+
+if __name__ == "__main__":
+    main()

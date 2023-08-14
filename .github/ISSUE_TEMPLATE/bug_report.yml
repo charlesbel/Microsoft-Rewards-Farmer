@@ -13,6 +13,14 @@ body:
             This bug wasn't already reported.
             (I have checked every bug report on GitHub)
           required: true
+  - type: checkboxes
+    id: title
+    attributes:
+      label: Title
+      options:
+        - label: |
+            The title is no longer "[BUG] Title" and I edited it with the right error name.
+          required: true
   - type: textarea
     id: description
     attributes:
@@ -31,11 +39,11 @@ body:
     validations:
       required: true
   - type: textarea
-    id: screenshot
+    id: screenshots
     attributes:
-      label: Screenshot of the bug
+      label: Screenshots
       description: |
-        Add a screenshot of the page where the error appeared.
+        Run the program with -v argument (ex: python main.py -v) and take screenshots of what's happening in the browser during the issue
     validations:
       required: true
   - type: textarea
@@ -43,6 +51,6 @@ body:
     attributes:
       label: Value of dashboard variable
       description: |
-        Open the source code of the [Microsoft Rewards Dashboard Page](https://rewards.bing.com), search for "var dashboard = " Copy the whole json of this line and paste it here.
+        Open the source code of the [Microsoft Rewards Dashboard Page](https://rewards.bing.com), search for "var dashboard = ", copy the whole json of this line and paste it on [Gist](https://gist.github.com), then copy the link here
     validations:
       required: true

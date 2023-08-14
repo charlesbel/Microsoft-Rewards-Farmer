@@ -1,17 +1,18 @@
-from selenium.webdriver.chrome.webdriver import WebDriver
+import logging
+
+from src.browser import Browser
 
 from .activities import Activities
-from .utils import Utils
 
 
 class MorePromotions:
-    def __init__(self, browser: WebDriver):
+    def __init__(self, browser: Browser):
         self.browser = browser
-        self.utils = Utils(browser)
         self.activities = Activities(browser)
 
     def completeMorePromotions(self):
-        morePromotions = self.utils.getDashboardData()["morePromotions"]
+        logging.info("[MORE PROMO] " + "Trying to complete More Promotions...")
+        morePromotions = self.browser.utils.getDashboardData()["morePromotions"]
         i = 0
         for promotion in morePromotions:
             try:
@@ -36,4 +37,5 @@ class MorePromotions:
                     else:
                         self.activities.completeSearch()
             except Exception:  # pylint: disable=broad-except
-                self.utils.resetTabs()
+                self.browser.utils.resetTabs()
+        logging.info("[MORE PROMO] Completed More Promotions successfully !")

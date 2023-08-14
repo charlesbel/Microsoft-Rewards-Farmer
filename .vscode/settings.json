@@ -3,7 +3,8 @@
     "editor.codeActionsOnSave": {
       "source.organizeImports": true
     },
-    "editor.defaultFormatter": "ms-python.black-formatter"
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "files.eol": "\n"
   },
   "python.formatting.autopep8Args": ["--aggressive"],
   "python.linting.mypyEnabled": true,

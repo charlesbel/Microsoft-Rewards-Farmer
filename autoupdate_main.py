@@ -1,10 +1,12 @@
 import os
+import sys
 from io import BytesIO
 from zipfile import ZipFile
 
 import requests
 
-if __name__ == "__main__":
+
+def update(version: str):
     url = "https://github.com/charlesbel/Microsoft-Rewards-Farmer/archive/refs/heads/master.zip"
     folderName = "Microsoft-Rewards-Farmer-master"
     with open(".gitignore", "r") as f:
@@ -38,4 +40,36 @@ if __name__ == "__main__":
                 os.makedirs(dirName)
             with zipObj.open(file) as src, open(newName, "wb") as dst:
                 dst.write(src.read())
+    with open("version.txt", "w") as f:
+        f.write(version)
     print("Done !")
+
+
+def getCurrentVersion():
+    if os.path.exists("version.txt"):
+        with open("version.txt", "r") as f:
+            version = f.read()
+        return version
+    return None
+
+
+def getLatestVersion():
+    r = requests.get(
+        "https://api.github.com/repos/charlesbel/Microsoft-Rewards-Farmer/commits/master"
+    )
+    return r.json()["sha"]
+
+
+if __name__ == "__main__":
+    currentVersion = getCurrentVersion()
+    latestVersion = getLatestVersion()
+    if currentVersion != latestVersion:
+        print("New version available !")
+        update(latestVersion)
+
+    print("Starting...")
+
+    import main
+
+    main.sys.argv[1:] = sys.argv[1:]
+    main.main()

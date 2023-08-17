@@ -3,21 +3,20 @@ import json
 import logging
 import logging.handlers as handlers
 import random
-import sys
 from pathlib import Path
 
 from src import Browser, DailySet, Login, MorePromotions, PunchCards, Searches
 from src.constants import VERSION
-from src.loggingColoredFormatter import ColoredFormatter
+from src.loggingFormatter import ColoredFormatter, NotifyingStreamHandler
 from src.notifier import Notifier
 
 POINTS_COUNTER = 0
 
 
 def main():
-    setupLogging()
     args = argumentParser()
     notifier = Notifier(args)
+    setupLogging(notifier, args.verbosenotifs)
     loadedAccounts = setupAccounts()
     for currentAccount in loadedAccounts:
         try:
@@ -26,10 +25,10 @@ def main():
             logging.exception(f"{e.__class__.__name__}: {e}")
 
 
-def setupLogging():
+def setupLogging(notifier: Notifier, verbose_notifs: bool):
     format = "%(asctime)s [%(levelname)s] %(message)s"
-    terminalHandler = logging.StreamHandler(sys.stdout)
-    terminalHandler.setFormatter(ColoredFormatter(format))
+    streamHandler = NotifyingStreamHandler(notifier, verbose_notifs)
+    streamHandler.setFormatter(ColoredFormatter(format))
 
     (Path(__file__).resolve().parent / "logs").mkdir(parents=True, exist_ok=True)
 
@@ -44,7 +43,7 @@ def setupLogging():
                 backupCount=2,
                 encoding="utf-8",
             ),
-            terminalHandler,
+            streamHandler,
         ],
     )
 
@@ -82,6 +81,9 @@ def argumentParser() -> argparse.Namespace:
         type=str,
         default=None,
         help="Optional: Discord Webhook URL (ex: https://discord.com/api/webhooks/123456789/ABCdefGhIjKlmNoPQRsTUVwxyZ)",
+    )
+    parser.add_argument(
+        "-vn", "--verbosenotifs", action="store_true", help="Optional: Send all the logs to discord/telegram"
     )
     return parser.parse_args()
 

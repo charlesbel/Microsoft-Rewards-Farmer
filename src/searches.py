@@ -75,9 +75,11 @@ class Searches:
         return pointsCounter
 
     def bingSearch(self, word: str):
+        i = 0
+        self.webdriver.get("https://bing.com")
+
         while True:
             try:
-                self.webdriver.get("https://bing.com")
                 self.browser.utils.waitUntilClickable(By.ID, "sb_form_q")
                 searchbar = self.webdriver.find_element(By.ID, "sb_form_q")
                 searchbar.send_keys(word)
@@ -85,6 +87,11 @@ class Searches:
                 time.sleep(random.randint(10, 15))
                 return self.browser.utils.getBingAccountPoints()
             except TimeoutException:
+                if i == 5:
+                    logging.error("[BING] " + "Cancelling mobile searches due to too many retries.")
+                    return self.browser.utils.getBingAccountPoints()
+
                 logging.error("[BING] " + "Timeout, retrying in 5 seconds...")
                 time.sleep(5)
+                i += 1
                 continue

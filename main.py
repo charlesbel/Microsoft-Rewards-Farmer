@@ -87,7 +87,10 @@ def argumentParser() -> argparse.Namespace:
         help="Optional: Discord Webhook URL (ex: https://discord.com/api/webhooks/123456789/ABCdefGhIjKlmNoPQRsTUVwxyZ)",
     )
     parser.add_argument(
-        "-vn", "--verbosenotifs", action="store_true", help="Optional: Send all the logs to discord/telegram"
+        "-vn",
+        "--verbosenotifs",
+        action="store_true",
+        help="Optional: Send all the logs to discord/telegram",
     )
     return parser.parse_args()
 

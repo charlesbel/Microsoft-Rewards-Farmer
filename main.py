@@ -151,6 +151,15 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
                 remainingSearches
             )
 
+        if remainingSearchesM != 0:
+            desktopBrowser.closeBrowser()
+            with Browser(
+                mobile=True, account=currentAccount, args=args
+            ) as mobileBrowser:
+                accountPointsCounter = Login(mobileBrowser).login()
+                accountPointsCounter = Searches(mobileBrowser).bingSearches(
+                    remainingSearchesM
+                )
         desktopBrowser.webdriver.quit()
 
         logging.info(

@@ -39,13 +39,13 @@ class PunchCards:
                             By.XPATH,
                             f'//*[@id="QuestionPane{question}"]/div[1]/div[2]/a[{random.randint(1, 3)}]/div',
                         ).click()
-                        time.sleep(random.randint(100, 700) / 100))
+                        time.sleep(random.randint(100, 700) / 100)
                         self.webdriver.find_element(
                             By.XPATH,
                             f'//*[@id="AnswerPane{question}"]/div[1]/div[2]/div[4]/a/div/span/input',
                         ).click()
-                        time.sleep(random.randint(100, 700) / 100))
-                    time.sleep(random.randint(100, 700) / 100))
+                        time.sleep(random.randint(100, 700) / 100)
+                    time.sleep(random.randint(100, 700) / 100)
                     self.browser.utils.closeCurrentTab()
 
     def completePunchCards(self):
@@ -67,9 +67,9 @@ class PunchCards:
             except Exception:  # pylint: disable=broad-except
                 self.browser.utils.resetTabs()
         logging.info("[PUNCH CARDS] Completed the Punch Cards successfully !")
-        time.sleep(random.randint(100, 700) / 100))
+        time.sleep(random.randint(100, 700) / 100)
         self.webdriver.get(BASE_URL)
-        time.sleep(random.randint(100, 700) / 100))
+        time.sleep(random.randint(100, 700) / 100)
 
     def completePromotionalItems(self):
         with contextlib.suppress(Exception):

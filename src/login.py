@@ -73,7 +73,7 @@ class Login:
             == "account.microsoft.com"
         ):
             self.utils.tryDismissAllMessages()
-            time.sleep(1)
+            time.sleep(random.randint(100, 700) / 100))
 
         self.utils.waitUntilVisible(
             By.CSS_SELECTOR, 'html[data-role-name="MeePortal"]', 10
@@ -90,7 +90,7 @@ class Login:
         )
         logging.info("[LOGIN] " + "Writing password...")
         self.webdriver.find_element(By.ID, "idSIButton9").click()
-        time.sleep(3)
+        time.sleep(random.randint(100, 700) / 100))
 
     def checkBingLogin(self):
         self.webdriver.get(
@@ -99,9 +99,9 @@ class Login:
         while True:
             currentUrl = urllib.parse.urlparse(self.webdriver.current_url)
             if currentUrl.hostname == "www.bing.com" and currentUrl.path == "/":
-                time.sleep(3)
+                time.sleep(random.randint(100, 700) / 100))
                 self.utils.tryDismissBingCookieBanner()
                 with contextlib.suppress(Exception):
                     if self.utils.checkBingLogin():
                         return
-            time.sleep(1)
+            time.sleep(random.randint(100, 700) / 100))

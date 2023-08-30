@@ -62,6 +62,31 @@ class Utils:
     def waitUntilQuizLoads(self):
         return self.waitForMSRewardElement(By.XPATH, '//*[@id="rqStartQuiz"]')
 
+    def waitUntilJS(self, jsSrc: str):
+        loadingTimeAllowed = 5
+        refreshsAllowed = 5
+
+        checkingInterval = 0.5
+        checks = loadingTimeAllowed / checkingInterval
+
+        tries = 0
+        refreshCount = 0
+        while True:
+            elem = self.webdriver.execute_script(jsSrc)
+            if elem:
+                return elem
+
+            if tries < checks:
+                tries += 1
+                time.sleep(checkingInterval)
+            elif refreshCount < refreshsAllowed:
+                self.webdriver.refresh()
+                refreshCount += 1
+                tries = 0
+                time.sleep(5)
+            else:
+                return elem
+
     def resetTabs(self):
         try:
             curr = self.webdriver.current_window_handle

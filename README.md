@@ -13,7 +13,7 @@
 ![Maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)
 ![MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)
 
-### A simple bot that uses selenium to farm M$ Rewards in Pythonn
+### A simple bot that uses selenium to farm M$ Rewards in Python
 
 ```diff
 - Use it at your own risk, Microsoft may ban your account (and I would not be responsible for it)

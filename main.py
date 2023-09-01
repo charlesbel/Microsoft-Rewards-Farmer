@@ -9,6 +9,7 @@ from pathlib import Path
 from src import (
     Browser,
     DailySet,
+    GamingTab,
     Login,
     MorePromotions,
     PunchCards,
@@ -139,6 +140,7 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
             f"[POINTS] You have {desktopBrowser.utils.formatNumber(accountPointsCounter)} points on your account !"
         )
         ShoppingGame(desktopBrowser).completeShoppingGame()
+        GamingTab(desktopBrowser).completeGamingTab()
         DailySet(desktopBrowser).completeDailySet()
         PunchCards(desktopBrowser).completePunchCards()
         MorePromotions(desktopBrowser).completeMorePromotions()

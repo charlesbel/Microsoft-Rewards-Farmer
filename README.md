@@ -1,7 +1,3 @@
-![Made with Python](https://forthebadge.com/images/badges/made-with-python.svg)
-![Built by Developers](http://ForTheBadge.com/images/badges/built-by-developers.svg)
-![Uses Git](http://ForTheBadge.com/images/badges/uses-git.svg)
-![Build with Love](http://ForTheBadge.com/images/badges/built-with-love.svg)
 
 ```ascii
 ███╗   ███╗███████╗    ███████╗ █████╗ ██████╗ ███╗   ███╗███████╗██████╗

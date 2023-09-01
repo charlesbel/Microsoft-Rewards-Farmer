@@ -9,15 +9,14 @@
        by Charles Bel (@charlesbel)          version 3.0
 ```
 
+![Static Badge](https://img.shields.io/badge/Made_in-python-violet?style=for-the-badge)
 ![Maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)
 ![MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)
 
-## :wave: Welcome to the future of automation
-
-### A simple bot that uses selenium to farm Microsoft Rewards written in Python
+### A simple bot that uses selenium to farm M$ Rewards in Pythonn
 
 ```diff
-- Use it at your own risk, M$ may ban your account (and I would not be responsible for it)
+- Use it at your own risk, Microsoft may ban your account (and I would not be responsible for it)
 ```
 
 ## Installation
@@ -78,7 +77,7 @@
 - Session storing (3.0)
 - 2FA Support (3.0)
 - Notifications (discord, telegram) (3.0)
-- Proxy Support (3.0) - they need to be high quality proxies 
+- Proxy Support (3.0)
 
 ## Future Features
 

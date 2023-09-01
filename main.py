@@ -6,7 +6,15 @@ import random
 import sys
 from pathlib import Path
 
-from src import Browser, DailySet, Login, MorePromotions, PunchCards, Searches
+from src import (
+    Browser,
+    DailySet,
+    Login,
+    MorePromotions,
+    PunchCards,
+    Searches,
+    ShoppingGame,
+)
 from src.constants import VERSION
 from src.loggingColoredFormatter import ColoredFormatter
 from src.notifier import Notifier
@@ -15,9 +23,9 @@ POINTS_COUNTER = 0
 
 
 def main():
+    setupLogging()
     args = argumentParser()
     notifier = Notifier(args)
-    setupLogging(args.verbosenotifs, notifier)
     loadedAccounts = setupAccounts()
     for currentAccount in loadedAccounts:
         try:
@@ -26,10 +34,7 @@ def main():
             logging.exception(f"{e.__class__.__name__}: {e}")
 
 
-def setupLogging(verbose_notifs, notifier):
-    ColoredFormatter.verbose_notifs = verbose_notifs
-    ColoredFormatter.notifier = notifier
-
+def setupLogging():
     format = "%(asctime)s [%(levelname)s] %(message)s"
     terminalHandler = logging.StreamHandler(sys.stdout)
     terminalHandler.setFormatter(ColoredFormatter(format))
@@ -86,12 +91,6 @@ def argumentParser() -> argparse.Namespace:
         default=None,
         help="Optional: Discord Webhook URL (ex: https://discord.com/api/webhooks/123456789/ABCdefGhIjKlmNoPQRsTUVwxyZ)",
     )
-    parser.add_argument(
-        "-vn",
-        "--verbosenotifs",
-        action="store_true",
-        help="Optional: Send all the logs to discord/telegram",
-    )
     return parser.parse_args()
 
 
@@ -139,6 +138,7 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
         logging.info(
             f"[POINTS] You have {desktopBrowser.utils.formatNumber(accountPointsCounter)} points on your account !"
         )
+        ShoppingGame(desktopBrowser).completeShoppingGame()
         DailySet(desktopBrowser).completeDailySet()
         PunchCards(desktopBrowser).completePunchCards()
         MorePromotions(desktopBrowser).completeMorePromotions()
@@ -160,7 +160,6 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
                 accountPointsCounter = Searches(mobileBrowser).bingSearches(
                     remainingSearchesM
                 )
-        desktopBrowser.webdriver.quit()
 
         logging.info(
             f"[POINTS] You have earned {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)} points today !"

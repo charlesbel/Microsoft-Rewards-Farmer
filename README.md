@@ -16,7 +16,7 @@
 ### A simple bot that uses selenium to farm M$ Rewards in Python
 
 ```diff
-- Use it at your own risk, Microsoft may ban your account (and I would not be responsible for it)
+- Use it at your own risk, M$ may ban your account (and I would not be responsible for it)
 ```
 
 ## Installation
@@ -72,13 +72,11 @@
 - Complete automatically the daily set
 - Complete automatically punch cards
 - Complete automatically the others promotions
+- Complete shopping game
+- Complete Edge game tab
 - Headless Mode
 - Multi-Account Management
 - Session storing (3.0)
 - 2FA Support (3.0)
 - Notifications (discord, telegram) (3.0)
-- Proxy Support (3.0)
-
-## Future Features
-
-- GUI
+- Proxy Support (3.0) - they need to be high quality proxies

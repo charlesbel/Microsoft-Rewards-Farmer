@@ -30,13 +30,10 @@
 
    `pip install -r requirements.txt`
 
-2. Make sure you have Chrome installed
+   Upgrade all required with the following command:
+   `pip install --upgrade -r requirements.txt`
 
-3. ~~Install ChromeDriver:~~
-
-   You no longer need to do this step since selenium >=4.10.0 include a webdriver manager
-
-   To update your selenium version, run this command : `pip install selenium --upgrade`
+3. Make sure you have Chrome installed
 
 4. (Windows Only) Make sure Visual C++ redistributable DLLs are installed
 
@@ -61,13 +58,9 @@
    ]
    ```
 
-6. Run the script:
+7. Run the script:
 
    `python main.py`
-
-   Or if you want to keep it updated (it will check on each run if a new version is available, if so, will download and run it), use :
-
-   `python autoupdate_main.py`
 
 ## Launch arguments
 

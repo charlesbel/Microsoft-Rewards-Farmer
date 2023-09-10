@@ -5,31 +5,12 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-import brotli
 import ipapi
 import seleniumwire.undetected_chromedriver as webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
 
 from src.userAgentGenerator import GenerateUserAgent
 from src.utils import Utils
-
-
-def interceptor(request, response):
-    if (
-        response
-        and request
-        and "shoppingHomepage" in request.url
-        and "Content-Type" in response.headers
-        and "application/javascript" in response.headers["Content-Type"]
-        and "br" in response.headers["Content-Encoding"]
-    ):
-        print("Hooked")
-        # This is pretty bad, If the javascript file were to be sent with ANYTHING other than brotli encoding it would fail.
-        decompressed_data = brotli.decompress(response.body)
-        modified_data = decompressed_data.replace(b'{price:""}', b"{}")
-        compressed_data = brotli.compress(modified_data)
-        response.body = compressed_data
-
 
 class Browser:
     """WebDriver wrapper class."""
@@ -97,8 +78,7 @@ class Browser:
             seleniumwire_options=seleniumwireOptions,
             user_data_dir=self.userDataDir.as_posix(),
         )
-        driver.response_interceptor = interceptor
-
+        
         seleniumLogger = logging.getLogger("seleniumwire")
         seleniumLogger.setLevel(logging.ERROR)
 

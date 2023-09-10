@@ -14,7 +14,6 @@ from src import (
     MorePromotions,
     PunchCards,
     Searches,
-    ShoppingGame,
 )
 from src.constants import VERSION
 from src.loggingColoredFormatter import ColoredFormatter
@@ -139,7 +138,6 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
         logging.info(
             f"[POINTS] You have {desktopBrowser.utils.formatNumber(accountPointsCounter)} points on your account !"
         )
-        ShoppingGame(desktopBrowser).completeShoppingGame()
         GamingTab(desktopBrowser).completeGamingTab()
         DailySet(desktopBrowser).completeDailySet()
         PunchCards(desktopBrowser).completePunchCards()

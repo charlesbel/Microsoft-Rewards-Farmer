@@ -12,6 +12,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from src.userAgentGenerator import GenerateUserAgent
 from src.utils import Utils
 
+
 class Browser:
     """WebDriver wrapper class."""
 
@@ -50,6 +51,7 @@ class Browser:
         """Perform actions to close the browser cleanly."""
         # close web browser
         with contextlib.suppress(Exception):
+            self.webdriver.close()
             self.webdriver.quit()
 
     def browserSetup(
@@ -78,7 +80,7 @@ class Browser:
             seleniumwire_options=seleniumwireOptions,
             user_data_dir=self.userDataDir.as_posix(),
         )
-        
+
         seleniumLogger = logging.getLogger("seleniumwire")
         seleniumLogger.setLevel(logging.ERROR)
 

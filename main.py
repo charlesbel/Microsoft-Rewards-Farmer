@@ -23,6 +23,7 @@ POINTS_COUNTER = 0
 
 
 def main():
+    setupLogging()
     args = argumentParser()
     notifier = Notifier(args)
     setupLogging(args.verbosenotifs, notifier)

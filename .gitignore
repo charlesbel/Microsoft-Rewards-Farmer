@@ -182,3 +182,4 @@ accounts.json
 sessions
 logs
 runbot.bat
+.DS_Store

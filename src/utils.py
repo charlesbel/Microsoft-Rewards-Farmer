@@ -185,11 +185,17 @@ class Utils:
             (By.ID, "iLooksGood"),
             (By.ID, "idSIButton9"),
             (By.CSS_SELECTOR, ".ms-Button.ms-Button--primary"),
+            (By.ID, "bnp_btn_accept"),
         ]
         result = False
         for button in buttons:
             try:
-                self.webdriver.find_element(button[0], button[1]).click()
+                elements = self.webdriver.find_elements(button[0], button[1])
+                try:
+                    for element in elements:
+                        element.click()
+                except Exception:  # pylint: disable=broad-except
+                    continue
                 result = True
             except Exception:  # pylint: disable=broad-except
                 continue

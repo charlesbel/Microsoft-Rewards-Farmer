@@ -104,7 +104,7 @@ class Searches:
                         + "Cancelling mobile searches due to too many retries."
                     )
                     return self.browser.utils.getBingAccountPoints()
-
+                self.browser.utils.tryDismissAllMessages() 
                 logging.error("[BING] " + "Timeout, retrying in 5 seconds...")
                 time.sleep(5)
                 i += 1

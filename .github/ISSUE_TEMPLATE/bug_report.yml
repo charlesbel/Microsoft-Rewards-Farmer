@@ -21,13 +21,14 @@ body:
         - label: |
             The title is no longer "[BUG] Title" and I edited it with the right error name.
           required: true
-  - type: textarea
+  - type: markdown
     id: description
     attributes:
       label: Describe the bug
       description: |
         A clear and concise description of what the issue is.
         Provide as much information as possible.
+        If it’s long, please paste to https://gist.github.com/ and insert the link here.
     validations:
       required: true
   - type: textarea

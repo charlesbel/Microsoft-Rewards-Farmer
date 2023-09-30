@@ -1,4 +1,4 @@
-### Original bot by @charlesbel - refactored and updated by @klept0 and the community
+## Original bot by @charlesbel - refactored and updated by @klept0 and the community
 
 ![Static Badge](https://img.shields.io/badge/Made_in-python-violet?style=for-the-badge)
 ![Maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)

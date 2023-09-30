@@ -1,14 +1,15 @@
-## Original bot by @charlesbel - refactored and updated by @klept0 and the community
-
-![Static Badge](https://img.shields.io/badge/Made_in-python-violet?style=for-the-badge)
-![Maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)
-![MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)
-
 ### A simple bot that uses selenium to farm M$ Rewards in Python
 
 ```diff
 - Use it at your own risk, M$ may ban your account (and I would not be responsible for it)
 ```
+## Original bot by @charlesbel - refactored and updated by @klept0 and the community
+
+![Static Badge](https://img.shields.io/badge/Made_in-python-violet?style=for-the-badge)
+![MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)
+![Maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge)
+![GitHub contributors](https://img.shields.io/github/contributors/klept0/MS-Rewards-Farmer?style=for-the-badge)
+![GitHub issues](https://img.shields.io/github/issues/klept0/MS-Rewards-Farmer?style=for-the-badge)
 
 ## Installation
 

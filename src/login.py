@@ -63,7 +63,7 @@ class Login:
                 code = self.webdriver.find_element(
                     By.ID, "idRemoteNGC_DisplaySign"
                 ).get_attribute("innerHTML")
-                logging.error("[LOGIN] " + f"2FA code: {code}")
+                logging.error(f"[LOGIN] 2FA code: {code}")
             logging.info("[LOGIN] Press enter when confirmed...")
             input()
 

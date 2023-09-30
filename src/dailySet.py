@@ -24,9 +24,7 @@ class DailySet:
                     cardId = int(activity["offerId"][-1:])
                     self.activities.openDailySetActivity(cardId)
                     if activity["promotionType"] == "urlreward":
-                        logging.info(
-                            "[DAILY SET] " + f"Completing search of card {cardId}"
-                        )
+                        logging.info(f"[DAILY SET] Completing search of card {cardId}")
                         self.activities.completeSearch()
                     if activity["promotionType"] == "quiz":
                         if (
@@ -43,7 +41,7 @@ class DailySet:
                             and activity["pointProgress"] == 0
                         ):
                             logging.info(
-                                "[DAILY SET] " + f"Completing quiz of card {cardId}"
+                                f"[DAILY SET] Completing quiz of card {cardId}"
                             )
                             self.activities.completeQuiz()
                         elif (
@@ -66,12 +64,12 @@ class DailySet:
                                 filters[filterEl[0]] = filterEl[1]
                             if "PollScenarioId" in filters:
                                 logging.info(
-                                    "[DAILY SET] " + f"Completing poll of card {cardId}"
+                                    f"[DAILY SET] Completing poll of card {cardId}"
                                 )
                                 self.activities.completeSurvey()
                             else:
                                 logging.info(
-                                    "[DAILY SET] " + f"Completing quiz of card {cardId}"
+                                    f"[DAILY SET] Completing quiz of card {cardId}"
                                 )
                                 try:
                                     self.activities.completeABC()

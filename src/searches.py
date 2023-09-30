@@ -50,17 +50,16 @@ class Searches:
 
     def bingSearches(self, numberOfSearches: int, pointsCounter: int = 0):
         logging.info(
-            "[BING] "
-            + f"Starting {self.browser.browserType.capitalize()} Edge Bing searches...",
+            f"[BING] Starting {self.browser.browserType.capitalize()} Edge Bing searches..."
         )
 
-        i = 0
         search_terms = self.getGoogleTrends(numberOfSearches)
         self.webdriver.get("https://bing.com")
 
+        i = 0
         for word in search_terms:
             i += 1
-            logging.info("[BING] " + f"{i}/{numberOfSearches}")
+            logging.info(f"[BING] {i}/{numberOfSearches}")
             points = self.bingSearch(word)
             if points <= pointsCounter:
                 relatedTerms = self.getRelatedTerms(word)[:2]
@@ -104,7 +103,7 @@ class Searches:
                         + "Cancelling mobile searches due to too many retries."
                     )
                     return self.browser.utils.getBingAccountPoints()
-                self.browser.utils.tryDismissAllMessages() 
+                self.browser.utils.tryDismissAllMessages()
                 logging.error("[BING] " + "Timeout, retrying in 5 seconds...")
                 time.sleep(5)
                 i += 1

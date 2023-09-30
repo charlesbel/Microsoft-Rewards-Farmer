@@ -7,7 +7,6 @@ import sys
 from pathlib import Path
 
 from src import Browser, DailySet, Login, MorePromotions, PunchCards, Searches
-from src.constants import VERSION
 from src.loggingColoredFormatter import ColoredFormatter
 from src.notifier import Notifier
 
@@ -53,7 +52,7 @@ def setupLogging(verbose_notifs, notifier):
 
 
 def argumentParser() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Microsoft Rewards Farmer")
+    parser = argparse.ArgumentParser(description="MS Rewards Farmer")
     parser.add_argument(
         "-v", "--visible", action="store_true", help="Optional: Visible browser"
     )
@@ -95,20 +94,6 @@ def argumentParser() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def bannerDisplay():
-    farmerBanner = """
-    ███╗   ███╗███████╗    ███████╗ █████╗ ██████╗ ███╗   ███╗███████╗██████╗
-    ████╗ ████║██╔════╝    ██╔════╝██╔══██╗██╔══██╗████╗ ████║██╔════╝██╔══██╗
-    ██╔████╔██║███████╗    █████╗  ███████║██████╔╝██╔████╔██║█████╗  ██████╔╝
-    ██║╚██╔╝██║╚════██║    ██╔══╝  ██╔══██║██╔══██╗██║╚██╔╝██║██╔══╝  ██╔══██╗
-    ██║ ╚═╝ ██║███████║    ██║     ██║  ██║██║  ██║██║ ╚═╝ ██║███████╗██║  ██║
-    ╚═╝     ╚═╝╚══════╝    ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚═╝  ╚═╝"""
-    logging.error(farmerBanner)
-    logging.warning(
-        f"        by Charles Bel (@charlesbel)               version {VERSION}\n"
-    )
-
-
 def setupAccounts() -> dict:
     accountPath = Path(__file__).resolve().parent / "accounts.json"
     if not accountPath.exists():
@@ -137,7 +122,7 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
         accountPointsCounter = Login(desktopBrowser).login()
         startingPoints = accountPointsCounter
         logging.info(
-            f"[POINTS] You have {desktopBrowser.utils.formatNumber(accountPointsCounter)} points on your account !"
+            f"[POINTS] You have {desktopBrowser.utils.formatNumber(accountPointsCounter)} points on your account"
         )
         DailySet(desktopBrowser).completeDailySet()
         PunchCards(desktopBrowser).completePunchCards()
@@ -172,7 +157,7 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
         notifier.send(
             "\n".join(
                 [
-                    "Microsoft Rewards Farmer",
+                    "MS Rewards Farmer",
                     f"Account: {currentAccount.get('username', '')}",
                     f"⭐️ Points earned today: {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)}",
                     f"🏅 Total points: {desktopBrowser.utils.formatNumber(accountPointsCounter)}",

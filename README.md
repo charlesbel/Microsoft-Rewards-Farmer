@@ -64,11 +64,16 @@
 - Complete the daily set automatically
 - Complete punch cards automatically
 - Complete the others promotions automatically
-- Complete shopping game - _currently disabled_
-- Complete Edge game tab - _currently disabled_
 - Headless Mode - _not recommended_
 - Multi-Account Management
 - Session storing (3.0)
 - 2FA Support (3.0)
 - Notifications (discord, telegram) (3.0)
 - Proxy Support (3.0) - they need to be **high quality** proxies
+
+## To Do List
+
+- Complete shopping game - _currently disabled_
+- Complete Edge game tab - _currently disabled_
+- Complete Reading News (30 pts)
+- Setup flags for mobile/desktop search only

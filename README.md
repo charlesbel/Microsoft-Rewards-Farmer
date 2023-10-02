@@ -75,5 +75,5 @@
 
 - Complete shopping game - _currently disabled_
 - Complete Edge game tab - _currently disabled_
-- Complete Reading News (30 pts)
+- Complete "Read To Earn" (30 pts)
 - Setup flags for mobile/desktop search only

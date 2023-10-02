@@ -53,8 +53,10 @@ class GenerateUserAgent:
         )
 
         newBrowserConfig = None
-        userAgentMetadata = browserConfig.get("userAgentMetadata")
-        if not userAgentMetadata:
+        if userAgentMetadata := browserConfig.get("userAgentMetadata"):
+            platformVersion = userAgentMetadata["platformVersion"]
+
+        else:
             # ref : https://textslashplain.com/2021/09/21/determining-os-platform-version/
             platformVersion = (
                 f"{random.randint(9,13) if mobile else random.randint(1,15)}.0.0"
@@ -63,9 +65,6 @@ class GenerateUserAgent:
             newBrowserConfig["userAgentMetadata"] = {
                 "platformVersion": platformVersion,
             }
-        else:
-            platformVersion = userAgentMetadata["platformVersion"]
-
         uaMetadata = {
             "mobile": mobile,
             "platform": "Android" if mobile else "Windows",
@@ -139,11 +138,10 @@ class GenerateUserAgent:
             "https://edgeupdates.microsoft.com/api/products"
         )
         data = response.json()
-        stableProduct = next(
+        if stableProduct := next(
             (product for product in data if product["Product"] == "Stable"),
             None,
-        )
-        if stableProduct:
+        ):
             releases = stableProduct["Releases"]
             androidRelease = next(
                 (release for release in releases if release["Platform"] == "Android"),

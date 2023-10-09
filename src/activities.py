@@ -4,6 +4,7 @@ import time
 from selenium.webdriver.common.by import By
 
 from src.browser import Browser
+from src.utils import Utils
 
 
 class Activities:
@@ -26,12 +27,12 @@ class Activities:
         self.browser.utils.switchToNewTab(8)
 
     def completeSearch(self):
-        time.sleep(random.randint(5, 10))
+        time.sleep(Utils.randomSeconds(5, 10))
         self.browser.utils.closeCurrentTab()
 
     def completeSurvey(self):
         self.webdriver.find_element(By.ID, f"btoption{random.randint(0, 1)}").click()
-        time.sleep(random.randint(10, 15))
+        time.sleep(Utils.randomSeconds(10, 15))
         self.browser.utils.closeCurrentTab()
 
     def completeQuiz(self):
@@ -42,7 +43,7 @@ class Activities:
         self.browser.utils.waitUntilVisible(
             By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 5
         )
-        time.sleep(random.randint(100, 700) / 100)
+        time.sleep(Utils.randomSeconds(1, 7))
         numberOfQuestions = self.webdriver.execute_script(
             "return _w.rewardsQuizRenderInfo.maxQuestions"
         )
@@ -60,7 +61,7 @@ class Activities:
                         answers.append(f"rqAnswerOption{i}")
                 for answer in answers:
                     self.webdriver.find_element(By.ID, answer).click()
-                    time.sleep(random.randint(100, 700) / 100)
+                    time.sleep(Utils.randomSeconds(1, 7))
                     if not self.browser.utils.waitUntilQuestionRefresh():
                         self.browser.utils.resetTabs()
                         return
@@ -76,14 +77,14 @@ class Activities:
                         == correctOption
                     ):
                         self.webdriver.find_element(By.ID, f"rqAnswerOption{i}").click()
-                        time.sleep(random.randint(100, 700) / 100)
+                        time.sleep(Utils.randomSeconds(1, 7))
                         if not self.browser.utils.waitUntilQuestionRefresh():
                             self.browser.utils.resetTabs()
                             return
                         break
             if question + 1 != numberOfQuestions:
-                time.sleep(random.randint(100, 700) / 100)
-        time.sleep(random.randint(100, 700) / 100)
+                time.sleep(Utils.randomSeconds(1, 7))
+        time.sleep(Utils.randomSeconds(1, 7))
         self.browser.utils.closeCurrentTab()
 
     def completeABC(self):
@@ -95,10 +96,10 @@ class Activities:
             self.webdriver.find_element(
                 By.ID, f"questionOptionChoice{question}{random.randint(0, 2)}"
             ).click()
-            time.sleep(random.randint(100, 700) / 100)
+            time.sleep(Utils.randomSeconds(1, 7))
             self.webdriver.find_element(By.ID, f"nextQuestionbtn{question}").click()
-            time.sleep(random.randint(100, 700) / 100)
-        time.sleep(random.randint(100, 700) / 100)
+            time.sleep(Utils.randomSeconds(1, 7))
+        time.sleep(Utils.randomSeconds(1, 7))
         self.browser.utils.closeCurrentTab()
 
     def completeThisOrThat(self):
@@ -109,7 +110,7 @@ class Activities:
         self.browser.utils.waitUntilVisible(
             By.XPATH, '//*[@id="currentQuestionContainer"]/div/div[1]', 10
         )
-        time.sleep(random.randint(100, 700) / 100)
+        time.sleep(Utils.randomSeconds(1, 7))
         for _ in range(10):
             correctAnswerCode = self.webdriver.execute_script(
                 "return _w.rewardsQuizRenderInfo.correctAnswer"
@@ -118,12 +119,12 @@ class Activities:
             answer2, answer2Code = self.getAnswerAndCode("rqAnswerOption1")
             if answer1Code == correctAnswerCode:
                 answer1.click()
-                time.sleep(random.randint(100, 700) / 100)
+                time.sleep(Utils.randomSeconds(1, 7))
             elif answer2Code == correctAnswerCode:
                 answer2.click()
-                time.sleep(random.randint(100, 700) / 100)
+                time.sleep(Utils.randomSeconds(1, 7))
 
-        time.sleep(random.randint(100, 700) / 100)
+        time.sleep(Utils.randomSeconds(1, 7))
         self.browser.utils.closeCurrentTab()
 
     def getAnswerAndCode(self, answerId: str) -> tuple:

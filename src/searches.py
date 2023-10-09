@@ -10,6 +10,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 from src.browser import Browser
+from src.utils import Utils
 
 
 class Searches:
@@ -86,14 +87,14 @@ class Searches:
                 searchbar.clear()
                 searchbar.send_keys(word)
                 searchbar.submit()
-                time.sleep(random.randint(10, 15))
+                time.sleep(Utils.randomSeconds(10, 15))
 
                 # Scroll down after the search (adjust the number of scrolls as needed)
                 for _ in range(3):  # Scroll down 3 times
                     self.webdriver.execute_script(
                         "window.scrollTo(0, document.body.scrollHeight);"
                     )
-                    time.sleep(random.uniform(1, 2))  # Random wait between scrolls
+                    time.sleep(Utils.randomSeconds(1, 2))  # Random wait between scrolls
 
                 return self.browser.utils.getBingAccountPoints()
             except TimeoutException:
@@ -104,7 +105,7 @@ class Searches:
                     )
                     return self.browser.utils.getBingAccountPoints()
                 self.browser.utils.tryDismissAllMessages()
-                logging.error("[BING] " + "Timeout, retrying in 5 seconds...")
-                time.sleep(5)
+                logging.error("[BING] " + "Timeout, retrying in 5~ seconds...")
+                time.sleep(Utils.randomSeconds(4, 6))
                 i += 1
                 continue

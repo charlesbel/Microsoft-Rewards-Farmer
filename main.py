@@ -9,11 +9,13 @@ from pathlib import Path
 from src import Browser, DailySet, Login, MorePromotions, PunchCards, Searches
 from src.loggingColoredFormatter import ColoredFormatter
 from src.notifier import Notifier
+from src.utils import Utils
 
 POINTS_COUNTER = 0
 
 
 def main():
+    print("test", Utils.randomSeconds(5, 10))
     args = argumentParser()
     notifier = Notifier(args)
     setupLogging(args.verbosenotifs, notifier)

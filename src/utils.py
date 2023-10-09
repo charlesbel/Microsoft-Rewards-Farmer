@@ -1,6 +1,7 @@
 import contextlib
 import json
 import locale as pylocale
+import random
 import time
 import urllib.parse
 from pathlib import Path
@@ -251,6 +252,11 @@ class Utils:
         return pylocale.format_string(
             f"%10.{num_decimals}f", number, grouping=True
         ).strip()
+
+    # this will return a decimal like 6.248 from randomSeconds(5, 8)
+    def randomSeconds(min_value, max_value):
+        random_number = random.uniform(min_value, max_value)
+        return round(random_number, 3)
 
     @staticmethod
     def getBrowserConfig(sessionPath: Path) -> dict:

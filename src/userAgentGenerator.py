@@ -27,7 +27,7 @@ class GenerateUserAgent:
     }
 
     OS_PLATFORMS = {"win": "Windows NT 10.0", "android": "Linux"}
-    OS_CPUS = {"win": "Win64; x64", "android": "Android 10"}
+    OS_CPUS = {"win": "Win64; x64", "android": "Android 13"}
 
     def userAgent(
         self,

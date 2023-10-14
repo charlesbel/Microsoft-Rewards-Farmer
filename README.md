@@ -71,6 +71,7 @@
 - 2FA Support (3.0)
 - Notifications (discord, telegram) (3.0)
 - Proxy Support (3.0) - they need to be **high quality** proxies
+- Logs to CSV file for point tracking
 
 ## To Do List
 

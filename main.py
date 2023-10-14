@@ -1,4 +1,5 @@
 import argparse
+import csv
 import json
 import logging
 import logging.handlers as handlers
@@ -20,11 +21,39 @@ def main():
     notifier = Notifier(args)
     setupLogging(args.verbosenotifs, notifier)
     loadedAccounts = setupAccounts()
+
+    # Load previous day's points data
+    previous_points_data = load_previous_points_data()
+
+    points_data = []  # Create a list to store points data for all accounts
+
     for currentAccount in loadedAccounts:
         try:
-            executeBot(currentAccount, notifier, args)
+            earned_points = executeBot(currentAccount, notifier, args)
+            account_name = currentAccount.get("username", "")
+            previous_points = previous_points_data.get(account_name, 0)
+
+            # Calculate the difference in points from the prior day
+            points_difference = earned_points - previous_points
+
+            points_data.append(
+                {
+                    "Account": account_name,
+                    "Earned Points": earned_points,
+                    "Points Difference": points_difference,
+                }
+            )
+
+            # Update the previous day's points data
+            previous_points_data[account_name] = earned_points
         except Exception as e:
             logging.exception(f"{e.__class__.__name__}: {e}")
+
+    # Export points data to a CSV file in the "logs" folder
+    export_points_to_csv(points_data)
+
+    # Save the current day's points data for the next day in the "logs" folder
+    save_previous_points_data(previous_points_data)
 
 
 def setupLogging(verbose_notifs, notifier):
@@ -35,14 +64,15 @@ def setupLogging(verbose_notifs, notifier):
     terminalHandler = logging.StreamHandler(sys.stdout)
     terminalHandler.setFormatter(ColoredFormatter(format))
 
-    (Path(__file__).resolve().parent / "logs").mkdir(parents=True, exist_ok=True)
+    logs_directory = Path(__file__).resolve().parent / "logs"
+    logs_directory.mkdir(parents=True, exist_ok=True)
 
     logging.basicConfig(
         level=logging.INFO,
         format=format,
         handlers=[
             handlers.TimedRotatingFileHandler(
-                "logs/activity.log",
+                logs_directory / "activity.log",
                 when="midnight",
                 interval=1,
                 backupCount=2,
@@ -96,7 +126,7 @@ def argumentParser() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def setupAccounts() -> dict:
+def setupAccounts() -> list:
     accountPath = Path(__file__).resolve().parent / "accounts.json"
     if not accountPath.exists():
         accountPath.write_text(
@@ -166,6 +196,37 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
                 ]
             )
         )
+
+        return accountPointsCounter
+
+
+def export_points_to_csv(points_data):
+    logs_directory = Path(__file__).resolve().parent / "logs"
+    csv_filename = logs_directory / "points_data.csv"
+    with open(csv_filename, mode="w", newline="") as file:
+        fieldnames = ["Account", "Earned Points", "Points Difference"]
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        for data in points_data:
+            writer.writerow(data)
+
+
+# Define a function to load the previous day's points data from a file in the "logs" folder
+def load_previous_points_data():
+    logs_directory = Path(__file__).resolve().parent / "logs"
+    try:
+        with open(logs_directory / "previous_points_data.json", "r") as file:
+            data = json.load(file)
+            return data
+    except FileNotFoundError:
+        return {}
+
+
+# Define a function to save the current day's points data for the next day in the "logs" folder
+def save_previous_points_data(data):
+    logs_directory = Path(__file__).resolve().parent / "logs"
+    with open(logs_directory / "previous_points_data.json", "w") as file:
+        json.dump(data, file, indent=4)
 
 
 if __name__ == "__main__":

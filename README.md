@@ -75,7 +75,7 @@
 
 ## Notes
 
-- You may see [WARNING] in your logs - this is currently enabled for debugging or to provide in any issues you may need top open
+- You may see [WARNING] in your logs - this is currently enabled for debugging or to provide in any issues you may need to open
 
 ## To Do List
 

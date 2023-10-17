@@ -5,7 +5,10 @@ import logging
 import logging.handlers as handlers
 import random
 import sys
+from datetime import datetime
 from pathlib import Path
+
+import pandas as pd
 
 from src import Browser, DailySet, Login, MorePromotions, PunchCards, Searches
 from src.loggingColoredFormatter import ColoredFormatter
@@ -25,8 +28,6 @@ def main():
     # Load previous day's points data
     previous_points_data = load_previous_points_data()
 
-    points_data = []  # Create a list to store points data for all accounts
-
     for currentAccount in loadedAccounts:
         try:
             earned_points = executeBot(currentAccount, notifier, args)
@@ -36,24 +37,43 @@ def main():
             # Calculate the difference in points from the prior day
             points_difference = earned_points - previous_points
 
-            points_data.append(
-                {
-                    "Account": account_name,
-                    "Earned Points": earned_points,
-                    "Points Difference": points_difference,
-                }
-            )
+            # Append the daily points and points difference to CSV and Excel
+            log_daily_points_to_csv(account_name, earned_points, points_difference)
 
             # Update the previous day's points data
             previous_points_data[account_name] = earned_points
+
+            print(f"[POINTS] data for '{account_name}' appended to the file.")
         except Exception as e:
             logging.exception(f"{e.__class__.__name__}: {e}")
 
-    # Export points data to a CSV file in the "logs" folder
-    export_points_to_csv(points_data)
-
     # Save the current day's points data for the next day in the "logs" folder
     save_previous_points_data(previous_points_data)
+    print("Points data saved for the next day.")
+
+
+def log_daily_points_to_csv(date, earned_points, points_difference):
+    logs_directory = Path(__file__).resolve().parent / "logs"
+    csv_filename = logs_directory / "points_data.csv"
+
+    # Create a new row with the date, daily points, and points difference
+    date = datetime.now().strftime("%Y-%m-%d")
+    new_row = {
+        "Date": date,
+        "Earned Points": earned_points,
+        "Points Difference": points_difference,
+    }
+
+    fieldnames = ["Date", "Earned Points", "Points Difference"]
+    is_new_file = not csv_filename.exists()
+
+    with open(csv_filename, mode="a", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+
+        if is_new_file:
+            writer.writeheader()
+
+        writer.writerow(new_row)
 
 
 def setupLogging(verbose_notifs, notifier):
@@ -191,8 +211,8 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
                 [
                     "MS Rewards Farmer",
                     f"Account: {currentAccount.get('username', '')}",
-                    f"⭐️ Points earned today: {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)}",
-                    f"🏅 Total points: {desktopBrowser.utils.formatNumber(accountPointsCounter)}",
+                    f"â­ï¸ Points earned today: {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)}",
+                    f"ðŸ… Total points: {desktopBrowser.utils.formatNumber(accountPointsCounter)}",
                 ]
             )
         )
@@ -203,10 +223,14 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
 def export_points_to_csv(points_data):
     logs_directory = Path(__file__).resolve().parent / "logs"
     csv_filename = logs_directory / "points_data.csv"
-    with open(csv_filename, mode="w", newline="") as file:
+    with open(csv_filename, mode="a", newline="") as file:  # Use "a" mode for append
         fieldnames = ["Account", "Earned Points", "Points Difference"]
         writer = csv.DictWriter(file, fieldnames=fieldnames)
-        writer.writeheader()
+
+        # Check if the file is empty, and if so, write the header row
+        if file.tell() == 0:
+            writer.writeheader()
+
         for data in points_data:
             writer.writerow(data)
 

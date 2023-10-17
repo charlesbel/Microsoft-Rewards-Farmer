@@ -73,6 +73,10 @@
 - Proxy Support (3.0) - they need to be **high quality** proxies
 - Logs to CSV file for point tracking
 
+## Notes
+
+- You may see [WARNING] in your logs - this is currently enabled for debugging or to provide in any issues you may need top open
+
 ## To Do List
 
 - Complete shopping game - _currently disabled_

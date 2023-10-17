@@ -5,10 +5,9 @@ import logging
 import logging.handlers as handlers
 import random
 import sys
-from datetime import datetime
 from pathlib import Path
-
 import pandas as pd
+from datetime import datetime
 
 from src import Browser, DailySet, Login, MorePromotions, PunchCards, Searches
 from src.loggingColoredFormatter import ColoredFormatter
@@ -16,7 +15,6 @@ from src.notifier import Notifier
 from src.utils import Utils
 
 POINTS_COUNTER = 0
-
 
 def main():
     print("test", Utils.randomSeconds(5, 10))
@@ -51,7 +49,6 @@ def main():
     save_previous_points_data(previous_points_data)
     print("Points data saved for the next day.")
 
-
 def log_daily_points_to_csv(date, earned_points, points_difference):
     logs_directory = Path(__file__).resolve().parent / "logs"
     csv_filename = logs_directory / "points_data.csv"
@@ -69,12 +66,11 @@ def log_daily_points_to_csv(date, earned_points, points_difference):
 
     with open(csv_filename, mode="a", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
-
+        
         if is_new_file:
             writer.writeheader()
-
+        
         writer.writerow(new_row)
-
 
 def setupLogging(verbose_notifs, notifier):
     ColoredFormatter.verbose_notifs = verbose_notifs
@@ -209,10 +205,10 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
         notifier.send(
             "\n".join(
                 [
-                    "MS Rewards Farmer",
-                    f"Account: {currentAccount.get('username', '')}",
-                    f"â­ï¸ Points earned today: {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)}",
-                    f"ðŸ… Total points: {desktopBrowser.utils.formatNumber(accountPointsCounter)}",
+                    "🏅 MS Rewards Farmer",
+                    f"👤 Account: {currentAccount.get('username', '')}",
+                    f"⭐️ Points earned today: {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)}",
+                    f"💰 Total points: {desktopBrowser.utils.formatNumber(accountPointsCounter)}",
                 ]
             )
         )

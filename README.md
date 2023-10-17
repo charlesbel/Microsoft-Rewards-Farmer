@@ -83,3 +83,4 @@
 - Complete Edge game tab - _currently disabled_
 - Complete "Read To Earn" (30 pts)
 - Setup flags for mobile/desktop search only
+- Pull Telegram and Discord info to json files so you don't need to input them on command line. (partial groundwork done)

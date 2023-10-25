@@ -5,6 +5,7 @@ import logging
 import logging.handlers as handlers
 import random
 import sys
+import time
 from pathlib import Path
 import pandas as pd
 from datetime import datetime
@@ -179,10 +180,18 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
             remainingSearches,
             remainingSearchesM,
         ) = desktopBrowser.utils.getRemainingSearches()
+
+        # Introduce random pauses before and after searches
+        pause_before_search = random.uniform(1.0, 5.0)  # Random pause between 1 to 5 seconds
+        time.sleep(pause_before_search)
+
         if remainingSearches != 0:
             accountPointsCounter = Searches(desktopBrowser).bingSearches(
                 remainingSearches
             )
+
+        pause_after_search = random.uniform(1.0, 5.0)  # Random pause between 1 to 5 seconds
+        time.sleep(pause_after_search)
 
         if remainingSearchesM != 0:
             desktopBrowser.closeBrowser()
@@ -193,6 +202,7 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
                 accountPointsCounter = Searches(mobileBrowser).bingSearches(
                     remainingSearchesM
                 )
+
         desktopBrowser.closeBrowser()
 
         logging.info(

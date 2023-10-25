@@ -168,6 +168,12 @@ class Utils:
     def getBingAccountPoints(self) -> int:
         return data["userInfo"]["balance"] if (data := self.getBingInfo()) else 0
 
+    def getGoalPoints(self) -> int:
+        return self.getDashboardData()["userStatus"]["redeemGoal"]["price"]
+
+    def getGoalTitle(self) -> str:
+        return self.getDashboardData()["userStatus"]["redeemGoal"]["title"]
+
     def tryDismissAllMessages(self):
         buttons = [
             (By.ID, "iLandingViewAction"),

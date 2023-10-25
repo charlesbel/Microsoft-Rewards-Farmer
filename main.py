@@ -203,14 +203,23 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
                     remainingSearchesM
                 )
 
+        desktopBrowser.utils.goHome()
+        goalPoints = desktopBrowser.utils.getGoalPoints()
+        goalTitle = desktopBrowser.utils.getGoalTitle()
         desktopBrowser.closeBrowser()
 
         logging.info(
             f"[POINTS] You have earned {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)} points today !"
         )
         logging.info(
-            f"[POINTS] You are now at {desktopBrowser.utils.formatNumber(accountPointsCounter)} points !\n"
+            f"[POINTS] You are now at {desktopBrowser.utils.formatNumber(accountPointsCounter)} points !"
         )
+        goalNotifier = ""
+        if goalPoints > 0:
+            logging.info(
+                f"[POINTS] You are now at {(desktopBrowser.utils.formatNumber((accountPointsCounter / goalPoints) * 100))}% of your goal ({goalTitle}) !\n"
+            )
+            goalNotifier = f"🎯 Goal reached: {(desktopBrowser.utils.formatNumber((accountPointsCounter / goalPoints) * 100))}% ({goalTitle})"
 
         notifier.send(
             "\n".join(
@@ -219,6 +228,7 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
                     f"👤 Account: {currentAccount.get('username', '')}",
                     f"⭐️ Points earned today: {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)}",
                     f"💰 Total points: {desktopBrowser.utils.formatNumber(accountPointsCounter)}",
+                    goalNotifier,
                 ]
             )
         )

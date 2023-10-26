@@ -6,9 +6,15 @@ import logging.handlers as handlers
 import random
 import sys
 import time
-from pathlib import Path
-import pandas as pd
 from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from src import Browser, DailySet, Login, MorePromotions, PunchCards, Searches
 from src.loggingColoredFormatter import ColoredFormatter
@@ -16,6 +22,7 @@ from src.notifier import Notifier
 from src.utils import Utils
 
 POINTS_COUNTER = 0
+
 
 def main():
     print("test", Utils.randomSeconds(5, 10))
@@ -50,6 +57,7 @@ def main():
     save_previous_points_data(previous_points_data)
     print("Points data saved for the next day.")
 
+
 def log_daily_points_to_csv(date, earned_points, points_difference):
     logs_directory = Path(__file__).resolve().parent / "logs"
     csv_filename = logs_directory / "points_data.csv"
@@ -67,11 +75,12 @@ def log_daily_points_to_csv(date, earned_points, points_difference):
 
     with open(csv_filename, mode="a", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=fieldnames)
-        
+
         if is_new_file:
             writer.writeheader()
-        
+
         writer.writerow(new_row)
+
 
 def setupLogging(verbose_notifs, notifier):
     ColoredFormatter.verbose_notifs = verbose_notifs
@@ -85,7 +94,7 @@ def setupLogging(verbose_notifs, notifier):
     logs_directory.mkdir(parents=True, exist_ok=True)
 
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.INFO,  # Set the logging level to INFO (show INFO and higher messages)
         format=format,
         handlers=[
             handlers.TimedRotatingFileHandler(
@@ -182,15 +191,19 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
         ) = desktopBrowser.utils.getRemainingSearches()
 
         # Introduce random pauses before and after searches
-        pause_before_search = random.uniform(1.0, 5.0)  # Random pause between 1 to 5 seconds
+        pause_before_search = random.uniform(
+            1.0, 5.0
+        )  # Random pause between 1 to 5 seconds
         time.sleep(pause_before_search)
 
         if remainingSearches != 0:
-            accountPointsCounter = Searches(desktopBrowser).bingSearches(
-                remainingSearches
+            accountPointsCounter = Searches(desktopBrowser).bingSearchesWithScrolling(
+                remainingSearches, desktopBrowser
             )
 
-        pause_after_search = random.uniform(1.0, 5.0)  # Random pause between 1 to 5 seconds
+        pause_after_search = random.uniform(
+            1.0, 5.0
+        )  # Random pause between 1 to 5 seconds
         time.sleep(pause_after_search)
 
         if remainingSearchesM != 0:
@@ -199,9 +212,9 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
                 mobile=True, account=currentAccount, args=args
             ) as mobileBrowser:
                 accountPointsCounter = Login(mobileBrowser).login()
-                accountPointsCounter = Searches(mobileBrowser).bingSearches(
-                    remainingSearchesM
-                )
+                accountPointsCounter = Searches(
+                    mobileBrowser
+                ).bingSearchesWithScrolling(remainingSearchesM, mobileBrowser)
 
         desktopBrowser.utils.goHome()
         goalPoints = desktopBrowser.utils.getGoalPoints()

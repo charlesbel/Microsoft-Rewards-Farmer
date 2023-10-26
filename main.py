@@ -10,11 +10,6 @@ from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 
 from src import Browser, DailySet, Login, MorePromotions, PunchCards, Searches
 from src.loggingColoredFormatter import ColoredFormatter
@@ -94,7 +89,7 @@ def setupLogging(verbose_notifs, notifier):
     logs_directory.mkdir(parents=True, exist_ok=True)
 
     logging.basicConfig(
-        level=logging.INFO,  # Set the logging level to INFO (show INFO and higher messages)
+        level=logging.INFO,
         format=format,
         handlers=[
             handlers.TimedRotatingFileHandler(
@@ -197,8 +192,8 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
         time.sleep(pause_before_search)
 
         if remainingSearches != 0:
-            accountPointsCounter = Searches(desktopBrowser).bingSearchesWithScrolling(
-                remainingSearches, desktopBrowser
+            accountPointsCounter = Searches(desktopBrowser).bingSearches(
+                remainingSearches
             )
 
         pause_after_search = random.uniform(
@@ -212,9 +207,9 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
                 mobile=True, account=currentAccount, args=args
             ) as mobileBrowser:
                 accountPointsCounter = Login(mobileBrowser).login()
-                accountPointsCounter = Searches(
-                    mobileBrowser
-                ).bingSearchesWithScrolling(remainingSearchesM, mobileBrowser)
+                accountPointsCounter = Searches(mobileBrowser).bingSearches(
+                    remainingSearchesM
+                )
 
         desktopBrowser.utils.goHome()
         goalPoints = desktopBrowser.utils.getGoalPoints()

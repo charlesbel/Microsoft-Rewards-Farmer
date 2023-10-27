@@ -50,9 +50,7 @@ def main():
 
     # Save the current day's points data for the next day in the "logs" folder
     save_previous_points_data(previous_points_data)
-    logging.info(
-        f"[POINTS] Data saved for the next day."
-    )
+    logging.info("[POINTS] Data saved for the next day.")
 
 def log_daily_points_to_csv(date, earned_points, points_difference):
     logs_directory = Path(__file__).resolve().parent / "logs"
@@ -269,8 +267,7 @@ def load_previous_points_data():
     logs_directory = Path(__file__).resolve().parent / "logs"
     try:
         with open(logs_directory / "previous_points_data.json", "r") as file:
-            data = json.load(file)
-            return data
+            return json.load(file)
     except FileNotFoundError:
         return {}
 

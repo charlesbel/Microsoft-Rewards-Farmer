@@ -42,13 +42,17 @@ def main():
             # Update the previous day's points data
             previous_points_data[account_name] = earned_points
 
-            print(f"[POINTS] data for '{account_name}' appended to the file.")
+            logging.info(
+                f"[POINTS] Data for '{account_name}' appended to the file."
+            )
         except Exception as e:
             logging.exception(f"{e.__class__.__name__}: {e}")
 
     # Save the current day's points data for the next day in the "logs" folder
     save_previous_points_data(previous_points_data)
-    print("Points data saved for the next day.")
+    logging.info(
+        f"[POINTS] Data saved for the next day."
+    )
 
 def log_daily_points_to_csv(date, earned_points, points_difference):
     logs_directory = Path(__file__).resolve().parent / "logs"
@@ -203,6 +207,7 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
         goalTitle = desktopBrowser.utils.getGoalTitle()
         desktopBrowser.closeBrowser()
     
+    remainingSearchesM = 1
     if remainingSearchesM != 0:
         desktopBrowser.closeBrowser()
         with Browser(mobile=True, account=currentAccount, args=args) as mobileBrowser:

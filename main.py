@@ -205,7 +205,6 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
         goalTitle = desktopBrowser.utils.getGoalTitle()
         desktopBrowser.closeBrowser()
     
-    remainingSearchesM = 1
     if remainingSearchesM != 0:
         desktopBrowser.closeBrowser()
         with Browser(mobile=True, account=currentAccount, args=args) as mobileBrowser:

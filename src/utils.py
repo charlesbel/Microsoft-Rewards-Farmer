@@ -202,15 +202,15 @@ class Utils:
         dashboard = self.getDashboardData()
         searchPoints = 1
         counters = dashboard["userStatus"]["counters"]
-        if "pcSearch" not in counters:
+        if "PCSearch" not in counters:
             return 0, 0
         progressDesktop = (
-            counters["pcSearch"][0]["pointProgress"]
-            + counters["pcSearch"][1]["pointProgress"]
+            counters["PCSearch"][0]["pointProgress"]
+            + counters["PCSearch"][1]["pointProgress"]
         )
         targetDesktop = (
-            counters["pcSearch"][0]["pointProgressMax"]
-            + counters["pcSearch"][1]["pointProgressMax"]
+            counters["PCSearch"][0]["pointProgressMax"]
+            + counters["PCSearch"][1]["pointProgressMax"]
         )
         if targetDesktop in [33, 102]:
             # Level 1 or 2 EU

@@ -202,18 +202,21 @@ class Utils:
         dashboard = self.getDashboardData()
         searchPoints = 1
         counters = dashboard["userStatus"]["counters"]
+
         if "pcSearch" not in counters:
             return 0, 0
-        progressDesktop = (
-            counters["pcSearch"][0]["pointProgress"]
-            + counters["pcSearch"][1]["pointProgress"]
-        )
-        targetDesktop = (
-            counters["pcSearch"][0]["pointProgressMax"]
-            + counters["pcSearch"][1]["pointProgressMax"]
-        )
+        progressDesktop = 0
+
+        for item in counters['pcSearch']:
+            progressDesktop += item.get('pointProgress', 0)
+
+        targetDesktop = 0
+
+        for item in counters['pcSearch']:
+            targetDesktop += item.get('pointProgressMax', 0)
+
         if targetDesktop in [33, 102]:
-            # Level 1 or 2 EU
+            # Level 1 or 2 EU/South America
             searchPoints = 3
         elif targetDesktop == 55 or targetDesktop >= 170:
             # Level 1 or 2 US

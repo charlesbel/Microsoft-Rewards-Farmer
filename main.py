@@ -122,7 +122,7 @@ def setupAccounts() -> dict:
 
 def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
     logging.info(
-        f'********************{ currentAccount.get("username", "") }********************'
+        f'********************{currentAccount.get("username", "")}********************'
     )
     with Browser(mobile=False, account=currentAccount, args=args) as desktopBrowser:
         accountPointsCounter = Login(desktopBrowser).login()

@@ -6,7 +6,15 @@ import random
 import sys
 from pathlib import Path
 
-from src import Browser, DailySet, Login, MorePromotions, PunchCards, Searches
+from src import (
+    Browser,
+    DailySet,
+    Login,
+    MorePromotions,
+    PunchCards,
+    Searches,
+    ShoppingGame,
+)
 from src.constants import VERSION
 from src.loggingColoredFormatter import ColoredFormatter
 from src.notifier import Notifier
@@ -130,6 +138,7 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
         logging.info(
             f"[POINTS] You have {desktopBrowser.utils.formatNumber(accountPointsCounter)} points on your account !"
         )
+        ShoppingGame(desktopBrowser).completeShoppingGame()
         DailySet(desktopBrowser).completeDailySet()
         PunchCards(desktopBrowser).completePunchCards()
         MorePromotions(desktopBrowser).completeMorePromotions()

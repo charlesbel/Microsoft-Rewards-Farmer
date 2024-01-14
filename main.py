@@ -124,6 +124,11 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
     logging.info(
         f'********************{currentAccount.get("username", "")}********************'
     )
+    accountsPointsCounter: int
+    remainingSearchesMobile: int
+    startingPoints: int
+    accountPointsCounter: int
+    remainingSearchesMobile: int
     with Browser(mobile=False, account=currentAccount, args=args) as desktopBrowser:
         accountPointsCounter = Login(desktopBrowser).login()
         startingPoints = accountPointsCounter
@@ -135,40 +140,37 @@ def executeBot(currentAccount, notifier: Notifier, args: argparse.Namespace):
         MorePromotions(desktopBrowser).completeMorePromotions()
         (
             remainingSearches,
-            remainingSearchesM,
+            remainingSearchesMobile,
         ) = desktopBrowser.utils.getRemainingSearches()
         if remainingSearches != 0:
             accountPointsCounter = Searches(desktopBrowser).bingSearches(
                 remainingSearches
             )
 
-        if remainingSearchesM != 0:
-            desktopBrowser.closeBrowser()
-            with Browser(
-                mobile=True, account=currentAccount, args=args
-            ) as mobileBrowser:
-                accountPointsCounter = Login(mobileBrowser).login()
-                accountPointsCounter = Searches(mobileBrowser).bingSearches(
-                    remainingSearchesM
-                )
-
-        logging.info(
-            f"[POINTS] You have earned {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)} points today !"
-        )
-        logging.info(
-            f"[POINTS] You are now at {desktopBrowser.utils.formatNumber(accountPointsCounter)} points !\n"
-        )
-
-        notifier.send(
-            "\n".join(
-                [
-                    "Microsoft Rewards Farmer",
-                    f"Account: {currentAccount.get('username', '')}",
-                    f"Points earned today: {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)}",
-                    f"Total points: {desktopBrowser.utils.formatNumber(accountPointsCounter)}",
-                ]
+    if remainingSearchesMobile != 0:
+        with Browser(mobile=True, account=currentAccount, args=args) as mobileBrowser:
+            Login(mobileBrowser).login()
+            accountPointsCounter = Searches(mobileBrowser).bingSearches(
+                remainingSearchesMobile
             )
+
+    logging.info(
+        f"[POINTS] You have earned {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)} points today !"
+    )
+    logging.info(
+        f"[POINTS] You are now at {desktopBrowser.utils.formatNumber(accountPointsCounter)} points !\n"
+    )
+
+    notifier.send(
+        "\n".join(
+            [
+                "Microsoft Rewards Farmer",
+                f"Account: {currentAccount.get('username', '')}",
+                f"Points earned today: {desktopBrowser.utils.formatNumber(accountPointsCounter - startingPoints)}",
+                f"Total points: {desktopBrowser.utils.formatNumber(accountPointsCounter)}",
+            ]
         )
+    )
 
 
 if __name__ == "__main__":

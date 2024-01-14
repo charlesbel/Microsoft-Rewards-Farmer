@@ -9,9 +9,12 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 
 from src.browser import Browser
+from src.constants import SEARCH_AMOUNT_TILL_COOLDOWN, COOLDOWN_TIMEOUT_IN_SECONDS
 
 
 class Searches:
+    searchesRemainingTillCooldown: int = SEARCH_AMOUNT_TILL_COOLDOWN
+
     def __init__(self, browser: Browser):
         self.browser = browser
         self.webdriver = browser.webdriver
@@ -56,7 +59,11 @@ class Searches:
         i = 0
         search_terms = self.getGoogleTrends(numberOfSearches)
         for word in search_terms:
+            if Searches.searchesRemainingTillCooldown == 0:
+                time.sleep(COOLDOWN_TIMEOUT_IN_SECONDS)
+                Searches.searchesRemainingTillCooldown = SEARCH_AMOUNT_TILL_COOLDOWN
             i += 1
+            Searches.searchesRemainingTillCooldown -= 1
             logging.info("[BING] " + f"{i}/{numberOfSearches}")
             points = self.bingSearch(word)
             if points <= pointsCounter:

@@ -218,7 +218,7 @@ class Utils:
         if targetDesktop in [33, 102]:
             # Level 1 or 2 EU/South America
             searchPoints = 3
-        elif targetDesktop == 55 or targetDesktop >= 170:
+        elif targetDesktop == 50 or targetDesktop >= 150:
             # Level 1 or 2 US
             searchPoints = 5
         remainingDesktop = int((targetDesktop - progressDesktop) / searchPoints)

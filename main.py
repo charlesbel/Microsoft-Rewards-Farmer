@@ -67,6 +67,7 @@ def argumentParser() -> argparse.Namespace:
         default=None,
         help="Optional: Global Proxy (ex: http://user:pass@host:port)",
     )
+    # noinspection SpellCheckingInspection
     parser.add_argument(
         "-t",
         "--telegram",

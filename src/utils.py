@@ -33,7 +33,7 @@ class Utils:
 
     def waitForMSRewardElement(self, by: str, selector: str):
         loadingTimeAllowed = 5
-        refreshsAllowed = 5
+        refreshesAllowed = 5
 
         checkingInterval = 0.5
         checks = loadingTimeAllowed / checkingInterval
@@ -41,6 +41,7 @@ class Utils:
         tries = 0
         refreshCount = 0
         while True:
+            # noinspection PyBroadException
             try:
                 self.webdriver.find_element(by, selector)
                 return True
@@ -48,7 +49,7 @@ class Utils:
                 if tries < checks:
                     tries += 1
                     time.sleep(checkingInterval)
-                elif refreshCount < refreshsAllowed:
+                elif refreshCount < refreshesAllowed:
                     self.webdriver.refresh()
                     refreshCount += 1
                     tries = 0
@@ -63,6 +64,7 @@ class Utils:
         return self.waitForMSRewardElement(By.XPATH, '//*[@id="rqStartQuiz"]')
 
     def resetTabs(self):
+        # noinspection PyBroadException
         try:
             curr = self.webdriver.current_window_handle
 
@@ -107,7 +109,8 @@ class Utils:
                 if reloads >= reloadThreshold:
                     break
 
-    def getAnswerCode(self, key: str, string: str) -> str:
+    @staticmethod
+    def getAnswerCode(key: str, string: str) -> str:
         t = sum(ord(string[i]) for i in range(len(string)))
         t += int(key[-2:], 16)
         return str(t)
@@ -163,6 +166,7 @@ class Utils:
         ]
         result = False
         for button in buttons:
+            # noinspection PyBroadException
             try:
                 self.webdriver.find_element(button[0], button[1]).click()
                 result = True
@@ -229,7 +233,8 @@ class Utils:
             remainingMobile = int((targetMobile - progressMobile) / searchPoints)
         return remainingDesktop, remainingMobile
 
-    def formatNumber(self, number, num_decimals=2):
+    @staticmethod
+    def formatNumber(number, num_decimals=2):
         return pylocale.format_string(
             f"%10.{num_decimals}f", number, grouping=True
         ).strip()

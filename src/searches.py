@@ -41,6 +41,7 @@ class Searches:
         return searchTerms
 
     def getRelatedTerms(self, word: str) -> list:
+        # noinspection PyBroadException
         try:
             r = requests.get(
                 f"https://api.bing.com/osjson.aspx?query={word}",

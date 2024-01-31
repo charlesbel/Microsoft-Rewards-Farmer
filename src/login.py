@@ -1,5 +1,6 @@
 import contextlib
 import logging
+import os
 import time
 import urllib.parse
 
@@ -64,8 +65,15 @@ class Login:
                     By.ID, "idRemoteNGC_DisplaySign"
                 ).get_attribute("innerHTML")
                 logging.error("[LOGIN] " + f"2FA code: {code}")
-            logging.info("[LOGIN] Press enter when confirmed...")
-            input()
+            if os.environ.get("DOCKER"):
+                dockerWaitTime = 15
+                logging.info(
+                    "[LOGIN] Waiting " + str(dockerWaitTime) + " seconds for 2FA..."
+                )
+                time.sleep(dockerWaitTime)
+            else:
+                logging.info("[LOGIN] Press enter when confirmed...")
+                input()
 
         while not (
             urllib.parse.urlparse(self.webdriver.current_url).path == "/"

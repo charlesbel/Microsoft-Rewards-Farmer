@@ -15,6 +15,14 @@ POINTS_COUNTER = 0
 
 
 def main():
+    if sys.version_info[0] == 3:
+        if sys.version_info[1] >= 12:
+            raise Exception(
+                "Not supported, see https://peps.python.org/pep-0632/#:~:text=In%20Python%203.12%2C%20distutils"
+                "%20will%20no%20longer%20be%20installed%20by%20make%20install%20or%20any%20of%20the%20first%2Dparty"
+                "%20distribution.%20Third%2Dparty%20redistributors%20should%20no%20longer%20include%20distutils%20in"
+                "%20their%20bundles%20or%20repositories."
+            )
     setupLogging()
     args = argumentParser()
     notifier = Notifier(args)

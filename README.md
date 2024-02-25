@@ -32,17 +32,11 @@
 
 2. Make sure you have Chrome installed
 
-3. ~~Install ChromeDriver:~~
-
-   You no longer need to do this step since selenium >=4.10.0 include a webdriver manager
-
-   To update your selenium version, run this command : `pip install selenium --upgrade`
-
-4. (Windows Only) Make sure Visual C++ redistributable DLLs are installed
+3. (Windows Only) Make sure Visual C++ redistributable DLLs are installed
 
    If they're not, install the current "vc_redist.exe" from this link and reboot your computer : https://learn.microsoft.com/en-GB/cpp/windows/latest-supported-vc-redist?view=msvc-170
 
-5. Edit the `accounts.json.sample` with your accounts credentials and rename it by removing `.sample` at the end. The "proxy" field is not mandatory, you can ommit it if you don't want to use proxy (don't keep it as an empty string, remove it completely).
+4. Edit the `accounts.json.sample` with your accounts credentials and rename it by removing `.sample` at the end. The "proxy" field is not mandatory, you can ommit it if you don't want to use proxy (don't keep it as an empty string, remove it completely).
 
    - If you want to add more than one account, the syntax is the following:
 
@@ -61,7 +55,7 @@
    ]
    ```
 
-6. Run the script:
+5. Run the script:
 
    `python main.py`
 

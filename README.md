@@ -32,19 +32,16 @@
 
 2. Make sure you have Chrome installed
 
-3. ~~Install ChromeDriver:~~
+3. (Windows Only) Make sure Visual C++ redistributable DLLs are installed
 
-   You no longer need to do this step since selenium >=4.10.0 include a webdriver manager
+   If they're not, install the current "vc_redist.exe" from this link and reboot your
+   computer : https://learn.microsoft.com/en-GB/cpp/windows/latest-supported-vc-redist?view=msvc-170
 
-   To update your selenium version, run this command : `pip install selenium --upgrade`
+4. Edit the `accounts.json.sample` with your accounts credentials and rename it by removing `.sample` at the end. The "
+   proxy" field is not mandatory, you can omit it if you don't want to use proxy (don't keep it as an empty string,
+   remove it completely).
 
-4. (Windows Only) Make sure Visual C++ redistributable DLLs are installed
-
-   If they're not, install the current "vc_redist.exe" from this link and reboot your computer : https://learn.microsoft.com/en-GB/cpp/windows/latest-supported-vc-redist?view=msvc-170
-
-5. Edit the `accounts.json.sample` with your accounts credentials and rename it by removing `.sample` at the end. The "proxy" field is not mandatory, you can ommit it if you don't want to use proxy (don't keep it as an empty string, remove it completely).
-
-   - If you want to add more than one account, the syntax is the following:
+    - If you want to add more than one account, the syntax is the following:
 
    ```json
    [
@@ -61,11 +58,12 @@
    ]
    ```
 
-6. Run the script:
+5. Run the script:
 
    `python main.py`
 
-   Or if you want to keep it updated (it will check on each run if a new version is available, if so, will download and run it), use :
+   Or if you want to keep it updated (it will check on each run if a new version is available, if so, will download and
+   run it), use :
 
    `python autoupdate_main.py`
 
@@ -74,9 +72,12 @@
 - -v/--visible to disable headless
 - -l/--lang to force a language (ex: en)
 - -g/--geo to force a geolocation (ex: US)
-- -p/--proxy to add a proxy to the whole program, supports http/https/socks4/socks5 (overrides per-account proxy in accounts.json) (ex: http://user:pass@host:port)
-- -t/--telegram to add a telegram notification, requires Telegram Bot Token and Chat ID (ex: 123456789:ABCdefGhIjKlmNoPQRsTUVwxyZ 123456789)
-- -d/--discord to add a discord notification, requires Discord Webhook URL (ex: https://discord.com/api/webhooks/123456789/ABCdefGhIjKlmNoPQRsTUVwxyZ)
+- -p/--proxy to add a proxy to the whole program, supports http/https/socks4/socks5 (overrides per-account proxy in
+  accounts.json) (ex: http://user:pass@host:port)
+- -t/--telegram to add a telegram notification, requires Telegram Bot Token and Chat ID (ex: 123456789:
+  ABCdefGhIjKlmNoPQRsTUVwxyZ 123456789)
+- -d/--discord to add a discord notification, requires Discord Webhook URL (
+  ex: https://discord.com/api/webhooks/123456789/ABCdefGhIjKlmNoPQRsTUVwxyZ)
 
 ## Features
 

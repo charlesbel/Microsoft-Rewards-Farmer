@@ -1,5 +1,5 @@
-requests
-selenium
-ipapi
-undetected-chromedriver
+requests~=2.31.0
+selenium~=4.16.0
+ipapi~=1.0.4
+undetected-chromedriver>=3.5.5
 selenium-wire

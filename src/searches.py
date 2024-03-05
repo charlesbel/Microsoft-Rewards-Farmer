@@ -60,11 +60,15 @@ class Searches:
         i = 0
         search_terms = self.getGoogleTrends(numberOfSearches)
         for word in search_terms:
-            if Searches.searchesRemainingTillCooldown == 0:
-                time.sleep(COOLDOWN_TIMEOUT_IN_SECONDS)
-                Searches.searchesRemainingTillCooldown = SEARCH_AMOUNT_TILL_COOLDOWN
+            if Searches.searchesRemainingTillCooldown != None:
+                if Searches.searchesRemainingTillCooldown == 0:
+                    logging.info(
+                        "[BING] " + f"Sleeping {COOLDOWN_TIMEOUT_IN_SECONDS} seconds"
+                    )
+                    time.sleep(COOLDOWN_TIMEOUT_IN_SECONDS)
+                    Searches.searchesRemainingTillCooldown = SEARCH_AMOUNT_TILL_COOLDOWN
+                Searches.searchesRemainingTillCooldown -= 1
             i += 1
-            Searches.searchesRemainingTillCooldown -= 1
             logging.info("[BING] " + f"{i}/{numberOfSearches}")
             points = self.bingSearch(word)
             if points <= pointsCounter:

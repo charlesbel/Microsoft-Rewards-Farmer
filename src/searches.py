@@ -9,9 +9,12 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 
 from src.browser import Browser
+from src.constants import SEARCH_AMOUNT_TILL_COOLDOWN, COOLDOWN_TIMEOUT_IN_SECONDS
 
 
 class Searches:
+    searchesRemainingTillCooldown: int = SEARCH_AMOUNT_TILL_COOLDOWN
+
     def __init__(self, browser: Browser):
         self.browser = browser
         self.webdriver = browser.webdriver
@@ -38,6 +41,7 @@ class Searches:
         return searchTerms
 
     def getRelatedTerms(self, word: str) -> list:
+        # noinspection PyBroadException
         try:
             r = requests.get(
                 f"https://api.bing.com/osjson.aspx?query={word}",
@@ -56,6 +60,14 @@ class Searches:
         i = 0
         search_terms = self.getGoogleTrends(numberOfSearches)
         for word in search_terms:
+            if Searches.searchesRemainingTillCooldown != None:
+                if Searches.searchesRemainingTillCooldown == 0:
+                    logging.info(
+                        "[BING] " + f"Sleeping {COOLDOWN_TIMEOUT_IN_SECONDS} seconds"
+                    )
+                    time.sleep(COOLDOWN_TIMEOUT_IN_SECONDS)
+                    Searches.searchesRemainingTillCooldown = SEARCH_AMOUNT_TILL_COOLDOWN
+                Searches.searchesRemainingTillCooldown -= 1
             i += 1
             logging.info("[BING] " + f"{i}/{numberOfSearches}")
             points = self.bingSearch(word)

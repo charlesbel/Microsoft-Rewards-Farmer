@@ -159,6 +159,7 @@ class Utils:
             (By.ID, "iNext"),
             (By.ID, "iLooksGood"),
             (By.ID, "idSIButton9"),
+            (By.ID, "acceptButton"),
             (By.CSS_SELECTOR, ".ms-Button.ms-Button--primary"),
         ]
         result = False

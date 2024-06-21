@@ -4,6 +4,7 @@ import time
 import urllib.parse
 
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 
 from src.browser import Browser
 
@@ -27,7 +28,7 @@ class Login:
                 break
             except Exception:  # pylint: disable=broad-except
                 try:
-                    self.utils.waitUntilVisible(By.ID, "loginHeader", 0.1)
+                    self.utils.waitUntilVisible(By.ID, "i0116", 0.1)
                     break
                 except Exception:  # pylint: disable=broad-except
                     if self.utils.tryDismissAllMessages():
@@ -35,6 +36,7 @@ class Login:
 
         if not alreadyLoggedIn:
             self.executeLogin()
+
         self.utils.tryDismissCookieBanner()
 
         logging.info("[LOGIN] " + "Logged-in !")
@@ -48,7 +50,7 @@ class Login:
         return points
 
     def executeLogin(self):
-        self.utils.waitUntilVisible(By.ID, "loginHeader", 10)
+        self.utils.waitUntilVisible(By.ID, "i0116", 10)
         logging.info("[LOGIN] " + "Writing email...")
         self.webdriver.find_element(By.NAME, "loginfmt").send_keys(
             self.browser.username
@@ -67,6 +69,18 @@ class Login:
             logging.info("[LOGIN] Press enter when confirmed...")
             input()
 
+        try:
+            self.utils.waitUntilVisible(
+                By.NAME, 'iProofEmail', 0.5
+            )
+            logging.error('[LOGIN] Needs you to prove email')
+            logging.info('[LOGIN] Press enter when confirmed...')
+            input()
+        except:
+            logging.info('[LOGIN] No email proof, all clear')
+        
+        self.utils.tryDismissAllMessages()
+
         while not (
             urllib.parse.urlparse(self.webdriver.current_url).path == "/"
             and urllib.parse.urlparse(self.webdriver.current_url).hostname
@@ -83,14 +97,33 @@ class Login:
         self.utils.waitUntilClickable(By.NAME, "passwd", 10)
         self.utils.waitUntilClickable(By.ID, "idSIButton9", 10)
         # browser.webdriver.find_element(By.NAME, "passwd").send_keys(password)
-        # If password contains special characters like " ' or \, send_keys() will not work
-        password = password.replace("\\", "\\\\").replace('"', '\\"')
-        self.webdriver.execute_script(
-            f'document.getElementsByName("passwd")[0].value = "{password}";'
-        )
+        # If password contains special characters like " ' or \, send_keys() will not work so we need to parse and use numpads for special characters
+        for char in password:
+            if char == '"':
+                self.webdriver.find_element(By.NAME, "passwd").send_keys(Keys.SHIFT, Keys.NUMPAD2)
+            elif char == "'":
+                self.webdriver.find_element(By.NAME, "passwd").send_keys(Keys.SHIFT, Keys.NUMPAD3)
+            elif char == '\\':
+                self.webdriver.find_element(By.NAME, "passwd").send_keys(Keys.SHIFT, Keys.NUMPAD7)
+            elif char == '[':
+                self.webdriver.find_element(By.NAME, "passwd").send_keys(Keys.SHIFT, Keys.NUMPAD9)
+            elif char == ']':
+                self.webdriver.find_element(By.NAME, "passwd").send_keys(Keys.SHIFT, Keys.NUMPAD0)
+            elif char == '{':
+                self.webdriver.find_element(By.NAME, "passwd").send_keys(Keys.ALT, Keys.NUMPAD9)
+            elif char == '}':
+                self.webdriver.find_element(By.NAME, "passwd").send_keys(Keys.ALT, Keys.NUMPAD0)
+            else:
+                self.webdriver.find_element(By.NAME, "passwd").send_keys(char)
+        # password = password.replace("\\", "\\\\").replace('"', '\\"')
+        # self.webdriver.execute_script(
+        #     f'document.getElementsByName("passwd")[0].value = "{password}";'
+        # )
+
         logging.info("[LOGIN] " + "Writing password...")
         self.webdriver.find_element(By.ID, "idSIButton9").click()
         time.sleep(3)
+        logging.info("[LOGIN] " + "Password submitted")
 
     def checkBingLogin(self):
         self.webdriver.get(

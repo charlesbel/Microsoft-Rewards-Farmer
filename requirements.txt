@@ -3,3 +3,4 @@ selenium
 ipapi
 undetected-chromedriver
 selenium-wire
+blinker<1.8.0

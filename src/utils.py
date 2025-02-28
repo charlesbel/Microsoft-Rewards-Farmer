@@ -6,12 +6,35 @@ import urllib.parse
 from pathlib import Path
 
 import requests
+from requests import Session
+from requests.adapters import HTTPAdapter
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
+from urllib3 import Retry
 
 from .constants import BASE_URL
+
+
+def makeRequestsSession(session: Session = requests.session()) -> Session:
+    retry = Retry(
+        total=4,
+        backoff_factor=1,
+        status_forcelist=[
+            500,
+            502,
+            503,
+            504,
+        ],
+    )
+    session.mount(
+        "https://", HTTPAdapter(max_retries=retry)
+    )  # See https://stackoverflow.com/a/35504626/4164390 to finetune
+    session.mount(
+        "http://", HTTPAdapter(max_retries=retry)
+    )  # See https://stackoverflow.com/a/35504626/4164390 to finetune
+    return session
 
 
 class Utils:
@@ -249,3 +272,4 @@ class Utils:
         configFile = sessionPath.joinpath("config.json")
         with open(configFile, "w") as f:
             json.dump(config, f)
+
